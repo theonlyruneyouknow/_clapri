@@ -1,0 +1,54 @@
+/* File: static/css/content_management.css */
+
+.inline-edit-content {
+    border: 1px dashed transparent;
+    padding: 10px;
+    margin: 5px 0;
+    transition: all 0.3s ease;
+}
+
+.inline-edit-content:hover {
+    border-color: #007bff;
+    cursor: pointer;
+}
+
+.inline-edit-active {
+    border-color: #28a745;
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.content-toolbar {
+    display: none;
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: white;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.inline-edit-content:hover .content-toolbar {
+    display: block;
+}
+
+.badge {
+    font-size: 0.85em;
+    padding: 0.35em 0.65em;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.btn-group .btn {
+    margin-right: 2px;
+}
+
+.filter-section {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}

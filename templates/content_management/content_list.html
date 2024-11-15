@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Content Management</h1>
+        <a href="{% url 'content_management:content_create' %}" class="btn btn-primary">
+            Create New Content
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="page_type" class="form-label">Page Type</label>
+                    <select name="page_type" id="page_type" class="form-select">
+                        <option value="">All Pages</option>
+                        <option value="home" {% if request.GET.page_type == 'home' %}selected{% endif %}>Home</option>
+                        <option value="about" {% if request.GET.page_type == 'about' %}selected{% endif %}>About</option>
+                        <option value="services" {% if request.GET.page_type == 'services' %}selected{% endif %}>Services</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="theme" class="form-label">Theme</label>
+                    <select name="theme" id="theme" class="form-select">
+                        <option value="">All Themes</option>
+                        {% for theme in themes %}
+                            <option value="{{ theme.id }}" {% if request.GET.theme == theme.id %}selected{% endif %}>
+                                {{ theme.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-secondary">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Content List -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Page Type</th>
+                    <th>Theme</th>
+                    <th>Status</th>
+                    <th>Display Period</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for content in contents %}
+                    <tr>
+                        <td>{{ content.title }}</td>
+                        <td>{{ content.page_type|title }}</td>
+                        <td>{{ content.theme.name|default:'-' }}</td>
+                        <td>
+                            {% if content.active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if content.display_from or content.display_until %}
+                                {{ content.display_from|date:"Y-m-d H:i"|default:"∞" }} to 
+                                {{ content.display_until|date:"Y-m-d H:i"|default:"∞" }}
+                            {% else %}
+                                Always
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'content_management:content_edit' content.id %}" 
+                                   class="btn btn-sm btn-outline-primary">Edit</a>
+                                <form method="post" action="{% url 'content_management:content_duplicate' content.id %}" 
+                                      class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Duplicate</button>
+                                </form>
+                                <form method="post" action="{% url 'content_management:content_archive' content.id %}"
+                                      class="d-inline" 
+                                      onsubmit="return confirm('Are you sure you want to archive this content?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Archive</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No content found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Main About Section -->
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            {% for content in main_content %}
+                <div class="{% if user and user.is_staff %}inline-edit-content{% endif %}"
+                     {% if user and user.is_staff %}data-content-id="{{ content.id }}"{% endif %}>
+                    {{ content.content|safe }}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col-lg-6">
+            <img src="{% static 'img/about-main.jpg' %}" alt="About Our Company" class="img-fluid rounded shadow">
+        </div>
+    </div>
+
+    <!-- Our Values -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2>Our Core Values</h2>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-shield-check display-4 text-primary mb-3"></i>
+                    {% for content in values_integrity %}
+                        <div class="{% if user and user.is_staff %}inline-edit-content{% endif %}"
+                             {% if user and user.is_staff %}data-content-id="{{ content.id }}"{% endif %}>
+                            {{ content.content|safe }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-graph-up-arrow display-4 text-primary mb-3"></i>
+                    {% for content in values_excellence %}
+                        <div class="{% if user and user.is_staff %}inline-edit-content{% endif %}"
+                             {% if user and user.is_staff %}data-content-id="{{ content.id }}"{% endif %}>
+                            {{ content.content|safe }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-people display-4 text-primary mb-3"></i>
+                    {% for content in values_service %}
+                        <div class="{% if user and user.is_staff %}inline-edit-content{% endif %}"
+                             {% if user and user.is_staff %}data-content-id="{{ content.id }}"{% endif %}>
+                            {{ content.content|safe }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2>Our Team</h2>
+        </div>
+        {% for content in team_content %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="{% if user and user.is_staff %}inline-edit-content{% endif %}"
+                         {% if user and user.is_staff %}data-content-id="{{ content.id }}"{% endif %}>
+                        {{ content.content|safe }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Timeline/History -->
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h2>Our Journey</h2>
+        </div>
+        <div class="col-12">
+            <div class="timeline">
+                {% for content in history_content %}
+                    <div class="timeline-item {% if forloop.counter|divisibleby:2 %}right{% else %}left{% endif %}">
+                        <div class="{% if user and user.is_staff %}inline-edit-content{% endif %}"
+                             {% if user and user.is_staff %}data-content-id="{{ content.id }}"{% endif %}>
+                            {{ content.content|safe }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user and user.is_staff %}
+    {% block extra_js %}
+    <script>
+        // Inline editing functionality (same as home.html)
+        document.querySelectorAll('.inline-edit-content').forEach(element => {
+            element.addEventListener('click', function() {
+                if (this.querySelector('.content-toolbar')) return;
+                
+                const contentId = this.dataset.contentId;
+                const content = this.innerHTML;
+                
+                this.classList.add('inline-edit-active');
+                this.innerHTML = `
+                    <div class="content-toolbar">
+                        <button class="btn btn-sm btn-primary save-content">Save</button>
+                        <button class="btn btn-sm btn-secondary cancel-edit">Cancel</button>
+                    </div>
+                    <textarea class="form-control">${content}</textarea>
+                `;
+                
+                const textarea = this.querySelector('textarea');
+                textarea.focus();
+                
+                this.querySelector('.save-content').addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const response = await fetch(`/content/inline-edit/${contentId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        },
+                        body: JSON.stringify({content: textarea.value})
+                    });
+                    
+                    if (response.ok) {
+                        this.innerHTML = textarea.value;
+                        this.classList.remove('inline-edit-active');
+                    }
+                });
+                
+                this.querySelector('.cancel-edit').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.innerHTML = content;
+                    this.classList.remove('inline-edit-active');
+                });
+            });
+        });
+    </script>
+    {% endblock %}
+{% endif %}
+
+<!-- Timeline CSS -->
+{% block extra_css %}
+<style>
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        height: 100%;
+        width: 2px;
+        background: var(--bs-primary);
+    }
+    
+    .timeline-item {
+        position: relative;
+        width: 50%;
+        padding: 20px 40px;
+        box-sizing: border-box;
+    }
+    
+    .timeline-item.left {
+        left: 0;
+    }
+    
+    .timeline-item.right {
+        left: 50%;
+    }
+    
+    .timeline-item::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: -6px;
+        width: 12px;
+        height: 12px;
+        background: var(--bs-primary);
+        border-radius: 50%;
+    }
+    
+    .timeline-item.right::after {
+        left: -6px;
+    }
+    
+    @media (max-width: 767px) {
+        .timeline::before {
+            left: 40px;
+        }
+        
+        .timeline-item {
+            width: 100%;
+            padding-left: 80px;
+        }
+        
+        .timeline-item.right {
+            left: 0;
+        }
+        
+        .timeline-item::after {
+            left: 34px;
+        }
+    }
+</style>
+{% endblock %}
+{% endblock %}

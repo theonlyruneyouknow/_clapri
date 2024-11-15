@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    <nav id="adminSidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h5 class="mb-0">Admin Panel</h5>
+            <button class="btn btn-link d-xl-none" onclick="toggleSidebar()">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                   href="{% url 'admin:dashboard' %}">
+                    <i class="bi bi-speedometer2"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'content_management' %}active{% endif %}"
+                   href="{% url 'content_management:content_list' %}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    Content Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'testimonial_management' %}active{% endif %}"
+                   href="{% url 'admin:testimonial_management' %}">
+                    <i class="bi bi-chat-quote"></i>
+                    Testimonials
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'user_management' %}active{% endif %}"
+                   href="{% url 'admin:user_management' %}">
+                    <i class="bi bi-people"></i>
+                    User Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'content_analytics' %}active{% endif %}"
+                   href="{% url 'admin:content_analytics' %}">
+                    <i class="bi bi-graph-up"></i>
+                    Analytics
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+            <div class="container-fluid">
+                <button class="btn btn-link d-xl-none me-2" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">Admin</li>
+                    {% block breadcrumb %}{% endblock %}
+                </ol>
+
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" 
+                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell"></i>
+                            {% if pending_notifications %}
+                                <span class="badge bg-danger">{{ pending_notifications }}</span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            {% for notification in notifications %}
+                                <li><a class="dropdown-item" href="{{ notification.url }}">
+                                    {{ notification.message }}
+                                </a></li>
+                            {% empty %}
+                                <li><a class="dropdown-item text-muted">No new notifications</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" 
+                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{% url 'profiles:profile' %}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'core:settings' %}">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'core:logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div class="content-wrapper">
+            {% block admin_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-wrapper {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        width: 260px;
+        background: #212529;
+        color: #fff;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+        padding: 0;
+        transition: all 0.3s;
+    }
+
+    .sidebar-header {
+        padding: 1.5rem 1rem;
+        background: rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .sidebar .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 0.8rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .sidebar .nav-link:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar .nav-link.active {
+        color: #fff;
+        background: var(--bs-primary);
+    }
+
+    .main-content {
+        flex: 1;
+        margin-left: 260px;
+        min-height: 100vh;
+        background: #f8f9fa;
+        transition: all 0.3s;
+    }
+
+    .content-wrapper {
+        padding: 1.5rem;
+    }
+
+    @media (max-width: 1199.98px) {
+        .sidebar {
+            margin-left: -260px;
+        }
+
+        .sidebar.show {
+            margin-left: 0;
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        margin-bottom: 1.5rem;
+    }
+
+    .avatar {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('adminSidebar');
+        sidebar.classList.toggle('show');
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        const sidebar = document.getElementById('adminSidebar');
+        const sidebarBtn = document.querySelector('[onclick="toggleSidebar()"]');
+        
+        if (window.innerWidth < 1200 && 
+            !sidebar.contains(event.target) && 
+            !sidebarBtn.contains(event.target)) {
+            sidebar.classList.remove('show');
+        }
+    });
+</script>
+{% endblock %}
