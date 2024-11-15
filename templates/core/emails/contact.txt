@@ -1,0 +1,12 @@
+{# File: templates/core/emails/contact_admin.txt #}
+{# Location: C:\git\_clapri\templates\core\emails\contact_admin.txt #}
+
+New Contact Form Submission
+
+Name: {{ name }}
+Email: {{ email }}
+Phone: {{ phone|default:"Not provided" }}
+Service Type: {{ service_type }}
+
+Message:
+{{ message }}

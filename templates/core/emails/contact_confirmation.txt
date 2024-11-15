@@ -1,0 +1,11 @@
+{# File: templates/core/emails/contact_confirmation.txt #}
+{# Location: C:\git\_clapri\templates\core\emails\contact_confirmation.txt #}
+
+Dear {{ name }},
+
+Thank you for contacting Appraisal Pro. We have received your message and will get back to you as soon as possible.
+
+If you need immediate assistance, please call us at (123) 456-7890.
+
+Best regards,
+The Appraisal Pro Team
