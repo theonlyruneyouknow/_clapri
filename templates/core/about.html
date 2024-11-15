@@ -1,64 +1,53 @@
+{# File: templates/core/about.html #}
+{# Location: C:\git\_clapri\templates\core\about.html #}
+
 {% extends 'base.html' %}
-{% load static %}
+
+{% block title %}About Us - Appraisal Pro{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <!-- Main About Section -->
+<div class="container">
+    <!-- Hero Section -->
     <div class="row mb-5">
-        <div class="col-lg-6">
-            {% for content in main_content %}
-                <div class="{% if user and user.is_staff %}inline-edit-content{% endif %}"
-                     {% if user and user.is_staff %}data-content-id="{{ content.id }}"{% endif %}>
-                    {{ content.content|safe }}
-                </div>
-            {% endfor %}
-        </div>
-        <div class="col-lg-6">
-            <img src="{% static 'img/about-main.jpg' %}" alt="About Our Company" class="img-fluid rounded shadow">
+        <div class="col-lg-12 text-center">
+            <h1 class="display-4 mb-4">About Appraisal Pro</h1>
+            <p class="lead text-muted">Professional appraisal services with over 20 years of experience.</p>
         </div>
     </div>
 
-    <!-- Our Values -->
+    <!-- Main Content -->
     <div class="row mb-5">
-        <div class="col-12 text-center mb-4">
-            <h2>Our Core Values</h2>
+        <div class="col-lg-6">
+            <h2>Our Story</h2>
+            <p>Founded in 2003, Appraisal Pro has been providing professional and reliable appraisal services to clients across the region. Our commitment to accuracy, integrity, and customer service has made us a trusted name in the industry.</p>
+            <p>We combine years of experience with modern technology to deliver accurate, timely, and comprehensive appraisal services.</p>
         </div>
-        <div class="col-md-4 mb-4">
+        <div class="col-lg-6">
             <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-shield-check display-4 text-primary mb-3"></i>
-                    {% for content in values_integrity %}
-                        <div class="{% if user and user.is_staff %}inline-edit-content{% endif %}"
-                             {% if user and user.is_staff %}data-content-id="{{ content.id }}"{% endif %}>
-                            {{ content.content|safe }}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-graph-up-arrow display-4 text-primary mb-3"></i>
-                    {% for content in values_excellence %}
-                        <div class="{% if user and user.is_staff %}inline-edit-content{% endif %}"
-                             {% if user and user.is_staff %}data-content-id="{{ content.id }}"{% endif %}>
-                            {{ content.content|safe }}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="bi bi-people display-4 text-primary mb-3"></i>
-                    {% for content in values_service %}
-                        <div class="{% if user and user.is_staff %}inline-edit-content{% endif %}"
-                             {% if user and user.is_staff %}data-content-id="{{ content.id }}"{% endif %}>
-                            {{ content.content|safe }}
-                        </div>
-                    {% endfor %}
+                <div class="card-body">
+                    <h3 class="card-title">Why Choose Us?</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            20+ Years of Experience
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            Certified Professional Appraisers
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            Quick Turnaround Time
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            Competitive Pricing
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            Modern Technology Integration
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -68,156 +57,44 @@
     <div class="row mb-5">
         <div class="col-12 text-center mb-4">
             <h2>Our Team</h2>
+            <p class="text-muted">Meet the professionals behind our success</p>
         </div>
-        {% for content in team_content %}
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="{% if user and user.is_staff %}inline-edit-content{% endif %}"
-                         {% if user and user.is_staff %}data-content-id="{{ content.id }}"{% endif %}>
-                        {{ content.content|safe }}
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-person-circle display-4"></i>
                     </div>
+                    <h5 class="card-title">John Doe</h5>
+                    <p class="card-text text-muted">Chief Appraiser</p>
+                    <p class="card-text">Over 15 years of experience in commercial and residential appraisals.</p>
                 </div>
             </div>
-        {% endfor %}
-    </div>
-
-    <!-- Timeline/History -->
-    <div class="row">
-        <div class="col-12 text-center mb-4">
-            <h2>Our Journey</h2>
         </div>
-        <div class="col-12">
-            <div class="timeline">
-                {% for content in history_content %}
-                    <div class="timeline-item {% if forloop.counter|divisibleby:2 %}right{% else %}left{% endif %}">
-                        <div class="{% if user and user.is_staff %}inline-edit-content{% endif %}"
-                             {% if user and user.is_staff %}data-content-id="{{ content.id }}"{% endif %}>
-                            {{ content.content|safe }}
-                        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-person-circle display-4"></i>
                     </div>
-                {% endfor %}
+                    <h5 class="card-title">Jane Smith</h5>
+                    <p class="card-text text-muted">Senior Appraiser</p>
+                    <p class="card-text">Specializing in residential properties with 10+ years of experience.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-person-circle display-4"></i>
+                    </div>
+                    <h5 class="card-title">Mike Johnson</h5>
+                    <p class="card-text text-muted">Commercial Specialist</p>
+                    <p class="card-text">Expert in commercial property valuation with 12 years of experience.</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-{% if user and user.is_staff %}
-    {% block extra_js %}
-    <script>
-        // Inline editing functionality (same as home.html)
-        document.querySelectorAll('.inline-edit-content').forEach(element => {
-            element.addEventListener('click', function() {
-                if (this.querySelector('.content-toolbar')) return;
-                
-                const contentId = this.dataset.contentId;
-                const content = this.innerHTML;
-                
-                this.classList.add('inline-edit-active');
-                this.innerHTML = `
-                    <div class="content-toolbar">
-                        <button class="btn btn-sm btn-primary save-content">Save</button>
-                        <button class="btn btn-sm btn-secondary cancel-edit">Cancel</button>
-                    </div>
-                    <textarea class="form-control">${content}</textarea>
-                `;
-                
-                const textarea = this.querySelector('textarea');
-                textarea.focus();
-                
-                this.querySelector('.save-content').addEventListener('click', async (e) => {
-                    e.stopPropagation();
-                    const response = await fetch(`/content/inline-edit/${contentId}/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                        },
-                        body: JSON.stringify({content: textarea.value})
-                    });
-                    
-                    if (response.ok) {
-                        this.innerHTML = textarea.value;
-                        this.classList.remove('inline-edit-active');
-                    }
-                });
-                
-                this.querySelector('.cancel-edit').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.innerHTML = content;
-                    this.classList.remove('inline-edit-active');
-                });
-            });
-        });
-    </script>
-    {% endblock %}
-{% endif %}
-
-<!-- Timeline CSS -->
-{% block extra_css %}
-<style>
-    .timeline {
-        position: relative;
-        padding: 20px 0;
-    }
-    
-    .timeline::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 50%;
-        height: 100%;
-        width: 2px;
-        background: var(--bs-primary);
-    }
-    
-    .timeline-item {
-        position: relative;
-        width: 50%;
-        padding: 20px 40px;
-        box-sizing: border-box;
-    }
-    
-    .timeline-item.left {
-        left: 0;
-    }
-    
-    .timeline-item.right {
-        left: 50%;
-    }
-    
-    .timeline-item::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        right: -6px;
-        width: 12px;
-        height: 12px;
-        background: var(--bs-primary);
-        border-radius: 50%;
-    }
-    
-    .timeline-item.right::after {
-        left: -6px;
-    }
-    
-    @media (max-width: 767px) {
-        .timeline::before {
-            left: 40px;
-        }
-        
-        .timeline-item {
-            width: 100%;
-            padding-left: 80px;
-        }
-        
-        .timeline-item.right {
-            left: 0;
-        }
-        
-        .timeline-item::after {
-            left: 34px;
-        }
-    }
-</style>
-{% endblock %}
 {% endblock %}
