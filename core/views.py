@@ -52,41 +52,49 @@ class ContactView(FormView):
         return context
 
     def form_valid(self, form):
-        # Send email to admin
-        admin_email_context = {
-            'name': form.cleaned_data['name'],
-            'email': form.cleaned_data['email'],
-            'phone': form.cleaned_data['phone'],
-            'service_type': form.cleaned_data['service_type'],
-            'message': form.cleaned_data['message'],
-        }
-        
-        admin_email_body = render_to_string('core/emails/contact_admin.txt', admin_email_context)
-        
-        send_mail(
-            subject=f"New Contact Form Submission from {form.cleaned_data['name']}",
-            message=admin_email_body,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.ADMIN_EMAIL],
-            fail_silently=False,
-        )
+        try:
+            # Send email to admin
+            admin_email_context = {
+                'name': form.cleaned_data['name'],
+                'email': form.cleaned_data['email'],
+                'phone': form.cleaned_data['phone'],
+                'service_type': form.cleaned_data['service_type'],
+                'message': form.cleaned_data['message'],
+            }
+            
+            admin_email_body = render_to_string('core/emails/contact_admin.txt', admin_email_context)
+            
+            send_mail(
+                subject=f"New Contact Form Submission from {form.cleaned_data['name']}",
+                message=admin_email_body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.ADMIN_EMAIL],
+                fail_silently=True,
+            )
 
-        # Send confirmation email to user
-        user_email_context = {
-            'name': form.cleaned_data['name'],
-        }
-        
-        user_email_body = render_to_string('core/emails/contact_confirmation.txt', user_email_context)
-        
-        send_mail(
-            subject="We've Received Your Message - Appraisal Pro",
-            message=user_email_body,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[form.cleaned_data['email']],
-            fail_silently=False,
-        )
+            # Send confirmation email to user
+            user_email_context = {
+                'name': form.cleaned_data['name'],
+            }
+            
+            user_email_body = render_to_string('core/emails/contact_confirmation.txt', user_email_context)
+            
+            send_mail(
+                subject="We've Received Your Message - Appraisal Pro",
+                message=user_email_body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[form.cleaned_data['email']],
+                fail_silently=True,
+            )
 
-        messages.success(self.request, "Thank you for contacting us! We'll get back to you soon.")
+            messages.success(self.request, "Thank you for contacting us! We'll get back to you soon.")
+        except Exception as e:
+            logger.error(f"Email error: {str(e)}")
+            messages.warning(
+                self.request,
+                "Your message was received but there was an issue sending confirmation emails. We'll still contact you soon."
+            )
+        
         return super().form_valid(form)
 
     def form_invalid(self, form):
