@@ -13,6 +13,7 @@ urlpatterns = [
     path('contact/', views.ContactView.as_view(), name='contact'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('profile/edit/', views.ProfileEditView.as_view(), name='profile_edit'),
+    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),  # Add this line
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('callback/', views.callback, name='callback'),

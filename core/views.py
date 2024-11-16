@@ -17,6 +17,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic.edit import FormView
 from .forms import ProfileForm
 from .models import UserProfile
+from datetime import datetime  # Add this line
 
 import logging
 
@@ -80,9 +81,31 @@ class ProfileView(TemplateView):
         context = super().get_context_data(**kwargs)
         user = get_auth0_user(self.request)
         context['user'] = user
-        if user:
-            profile = UserProfile.objects(user_id=user['sub']).first()
-            context['profile'] = profile
+        
+        # Get or create profile
+        profile = UserProfile.objects(user_id=user['sub']).first()
+        if not profile and user:
+            # Create profile with Auth0 data
+            profile = UserProfile(
+                user_id=user['sub'],
+                email=user.get('email', ''),
+                first_name=user.get('given_name', ''),
+                last_name=user.get('family_name', ''),
+                # Add any other fields that Auth0 might provide
+            )
+            profile.save()
+        
+        context.update({
+            'profile': profile,
+            'auth0_data': {
+                'picture': user.get('picture', None),
+                'email_verified': user.get('email_verified', False),
+                'locale': user.get('locale', ''),
+                'updated_at': user.get('updated_at', ''),
+                'name': user.get('name', ''),
+                'email': user.get('email', ''),
+            }
+        })
         return context
 
 class ProfileEditView(FormView):
@@ -109,31 +132,50 @@ class ProfileEditView(FormView):
                 'state': profile.state,
                 'zip_code': profile.zip_code,
             }
-        return {}
+        # Pre-fill with Auth0 data if no profile exists
+        return {
+            'first_name': user.get('given_name', ''),
+            'last_name': user.get('family_name', ''),
+            'email': user.get('email', ''),
+        }
+    
 
-    def form_valid(self, form):
+class DashboardView(TemplateView):
+    template_name = 'core/dashboard.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         user = get_auth0_user(self.request)
         profile = UserProfile.objects(user_id=user['sub']).first()
-        
-        if not profile:
-            profile = UserProfile(
-                user_id=user['sub'],
-                email=user['email']
-            )
-        
-        profile.first_name = form.cleaned_data['first_name']
-        profile.last_name = form.cleaned_data['last_name']
-        profile.phone = form.cleaned_data['phone']
-        profile.company = form.cleaned_data['company']
-        profile.address = form.cleaned_data['address']
-        profile.city = form.cleaned_data['city']
-        profile.state = form.cleaned_data['state']
-        profile.zip_code = form.cleaned_data['zip_code']
-        
-        profile.save()
-        
-        messages.success(self.request, 'Profile updated successfully!')
-        return super().form_valid(form)    
+
+        # For now, we'll use placeholder data
+        # Later, we'll replace these with real data from the database
+        context.update({
+            'user': user,
+            'profile': profile,
+            'statistics': {
+                'total_requests': 0,
+                'pending_requests': 0,
+                'completed_requests': 0,
+                'in_progress': 0
+            },
+            'recent_requests': [],
+            'upcoming_appointments': [],
+            'notifications': [
+                {
+                    'type': 'info',
+                    'message': 'Welcome to your dashboard! Start by creating your first appraisal request.',
+                    'date': datetime.now()
+                }
+            ]
+        })
+        return context
+
+
 
 def login(request):
     state = secrets.token_urlsafe(32)

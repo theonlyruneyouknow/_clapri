@@ -47,16 +47,22 @@
                 <ul class="navbar-nav">
                     {% if user %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle"></i> {{ user.name }}
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" 
+                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if user.picture %}
+                                <img src="{{ user.picture }}" alt="{{ user.name }}" 
+                                     class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                            {% else %}
+                                <i class="bi bi-person-circle me-2" style="font-size: 1.2rem;"></i>
+                            {% endif %}
+                            {{ user.name }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'core:dashboard' %}">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a></li>
                             <li><a class="dropdown-item" href="{% url 'core:profile' %}">
                                 <i class="bi bi-person"></i> Profile
-                            </a></li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-card-checklist"></i> My Appraisals
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             {% if user.app_metadata.is_admin %}
