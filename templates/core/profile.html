@@ -1,0 +1,72 @@
+{# File: templates/core/profile.html #}
+{# Location: C:\git\_clapri\templates\core\profile.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Your Profile - Appraisal Pro{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-4">
+            <!-- Profile Card -->
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        {% if user.picture %}
+                            <img src="{{ user.picture }}" alt="{{ profile.full_name }}" 
+                                 class="rounded-circle img-fluid" style="width: 150px;">
+                        {% else %}
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto" 
+                                 style="width: 150px; height: 150px;">
+                                <span class="display-4">{{ profile.first_name|first|default:"U" }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <h5 class="mb-1">{{ profile.full_name }}</h5>
+                    <p class="text-muted mb-4">{{ profile.company|default:"" }}</p>
+                    <a href="{% url 'core:profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="card mb-4">
+                <div class="card-header">Contact Information</div>
+                <div class="card-body">
+                    <p><strong>Email:</strong><br>{{ profile.email }}</p>
+                    {% if profile.phone %}
+                        <p><strong>Phone:</strong><br>{{ profile.phone }}</p>
+                    {% endif %}
+                    {% if profile.full_address %}
+                        <p><strong>Address:</strong><br>{{ profile.full_address }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <!-- Activity Overview -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <!-- We'll add activity content later -->
+                    <p class="text-muted">No recent activity to display.</p>
+                </div>
+            </div>
+
+            <!-- Appraisal Requests -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Your Appraisal Requests</h5>
+                </div>
+                <div class="card-body">
+                    <!-- We'll add appraisal requests later -->
+                    <p class="text-muted">No appraisal requests to display.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

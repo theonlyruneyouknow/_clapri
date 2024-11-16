@@ -117,29 +117,29 @@ print("AUTH0_DOMAIN:", os.getenv('AUTH0_DOMAIN'))
 print("AUTH0_CLIENT_ID:", os.getenv('AUTH0_CLIENT_ID'))
 
 # Logging configuration
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-        'core': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-        'utils': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#         },
+#         'core': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#         },
+#         'utils': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#         },
+#     },
+# }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

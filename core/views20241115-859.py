@@ -1,7 +1,7 @@
 # File: core/views.py
 # Location: C:\git\_clapri\core\views.py
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from django.urls import reverse
@@ -9,20 +9,17 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.utils.decorators import method_decorator
 from urllib.parse import quote, urlencode
 from utils.auth import oauth, login_required, get_auth0_user
-from .forms import ContactForm
-import secrets
-from django.utils.decorators import method_decorator
-from django.views.generic.edit import FormView
-from .forms import ProfileForm
 from .models import UserProfile
-
+from .forms import ContactForm, ProfileForm
 import logging
+import secrets
+
 
 logger = logging.getLogger(__name__)
 
-# Keep only these existing views for now
 class HomeView(TemplateView):
     template_name = 'core/home.html'
 
@@ -59,7 +56,40 @@ class ContactView(FormView):
 
     def form_valid(self, form):
         try:
-            # Your existing contact form logic
+            # Send email to admin
+            admin_email_context = {
+                'name': form.cleaned_data['name'],
+                'email': form.cleaned_data['email'],
+                'phone': form.cleaned_data['phone'],
+                'service_type': form.cleaned_data['service_type'],
+                'message': form.cleaned_data['message'],
+            }
+            
+            admin_email_body = render_to_string('core/emails/contact_admin.txt', admin_email_context)
+            
+            send_mail(
+                subject=f"New Contact Form Submission from {form.cleaned_data['name']}",
+                message=admin_email_body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.ADMIN_EMAIL],
+                fail_silently=True,
+            )
+
+            # Send confirmation email to user
+            user_email_context = {
+                'name': form.cleaned_data['name'],
+            }
+            
+            user_email_body = render_to_string('core/emails/contact_confirmation.txt', user_email_context)
+            
+            send_mail(
+                subject="We've Received Your Message - Appraisal Pro",
+                message=user_email_body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[form.cleaned_data['email']],
+                fail_silently=True,
+            )
+
             messages.success(self.request, "Thank you for contacting us! We'll get back to you soon.")
         except Exception as e:
             logger.error(f"Email error: {str(e)}")
@@ -67,8 +97,13 @@ class ContactView(FormView):
                 self.request,
                 "Your message was received but there was an issue sending confirmation emails. We'll still contact you soon."
             )
+        
         return super().form_valid(form)
-    
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Please correct the errors below.")
+        return super().form_invalid(form)
+
 class ProfileView(TemplateView):
     template_name = 'core/profile.html'
 
@@ -79,10 +114,12 @@ class ProfileView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = get_auth0_user(self.request)
-        context['user'] = user
-        if user:
-            profile = UserProfile.objects(user_id=user['sub']).first()
-            context['profile'] = profile
+        profile = UserProfile.objects(user_id=user['sub']).first()
+        
+        context.update({
+            'user': user,
+            'profile': profile
+        })
         return context
 
 class ProfileEditView(FormView):
@@ -133,8 +170,11 @@ class ProfileEditView(FormView):
         profile.save()
         
         messages.success(self.request, 'Profile updated successfully!')
-        return super().form_valid(form)    
+        return super().form_valid(form)
+    
 
+
+    
 def login(request):
     state = secrets.token_urlsafe(32)
     request.session['auth_state'] = state

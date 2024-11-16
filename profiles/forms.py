@@ -39,3 +39,12 @@ class TestimonialForm(forms.Form):
     ], widget=forms.Select(attrs={
         'class': 'form-control'
     }))
+
+class ContactForm(forms.Form):
+    name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea)
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        return cleaned_data
