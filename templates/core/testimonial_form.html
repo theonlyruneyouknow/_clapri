@@ -1,0 +1,93 @@
+{# File: templates/core/testimonials.html #}
+{# Location: C:\git\_clapri\templates\core\testimonials.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Testimonials - Appraisal Pro{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2">Client Testimonials</h1>
+            <p class="text-muted">See what our clients say about our services</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            {% if user %}
+                <a href="{% url 'core:testimonial_add' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add Your Testimonial
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if user %}
+        <!-- User's Testimonials -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Your Testimonials</h5>
+            </div>
+            <div class="card-body">
+                {% if user_testimonials %}
+                    {% for testimonial in user_testimonials %}
+                        <div class="border-bottom pb-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">{{ testimonial.title }}</h5>
+                                    <div class="text-warning mb-2">{{ testimonial.rating_stars }}</div>
+                                </div>
+                                <div>
+                                    <a href="{% url 'core:testimonial_edit' testimonial.id %}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                </div>
+                            </div>
+                            <p class="mb-1">{{ testimonial.content }}</p>
+                            <small class="text-muted">
+                                Submitted on {{ testimonial.created_at|date:"F j, Y" }}
+                                {% if testimonial.is_approved %}
+                                    <span class="badge bg-success ms-2">Approved</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark ms-2">Pending Review</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0">You haven't submitted any testimonials yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Public Testimonials -->
+    <div class="row">
+        {% for testimonial in testimonials %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="text-warning mb-2">{{ testimonial.rating_stars }}</div>
+                        <h5 class="card-title">{{ testimonial.title }}</h5>
+                        <p class="card-text">{{ testimonial.content }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-muted">
+                            {{ testimonial.author_name }}
+                            {% if testimonial.author_company %}
+                                <span class="mx-1">|</span> {{ testimonial.author_company }}
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <p class="text-muted mb-0">No testimonials available yet.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

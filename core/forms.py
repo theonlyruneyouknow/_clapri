@@ -168,3 +168,39 @@ class AppraisalRequestForm(forms.Form):
             'placeholder': 'Additional Notes'
         })
     )
+
+class TestimonialForm(forms.Form):
+    title = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Title for your testimonial'
+        })
+    )
+    content = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 4,
+            'placeholder': 'Share your experience with our service'
+        })
+    )
+    rating = forms.ChoiceField(
+        choices=[
+            (5, '★★★★★ Excellent'),
+            (4, '★★★★☆ Very Good'),
+            (3, '★★★☆☆ Good'),
+            (2, '★★☆☆☆ Fair'),
+            (1, '★☆☆☆☆ Poor')
+        ],
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        })
+    )
+    company = forms.CharField(
+        required=False,
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Your Company (Optional)'
+        })
+    )

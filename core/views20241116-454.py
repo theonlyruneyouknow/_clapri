@@ -12,8 +12,8 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from urllib.parse import quote, urlencode
 from utils.auth import oauth, login_required, get_auth0_user
-from .models import UserProfile, AppraisalRequest, Testimonial
-from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm
+from .models import UserProfile, AppraisalRequest
+from .forms import ContactForm, ProfileForm, AppraisalRequestForm
 from .forms import ProfileForm
 from .models import UserProfile
 from datetime import datetime  # Add this line
