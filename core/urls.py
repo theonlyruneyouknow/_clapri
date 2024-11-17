@@ -14,7 +14,9 @@ urlpatterns = [
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('profile/edit/', views.ProfileEditView.as_view(), name='profile_edit'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),  # Add this line
+    path('appraisal/request/', views.AppraisalRequestView.as_view(), name='appraisal_request'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('callback/', views.callback, name='callback'),
+
 ]
