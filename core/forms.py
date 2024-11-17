@@ -186,11 +186,11 @@ class TestimonialForm(forms.Form):
     )
     rating = forms.ChoiceField(
         choices=[
-            (5, '★★★★★ Excellent'),
-            (4, '★★★★☆ Very Good'),
-            (3, '★★★☆☆ Good'),
-            (2, '★★☆☆☆ Fair'),
-            (1, '★☆☆☆☆ Poor')
+            (5, '⭐⭐⭐⭐⭐ Excellent'),
+            (4, '⭐⭐⭐⭐☆ Very Good'),
+            (3, '⭐⭐⭐☆☆ Good'),
+            (2, '⭐⭐☆☆☆ Fair'),
+            (1, '⭐☆☆☆☆ Poor')
         ],
         widget=forms.Select(attrs={
             'class': 'form-control'

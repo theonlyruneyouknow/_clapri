@@ -150,3 +150,23 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     z-index: 1000;
 }
+
+/* Gold variation */
+.star-rating {
+    color: #FFD700;  /* More golden yellow */
+}
+
+/* Amber variation */
+.star-rating_Amber {
+    color: #FFA000;  /* Deeper amber color */
+}
+
+/* Green variation */
+.star-rating_Green {
+    color: #4CAF50;  /* Success green */
+}
+
+/* Custom yellow variation */
+.star-rating_Yellow {
+    color: #FFB900;  /* Warmer yellow */
+}

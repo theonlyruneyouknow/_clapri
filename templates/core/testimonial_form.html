@@ -1,93 +1,76 @@
-{# File: templates/core/testimonials.html #}
-{# Location: C:\git\_clapri\templates\core\testimonials.html #}
+{# File: templates/core/testimonial_form.html #}
+{# Location: C:\git\_clapri\templates\core\testimonial_form.html #}
 
 {% extends 'base.html' %}
 
-{% block title %}Testimonials - Appraisal Pro{% endblock %}
+{% block title %}
+    {% if is_edit %}Edit{% else %}Add{% endif %} Testimonial - Appraisal Pro
+{% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h1 class="h2">Client Testimonials</h1>
-            <p class="text-muted">See what our clients say about our services</p>
-        </div>
-        <div class="col-md-4 text-md-end">
-            {% if user %}
-                <a href="{% url 'core:testimonial_add' %}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Add Your Testimonial
-                </a>
-            {% endif %}
-        </div>
-    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        {% if is_edit %}Edit{% else %}Add{% endif %} Your Testimonial
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
 
-    {% if user %}
-        <!-- User's Testimonials -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Your Testimonials</h5>
-            </div>
-            <div class="card-body">
-                {% if user_testimonials %}
-                    {% for testimonial in user_testimonials %}
-                        <div class="border-bottom pb-3 mb-3">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h5 class="mb-1">{{ testimonial.title }}</h5>
-                                    <div class="text-warning mb-2">{{ testimonial.rating_stars }}</div>
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label required">Title</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.title.errors|join:", " }}
                                 </div>
-                                <div>
-                                    <a href="{% url 'core:testimonial_edit' testimonial.id %}" 
-                                       class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-pencil"></i> Edit
-                                    </a>
-                                </div>
-                            </div>
-                            <p class="mb-1">{{ testimonial.content }}</p>
-                            <small class="text-muted">
-                                Submitted on {{ testimonial.created_at|date:"F j, Y" }}
-                                {% if testimonial.is_approved %}
-                                    <span class="badge bg-success ms-2">Approved</span>
-                                {% else %}
-                                    <span class="badge bg-warning text-dark ms-2">Pending Review</span>
-                                {% endif %}
-                            </small>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p class="text-muted mb-0">You haven't submitted any testimonials yet.</p>
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- Public Testimonials -->
-    <div class="row">
-        {% for testimonial in testimonials %}
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <div class="text-warning mb-2">{{ testimonial.rating_stars }}</div>
-                        <h5 class="card-title">{{ testimonial.title }}</h5>
-                        <p class="card-text">{{ testimonial.content }}</p>
-                    </div>
-                    <div class="card-footer bg-transparent">
-                        <small class="text-muted">
-                            {{ testimonial.author_name }}
-                            {% if testimonial.author_company %}
-                                <span class="mx-1">|</span> {{ testimonial.author_company }}
                             {% endif %}
-                        </small>
-                    </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.rating.id_for_label }}" class="form-label required">Rating</label>
+                            {{ form.rating }}
+                            {% if form.rating.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.rating.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.company.id_for_label }}" class="form-label">Company</label>
+                            {{ form.company }}
+                            {% if form.company.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.company.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.content.id_for_label }}" class="form-label required">Your Testimonial</label>
+                            {{ form.content }}
+                            {% if form.content.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.content.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'core:testimonials' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                {% if is_edit %}Update{% else %}Submit{% endif %} Testimonial
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        {% empty %}
-            <div class="col-12">
-                <div class="text-center py-5">
-                    <p class="text-muted mb-0">No testimonials available yet.</p>
-                </div>
-            </div>
-        {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock %}

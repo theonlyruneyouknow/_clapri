@@ -34,7 +34,8 @@
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <h5 class="mb-1">{{ testimonial.title }}</h5>
-                                    <div class="text-warning mb-2">{{ testimonial.rating_stars }}</div>
+                                    <!-- <div class="text-warning mb-2">{{ testimonial.rating_stars }}</div> -->
+                                    <div class="star-rating mb-2">{{ testimonial.rating_stars }}</div>
                                 </div>
                                 <div>
                                     <a href="{% url 'core:testimonial_edit' testimonial.id %}" 
@@ -67,7 +68,8 @@
             <div class="col-md-6 mb-4">
                 <div class="card h-100">
                     <div class="card-body">
-                        <div class="text-warning mb-2">{{ testimonial.rating_stars }}</div>
+                        <!-- <div class="text-warning mb-2">{{ testimonial.rating_stars }}</div> -->
+                        <div class="star-rating mb-2">{{ testimonial.rating_stars }}</div>
                         <h5 class="card-title">{{ testimonial.title }}</h5>
                         <p class="card-text">{{ testimonial.content }}</p>
                     </div>
