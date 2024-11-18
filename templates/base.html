@@ -1,44 +1,33 @@
-<!-- # File: templates/base.html
-# Location: C:\git\_clapri\templates\base.html
--->
+<!-- # File: templates/base.html -->
+<!-- # Location: C:\git\_clapri\templates\base.html -->
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Appraisal App{% endblock %}</title>
+    <title>{% block title %}Appraisal Pro{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    {% block extra_css %}{% endblock %}
-    <!-- Add this in the head section, after the other CSS links -->
     <style>
         .form-label.required::after {
             content: " *";
-            color: #dc3545;  /* Bootstrap's danger color */
+            color: #dc3545;
             font-weight: bold;
         }
-    </style>
-    
-    <style>
-        /* Your existing styles */
-    
-        /* Star Rating Colors */
-        .star-rating {
-            color: #ffc107;  /* Bootstrap's warning color - a nice gold/yellow */
-            font-size: 1.1rem;  /* Makes stars slightly larger */
-        }
         
-        /* Optional hover effect for interactive stars */
-        .star-rating:hover {
-            color: #ffaa00;  /* Slightly darker gold on hover */
+        .star-rating {
+            color: #ffc107;
+            font-size: 1.1rem;
         }
     </style>
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'core:home' %}">
+            <a class="navbar-brand" href="/">
                 <i class="bi bi-building"></i> Appraisal Pro
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -46,63 +35,60 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <!-- Update the navigation section in base.html -->
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" 
-                               href="{% url 'core:home' %}">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" 
-                               href="{% url 'core:about' %}">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}" 
-                               href="{% url 'core:services' %}">Services</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" 
-                               href="{% url 'core:contact' %}">Contact Us</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'testimonials' %}active{% endif %}" 
-                               href="{% url 'core:testimonials' %}">Testimonials</a>
-                        </li>
-                    </ul>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" 
+                           href="{% url 'core:home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" 
+                           href="{% url 'core:about' %}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}" 
+                           href="{% url 'core:services' %}">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'testimonials' %}active{% endif %}" 
+                           href="{% url 'core:testimonials' %}">Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" 
+                           href="{% url 'core:contact' %}">Contact Us</a>
+                    </li>
                 </ul>
                 
                 <ul class="navbar-nav">
                     {% if user %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" 
-                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {% if user.picture %}
-                                <img src="{{ user.picture }}" alt="{{ user.name }}" 
-                                     class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
-                            {% else %}
-                                <i class="bi bi-person-circle me-2" style="font-size: 1.2rem;"></i>
-                            {% endif %}
-                            {{ user.name }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url 'core:dashboard' %}">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'core:profile' %}">
-                                <i class="bi bi-person"></i> Profile
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            {% if user.app_metadata.is_admin %}
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-gear"></i> Admin Panel
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            {% endif %}
-                            <li><a class="dropdown-item" href="{% url 'core:logout' %}">
-                                <i class="bi bi-box-arrow-right"></i> Logout
-                            </a></li>
-                        </ul>
-                    </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" 
+                               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if user.picture %}
+                                    <img src="{{ user.picture }}" alt="{{ user.name }}" 
+                                         class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                                {% else %}
+                                    <i class="bi bi-person-circle me-2" style="font-size: 1.2rem;"></i>
+                                {% endif %}
+                                {{ user.name }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{% url 'core:dashboard' %}">
+                                    <i class="bi bi-speedometer2"></i> Dashboard
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'core:profile' %}">
+                                    <i class="bi bi-person"></i> Profile
+                                </a></li>
+                                {% if user.is_admin or user|get:'/app_metadata'|get:'is_admin' %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'core:admin_testimonials' %}">
+                                        <i class="bi bi-shield-check"></i> Admin Panel
+                                    </a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'core:logout' %}">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </a></li>
+                            </ul>
+                        </li>
                     {% else %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'core:login' %}">
@@ -128,7 +114,7 @@
     {% endif %}
 
     <!-- Main Content -->
-    <main class="py-4">
+    <main>
         {% block content %}{% endblock %}
     </main>
 

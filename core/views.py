@@ -2,6 +2,7 @@
 # Location: C:\git\_clapri\core\views.py
 
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import TemplateView, View  # Add View here
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from django.urls import reverse
@@ -69,74 +70,47 @@ class ContactView(FormView):
             )
         return super().form_valid(form)
     
+
+
 class ProfileView(TemplateView):
     template_name = 'core/profile.html'
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = get_auth0_user(self.request)
-        context['user'] = user
         
-        # Get or create profile
-        profile = UserProfile.objects(user_id=user['sub']).first()
-        if not profile and user:
-            # Create profile with Auth0 data
-            profile = UserProfile(
-                user_id=user['sub'],
-                email=user.get('email', ''),
-                first_name=user.get('given_name', ''),
-                last_name=user.get('family_name', ''),
-                # Add any other fields that Auth0 might provide
-            )
-            profile.save()
-        
+        print("\n=== DEBUG USER INFO ===")
+        print("Complete user object:", user)
+        print("Is admin check paths:")
+        print("- Direct is_admin:", user.get('is_admin'))
+        print("- /app_metadata:", user.get('/app_metadata'))
+        print("- /user_metadata:", user.get('/user_metadata'))
+        print("======================\n")
+
+        # Simplified admin check
+        is_admin = bool(
+            user.get('is_admin') or
+            (user.get('/app_metadata', {}) or {}).get('is_admin') or
+            (user.get('/user_metadata', {}) or {}).get('is_admin')
+        )
+
+        auth_data = {
+            'picture': user.get('picture', None),
+            'email_verified': user.get('email_verified', False),
+            'locale': user.get('locale', ''),
+            'updated_at': user.get('updated_at', ''),
+            'name': user.get('name', ''),
+            'email': user.get('email', ''),
+            'is_admin': is_admin,  # This should now correctly reflect admin status
+            'app_metadata': user.get('/app_metadata', {}),
+            'user_metadata': user.get('/user_metadata', {})
+        }
+
         context.update({
-            'profile': profile,
-            'auth0_data': {
-                'picture': user.get('picture', None),
-                'email_verified': user.get('email_verified', False),
-                'locale': user.get('locale', ''),
-                'updated_at': user.get('updated_at', ''),
-                'name': user.get('name', ''),
-                'email': user.get('email', ''),
-            }
+            'user': user,
+            'auth0_data': auth_data
         })
         return context
-
-class ProfileEditView(FormView):
-    template_name = 'core/profile_edit.html'
-    form_class = ProfileForm
-    success_url = '/profile/'
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
-    def get_initial(self):
-        user = get_auth0_user(self.request)
-        profile = UserProfile.objects(user_id=user['sub']).first()
-        
-        if profile:
-            return {
-                'first_name': profile.first_name,
-                'last_name': profile.last_name,
-                'phone': profile.phone,
-                'company': profile.company,
-                'address': profile.address,
-                'city': profile.city,
-                'state': profile.state,
-                'zip_code': profile.zip_code,
-            }
-        # Pre-fill with Auth0 data if no profile exists
-        return {
-            'first_name': user.get('given_name', ''),
-            'last_name': user.get('family_name', ''),
-            'email': user.get('email', ''),
-        }
     
 
 class DashboardView(TemplateView):
@@ -305,11 +279,164 @@ class TestimonialEditView(FormView):
         messages.success(self.request, 'Your testimonial has been updated and will be reviewed again.')
         return super().form_valid(form)
 
+class AdminTestimonialsView(TemplateView):
+    template_name = 'core/admin/testimonials.html'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        user = get_auth0_user(self.request)
+        if not user.get('app_metadata', {}).get('is_admin', False):
+            messages.error(self.request, "You don't have permission to access this page.")
+            return redirect('core:home')
+        return super().dispatch(*args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        
+        # Get testimonials with filter options
+        filter_status = self.request.GET.get('status', 'pending')
+        if filter_status == 'pending':
+            testimonials = Testimonial.objects(is_approved=False).order_by('-created_at')
+        elif filter_status == 'approved':
+            testimonials = Testimonial.objects(is_approved=True).order_by('-created_at')
+        else:  # all
+            testimonials = Testimonial.objects.order_by('-created_at')
+            
+        context.update({
+            'testimonials': testimonials,
+            'filter_status': filter_status,
+            'pending_count': Testimonial.objects(is_approved=False).count(),
+            'approved_count': Testimonial.objects(is_approved=True).count(),
+            'total_count': Testimonial.objects.count(),
+        })
+        return context
 
+class AdminTestimonialApproveView(View):
+    @method_decorator(login_required)
+    def post(self, request, testimonial_id):
+        user = get_auth0_user(request)
+        if not user.get('app_metadata', {}).get('is_admin', False):
+            messages.error(request, "You don't have permission to perform this action.")
+            return redirect('core:home')
+            
+        testimonial = get_object_or_404(Testimonial, id=testimonial_id)
+        testimonial.is_approved = True
+        testimonial.save()
+        
+        # Send notification email to the user
+        try:
+            user_profile = UserProfile.objects(user_id=testimonial.user_id).first()
+            if user_profile and user_profile.email:
+                send_mail(
+                    subject="Your testimonial has been approved!",
+                    message=f"Your testimonial '{testimonial.title}' has been approved and is now visible on our website.",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user_profile.email],
+                    fail_silently=True,
+                )
+        except Exception as e:
+            logger.error(f"Failed to send approval notification: {str(e)}")
+        
+        messages.success(request, "Testimonial approved successfully.")
+        return redirect('core:admin_testimonials')
+
+class AdminTestimonialRejectView(View):
+    @method_decorator(login_required)
+    def post(self, request, testimonial_id):
+        user = get_auth0_user(request)
+        if not user.get('app_metadata', {}).get('is_admin', False):
+            messages.error(request, "You don't have permission to perform this action.")
+            return redirect('core:home')
+            
+        testimonial = get_object_or_404(Testimonial, id=testimonial_id)
+        testimonial.delete()
+        
+        messages.success(request, "Testimonial rejected and deleted.")
+        return redirect('core:admin_testimonials')
+
+def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    user = get_auth0_user(self.request)
     
+    # Check admin status using the correct paths
+    is_admin = (
+        user.get('is_admin') or 
+        user.get('/app_metadata', {}).get('is_admin') or 
+        user.get('/user_metadata', {}).get('is_admin')
+    )
+    
+    auth_data = {
+        'picture': user.get('picture', None),
+        'email_verified': user.get('email_verified', False),
+        'locale': user.get('locale', ''),
+        'updated_at': user.get('updated_at', ''),
+        'name': user.get('name', ''),
+        'email': user.get('email', ''),
+        'is_admin': is_admin,  # This should now be correct
+    }
+    
+    context.update({
+        'user': user,
+        'auth0_data': auth_data
+    })
+    return context
+    
+class ProfileEditView(FormView):
+    template_name = 'core/profile_edit.html'
+    form_class = ProfileForm
+    success_url = '/profile/'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_initial(self):
+        """Pre-populate form with existing profile data"""
+        user = get_auth0_user(self.request)
+        profile = UserProfile.objects(user_id=user['sub']).first()
+        
+        if profile:
+            return {
+                'first_name': profile.first_name,
+                'last_name': profile.last_name,
+                'phone': profile.phone,
+                'company': profile.company,
+                'address': profile.address,
+                'city': profile.city,
+                'state': profile.state,
+                'zip_code': profile.zip_code,
+            }
+        return {}
+
+    def form_valid(self, form):
+        user = get_auth0_user(self.request)
+        profile = UserProfile.objects(user_id=user['sub']).first()
+        
+        if not profile:
+            profile = UserProfile(
+                user_id=user['sub'],
+                email=user['email']
+            )
+        
+        profile.first_name = form.cleaned_data['first_name']
+        profile.last_name = form.cleaned_data['last_name']
+        profile.phone = form.cleaned_data['phone']
+        profile.company = form.cleaned_data['company']
+        profile.address = form.cleaned_data['address']
+        profile.city = form.cleaned_data['city']
+        profile.state = form.cleaned_data['state']
+        profile.zip_code = form.cleaned_data['zip_code']
+        
+        profile.save()
+        
+        messages.success(self.request, 'Profile updated successfully!')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        return context
 
 
 def login(request):
@@ -328,6 +455,14 @@ def callback(request):
     try:
         token = oauth.auth0.authorize_access_token(request)
         userinfo = token.get('userinfo')
+        
+        # Add debugging
+        print("=== Auth0 Debug Info ===")
+        print("Token:", token)
+        print("Userinfo:", userinfo)
+        print("ID Token:", token.get('id_token'))
+        print("Access Token:", token.get('access_token'))
+        print("=====================")
         
         if not userinfo:
             logger.error("No user info in token")

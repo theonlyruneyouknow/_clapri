@@ -21,5 +21,9 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('callback/', views.callback, name='callback'),
+# Admin URLs
+    path('admin/testimonials/', views.AdminTestimonialsView.as_view(), name='admin_testimonials'),
+    path('admin/testimonials/approve/<str:testimonial_id>/', views.AdminTestimonialApproveView.as_view(), name='admin_testimonial_approve'),
+    path('admin/testimonials/reject/<str:testimonial_id>/', views.AdminTestimonialRejectView.as_view(), name='admin_testimonial_reject'),
 
 ]
