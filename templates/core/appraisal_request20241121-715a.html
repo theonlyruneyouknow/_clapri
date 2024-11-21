@@ -1,0 +1,177 @@
+{# File: templates/core/appraisal_request.html #}
+{# Location: C:\git\_clapri\templates\core\appraisal_request.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}New Appraisal Request - Appraisal Pro{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">New Appraisal Request</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Property Location -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Property Location</h6>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="{{ form.property_address.id_for_label }}" class="form-label required">Street Address</label>
+                                    {{ form.property_address }}
+                                    {% if form.property_address.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.property_address.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.property_city.id_for_label }}" class="form-label required">City</label>
+                                    {{ form.property_city }}
+                                    {% if form.property_city.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.property_city.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="{{ form.property_state.id_for_label }}" class="form-label required">State</label>
+                                    {{ form.property_state }}
+                                    {% if form.property_state.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.property_state.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="{{ form.property_zip.id_for_label }}" class="form-label required">ZIP Code</label>
+                                    {{ form.property_zip }}
+                                    {% if form.property_zip.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.property_zip.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Property Details -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Property Details</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.property_type.id_for_label }}" class="form-label required">Property Type</label>
+                                    {{ form.property_type }}
+                                    {% if form.property_type.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.property_type.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.square_footage.id_for_label }}" class="form-label required">Square Footage</label>
+                                    {{ form.square_footage }}
+                                    {% if form.square_footage.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.square_footage.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="{{ form.year_built.id_for_label }}" class="form-label">Year Built</label>
+                                    {{ form.year_built }}
+                                    {% if form.year_built.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.year_built.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="{{ form.bedrooms.id_for_label }}" class="form-label">Bedrooms</label>
+                                    {{ form.bedrooms }}
+                                    {% if form.bedrooms.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.bedrooms.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="{{ form.bathrooms.id_for_label }}" class="form-label">Bathrooms</label>
+                                    {{ form.bathrooms }}
+                                    {% if form.bathrooms.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.bathrooms.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-12">
+                                    <label for="{{ form.lot_size.id_for_label }}" class="form-label">Lot Size</label>
+                                    {{ form.lot_size }}
+                                    {% if form.lot_size.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.lot_size.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Appraisal Details -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Appraisal Details</h6>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="{{ form.purpose.id_for_label }}" class="form-label required">Purpose of Appraisal</label>
+                                    {{ form.purpose }}
+                                    {% if form.purpose.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.purpose.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.preferred_date.id_for_label }}" class="form-label">Preferred Inspection Date</label>
+                                    {{ form.preferred_date }}
+                                    {% if form.preferred_date.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.preferred_date.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.alternate_date.id_for_label }}" class="form-label">Alternate Date</label>
+                                    {{ form.alternate_date }}
+                                    {% if form.alternate_date.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.alternate_date.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-12">
+                                    <label for="{{ form.notes.id_for_label }}" class="form-label">Additional Notes</label>
+                                    {{ form.notes }}
+                                    {% if form.notes.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.notes.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'core:dashboard' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Submit Request</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

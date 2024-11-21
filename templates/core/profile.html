@@ -25,41 +25,8 @@
                     </div>
                     <h5 class="mb-1">{{ auth0_data.name }}</h5>
                     <p class="text-muted mb-4">{{ profile.company|default:"" }}</p>
-                    <!-- <div class="mb-3">
-                        {% if auth0_data.email_verified %}
-                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Email Verified</span>
-                        {% else %}
-                            <span class="badge bg-warning"><i class="bi bi-exclamation-circle"></i> Email Not Verified</span>
-                        {% endif %}
-                    </div> -->
-                    <!-- Add this debug section temporarily -->
-{% if debug %}
-<div class="card mb-4">
-    <div class="card-header">
-        <h6 class="mb-0">Debug Information</h6>
-    </div>
-    <div class="card-body">
-        <p><strong>App Metadata:</strong> {{ auth0_data.app_metadata|pprint }}</p>
-        <p><strong>User Metadata:</strong> {{ auth0_data.user_metadata|pprint }}</p>
-    </div>
-</div>
-{% endif %}
 
-<!-- Update the role check to look in both places -->
-<li class="mb-2">
-    <strong>Account Type:</strong><br>
-    {% if auth0_data.is_admin %}
-        <span class="badge bg-primary"><i class="bi bi-shield-fill"></i> Administrator</span>
-    {% else %}
-        <span class="badge bg-secondary"><i class="bi bi-person"></i> Standard User</span>
-    {% endif %}
-    
-    {% if debug %}
-    <div class="small text-muted mt-1">
-        <pre>{{ auth0_data|pprint }}</pre>
-    </div>
-    {% endif %}
-</li>
+                    <!-- Account Information Card -->
                     <div class="card mb-4">
                         <div class="card-header">
                             <h6 class="mb-0">Account Information</h6>
@@ -71,23 +38,15 @@
                                     <strong>Email:</strong><br>
                                     {{ auth0_data.email }}
                                     {% if auth0_data.email_verified %}
-                                        <span class="badge bg-success ms-2"><i class="bi bi-check-circle"></i> Verified</span>
+                                        <span class="badge bg-success ms-2">Verified</span>
                                     {% endif %}
                                 </li>
                                 <li class="mb-2">
                                     <strong>Account Type:</strong><br>
-                                    {% if user.app_metadata.is_admin %}
-                                        <span class="badge bg-primary"><i class="bi bi-shield-fill"></i> Administrator</span>
+                                    {% if auth0_data.is_admin or auth0_data.app_metadata.is_admin %}
+                                        <span class="badge bg-primary">Administrator</span>
                                     {% else %}
-                                        <span class="badge bg-secondary"><i class="bi bi-person"></i> Standard User</span>
-                                    {% endif %}
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Account Type:</strong><br>
-                                    {% if auth0_data.is_admin %}
-                                        <span class="badge bg-primary"><i class="bi bi-shield-fill"></i> Administrator</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary"><i class="bi bi-person"></i> Standard User</span>
+                                        <span class="badge bg-secondary">Standard User</span>
                                     {% endif %}
                                 </li>
                                 <li class="mb-2">
@@ -102,56 +61,32 @@
                                 {% endif %}
                             </ul>
                         </div>
-                        {% if debug %}
-<div class="card mb-4">
-    <div class="card-header">
-        <h6 class="mb-0">Debug Information</h6>
-    </div>
-    <div class="card-body">
-        <dl>
-            <dt>Raw is_admin:</dt>
-            <dd>{{ debug_info.raw_is_admin }}</dd>
-            
-            <dt>App Metadata:</dt>
-            <dd>{{ debug_info.app_metadata }}</dd>
-            
-            <dt>User Metadata:</dt>
-            <dd>{{ debug_info.user_metadata }}</dd>
-            
-            <dt>Computed is_admin:</dt>
-            <dd>{{ debug_info.computed_is_admin }}</dd>
-        </dl>
-    </div>
-</div>
-{% endif %}
                     </div>
-                    <a href="{% url 'core:profile_edit' %}" class="btn btn-primary">Edit Profile</a>
-                </div>
-            </div>
 
-            <!-- Auth0 Information -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h6 class="mb-0">Account Information</h6>
-                </div>
-                <div class="card-body">
-                    <p class="small text-muted mb-2">Information from your login provider:</p>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <strong>Email:</strong><br>
-                            {{ auth0_data.email }}
-                        </li>
-                        <li class="mb-2">
-                            <strong>Account Updated:</strong><br>
-                            {{ auth0_data.updated_at|date:"F j, Y" }}
-                        </li>
-                        {% if auth0_data.locale %}
-                        <li class="mb-2">
-                            <strong>Locale:</strong><br>
-                            {{ auth0_data.locale|upper }}
-                        </li>
-                        {% endif %}
-                    </ul>
+                    {% if debug %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">Debug Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <dl>
+                                <dt>Raw is_admin:</dt>
+                                <dd>{{ debug_info.raw_is_admin }}</dd>
+                                
+                                <dt>App Metadata:</dt>
+                                <dd>{{ debug_info.app_metadata }}</dd>
+                                
+                                <dt>User Metadata:</dt>
+                                <dd>{{ debug_info.user_metadata }}</dd>
+                                
+                                <dt>Computed is_admin:</dt>
+                                <dd>{{ debug_info.computed_is_admin }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <a href="{% url 'core:profile_edit' %}" class="btn btn-primary">Edit Profile</a>
                 </div>
             </div>
         </div>
@@ -199,7 +134,6 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted">No recent activity to display.</p>
-                    <!-- We'll add activity content later -->
                 </div>
             </div>
         </div>

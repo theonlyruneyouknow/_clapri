@@ -2,11 +2,10 @@
 # Location: C:\git\_clapri\core\views.py
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import TemplateView, View  # Add View here
-from django.views.generic import TemplateView
+from django.contrib import messages
+from django.views.generic import View, TemplateView, FormView
 from django.views.generic.edit import FormView
 from django.urls import reverse
-from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -15,9 +14,7 @@ from urllib.parse import quote, urlencode
 from utils.auth import oauth, login_required, get_auth0_user
 from .models import UserProfile, AppraisalRequest, Testimonial
 from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm
-from .forms import ProfileForm
-from .models import UserProfile
-from datetime import datetime  # Add this line
+from datetime import datetime, timedelta
 import secrets
 import logging
 
@@ -112,41 +109,59 @@ class ProfileView(TemplateView):
         })
         return context
     
-
 class DashboardView(TemplateView):
     template_name = 'core/dashboard.html'
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = get_auth0_user(self.request)
+    def get(self, request, *args, **kwargs):
+        user = get_auth0_user(request)
         profile = UserProfile.objects(user_id=user['sub']).first()
-
-        # For now, we'll use placeholder data
-        # Later, we'll replace these with real data from the database
-        context.update({
+        
+        # Get recent appraisal requests
+        recent_requests = AppraisalRequest.objects(user_id=user['sub']).order_by('-created_at')
+        
+        context = {
             'user': user,
             'profile': profile,
-            'statistics': {
-                'total_requests': 0,
-                'pending_requests': 0,
-                'completed_requests': 0,
-                'in_progress': 0
-            },
-            'recent_requests': [],
-            'upcoming_appointments': [],
-            'notifications': [
-                {
-                    'type': 'info',
-                    'message': 'Welcome to your dashboard! Start by creating your first appraisal request.',
-                    'date': datetime.now()
-                }
-            ]
-        })
-        return context
+            'recent_requests': recent_requests,
+        }
+        
+        return render(request, self.template_name, context)
+    
+# class DashboardView(TemplateView):
+#     template_name = 'core/dashboard.html'
+
+#     @method_decorator(login_required)
+#     def dispatch(self, *args, **kwargs):
+#         return super().dispatch(*args, **kwargs)
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         user = get_auth0_user(self.request)
+#         profile = UserProfile.objects(user_id=user['sub']).first()
+
+#         # For now, we'll use placeholder data
+#         # Later, we'll replace these with real data from the database
+#         context.update({
+#             'user': user,
+#             'profile': profile,
+#             'statistics': {
+#                 'total_requests': 0,
+#                 'pending_requests': 0,
+#                 'completed_requests': 0,
+#                 'in_progress': 0
+#             },
+#             'recent_requests': [],
+#             'upcoming_appointments': [],
+#             'notifications': [
+#                 {
+#                     'type': 'info',
+#                     'message': 'Welcome to your dashboard! Start by creating your first appraisal request.',
+#                     'date': datetime.now()
+#                 }
+#             ]
+#         })
+#         return context
     
 class AppraisalRequestView(FormView):
     template_name = 'core/appraisal_request.html'
@@ -487,3 +502,230 @@ def logout(request):
         'client_id': settings.AUTH0_CLIENT_ID
     }
     return redirect(f"https://{settings.AUTH0_DOMAIN}/v2/logout?{urlencode(params)}")
+
+class AppraisalRequestView(FormView):
+    template_name = 'core/appraisal_request.html'
+    form_class = AppraisalRequestForm
+    success_url = '/dashboard/'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        """Pre-populate form with user profile data if available"""
+        user = get_auth0_user(self.request)
+        profile = UserProfile.objects(user_id=user['sub']).first()
+        
+        initial = {}
+        if profile:
+            initial.update({
+                'contact_name': f"{profile.first_name} {profile.last_name}",
+                'contact_phone': profile.phone,
+                'contact_email': profile.email,
+            })
+        return initial
+
+    def form_valid(self, form):
+        user = get_auth0_user(self.request)
+        
+        try:
+            # Create new appraisal request
+            appraisal_request = AppraisalRequest(
+                user_id=user['sub'],
+                property_address=form.cleaned_data['property_address'],
+                property_city=form.cleaned_data['property_city'],
+                property_state=form.cleaned_data['property_state'],
+                property_zip=form.cleaned_data['property_zip'],
+                property_type=form.cleaned_data['property_type'],
+                square_footage=form.cleaned_data['square_footage'],
+                year_built=form.cleaned_data['year_built'],
+                bedrooms=form.cleaned_data['bedrooms'],
+                bathrooms=form.cleaned_data['bathrooms'],
+                lot_size=form.cleaned_data['lot_size'],
+                purpose=form.cleaned_data['purpose'],
+                preferred_date=form.cleaned_data['preferred_date'],
+                alternate_date=form.cleaned_data['alternate_date'],
+                notes=form.cleaned_data['notes'],
+                status='pending',
+                created_at=datetime.now()
+            )
+            
+            # Validate dates
+            now = datetime.now()
+            min_schedule_date = now + timedelta(days=1)  # Minimum 24 hours notice
+            max_schedule_date = now + timedelta(days=90)  # Maximum 90 days in advance
+            
+            if appraisal_request.preferred_date:
+                if appraisal_request.preferred_date < min_schedule_date:
+                    messages.error(self.request, 'Please schedule appointments at least 24 hours in advance.')
+                    return self.form_invalid(form)
+                if appraisal_request.preferred_date > max_schedule_date:
+                    messages.error(self.request, 'Please schedule appointments within 90 days from today.')
+                    return self.form_invalid(form)
+                
+            if appraisal_request.alternate_date:
+                if appraisal_request.alternate_date < min_schedule_date:
+                    messages.error(self.request, 'Please schedule appointments at least 24 hours in advance.')
+                    return self.form_invalid(form)
+                if appraisal_request.alternate_date > max_schedule_date:
+                    messages.error(self.request, 'Please schedule appointments within 90 days from today.')
+                    return self.form_invalid(form)
+                
+                # Ensure alternate date is different from preferred date
+                if (appraisal_request.preferred_date and 
+                    appraisal_request.alternate_date.date() == appraisal_request.preferred_date.date()):
+                    messages.error(self.request, 'Please select different dates for preferred and alternate appointments.')
+                    return self.form_invalid(form)
+
+            # Save the request
+            appraisal_request.save()
+            
+            # Send email notifications
+            try:
+                # Email to admin
+                admin_context = {
+                    'request': appraisal_request,
+                    'user': user,
+                }
+                admin_email_body = render_to_string('core/emails/new_appraisal_request_admin.txt', admin_context)
+                send_mail(
+                    subject=f'New Appraisal Request #{appraisal_request.request_id}',
+                    message=admin_email_body,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[settings.ADMIN_EMAIL],
+                    fail_silently=True,
+                )
+                
+                # Confirmation email to user
+                user_context = {
+                    'request': appraisal_request,
+                    'user': user,
+                }
+                user_email_body = render_to_string('core/emails/appraisal_request_confirmation.txt', user_context)
+                send_mail(
+                    subject=f'Appraisal Request Confirmation #{appraisal_request.request_id}',
+                    message=user_email_body,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.get('email')],
+                    fail_silently=True,
+                )
+            except Exception as e:
+                logger.error(f"Error sending appraisal request emails: {str(e)}")
+                # Continue processing even if email fails
+            
+            # Success message
+            messages.success(
+                self.request,
+                f'Your appraisal request #{appraisal_request.request_id} has been submitted successfully! '
+                'We will contact you shortly to confirm the details.'
+            )
+            
+            # Log the request
+            logger.info(
+                f"New appraisal request created - ID: {appraisal_request.request_id}, "
+                f"User: {user['sub']}, Property: {appraisal_request.property_address}"
+            )
+            
+            return super().form_valid(form)
+
+        except Exception as e:
+            logger.error(f"Error creating appraisal request: {str(e)}")
+            messages.error(
+                self.request,
+                'There was an error processing your request. Please try again or contact support.'
+            )
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Please correct the errors below.')
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = get_auth0_user(self.request)
+        
+        # Add user data to context
+        context['user'] = user
+        
+        # Get user profile
+        context['profile'] = UserProfile.objects(user_id=user['sub']).first()
+        
+        # Get user's recent requests
+        context['recent_requests'] = AppraisalRequest.objects(
+            user_id=user['sub']
+        ).order_by('-created_at')[:3]
+        
+        # Get business hours and scheduling info
+        context['scheduling_info'] = {
+            'business_hours': {
+                'weekdays': '9:00 AM - 5:00 PM',
+                'saturday': '10:00 AM - 2:00 PM',
+                'sunday': 'Closed'
+            },
+            'min_notice': '24 hours',
+            'max_advance': '90 days'
+        }
+        
+        return context
+    
+
+class AppraisalRequestDetailView(View):
+    template_name = 'core/appraisal_request_detail.html'
+
+    @method_decorator(login_required)
+    def get(self, request, request_id):
+        user = get_auth0_user(request)
+        try:
+            appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
+            context = {
+                'user': user,  # Add user to context
+                'request': appraisal_request,
+                'profile': UserProfile.objects(user_id=user['sub']).first()  # Add profile if needed
+            }
+            return render(request, self.template_name, context)
+        except AppraisalRequest.DoesNotExist:
+            messages.error(request, 'Appraisal request not found.')
+            return redirect('core:dashboard')    
+
+# class AppraisalRequestDetailView(View):
+#     template_name = 'core/appraisal_request_detail.html'
+
+#     @method_decorator(login_required)
+#     def get(self, request, request_id):
+#         try:
+#             appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
+#             context = {
+#                 'request': appraisal_request
+#             }
+#             return render(request, self.template_name, context)
+#         except AppraisalRequest.DoesNotExist:
+#             messages.error(request, 'Appraisal request not found.')
+#             return redirect('core:dashboard')
+
+# class AppraisalRequestDetailView(View):
+#     template_name = 'core/appraisal_request_detail.html'
+
+#     @method_decorator(login_required)
+#     def get(self, request, request_id):
+#         user = get_auth0_user(request)
+        
+#         try:
+#             appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
+            
+#             # Check if user owns this request or is admin
+#             if appraisal_request.user_id != user['sub'] and not user.get('app_metadata', {}).get('is_admin'):
+#                 messages.error(request, "You don't have permission to view this request.")
+#                 return redirect('core:dashboard')
+            
+#             context = {
+#                 'user': user,
+#                 'request': appraisal_request,
+#                 'status_history': appraisal_request.get_status_history() if hasattr(appraisal_request, 'get_status_history') else None,
+#             }
+            
+#             return render(request, self.template_name, context)
+            
+#         except AppraisalRequest.DoesNotExist:
+#             messages.error(request, 'Appraisal request not found.')
+#             return redirect('core:dashboard')

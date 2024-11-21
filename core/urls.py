@@ -3,6 +3,7 @@
 
 from django.urls import path
 from . import views
+from . import admin_views
 
 app_name = 'core'
 
@@ -13,7 +14,7 @@ urlpatterns = [
     path('contact/', views.ContactView.as_view(), name='contact'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('profile/edit/', views.ProfileEditView.as_view(), name='profile_edit'),
-    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),  # Add this line
+    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('appraisal/request/', views.AppraisalRequestView.as_view(), name='appraisal_request'),
     path('testimonials/', views.TestimonialsView.as_view(), name='testimonials'),
     path('testimonials/add/', views.TestimonialCreateView.as_view(), name='testimonial_add'),
@@ -21,9 +22,17 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('callback/', views.callback, name='callback'),
-# Admin URLs
-    path('admin/testimonials/', views.AdminTestimonialsView.as_view(), name='admin_testimonials'),
-    path('admin/testimonials/approve/<str:testimonial_id>/', views.AdminTestimonialApproveView.as_view(), name='admin_testimonial_approve'),
-    path('admin/testimonials/reject/<str:testimonial_id>/', views.AdminTestimonialRejectView.as_view(), name='admin_testimonial_reject'),
+    path('appraisal/request/', views.AppraisalRequestView.as_view(), name='appraisal_request'),
+    path('appraisal/request/<str:request_id>/', views.AppraisalRequestDetailView.as_view(), name='appraisal_request_detail'),
 
+    
+    # Admin URLs
+    path('admin/dashboard/', admin_views.AdminDashboardView.as_view(), name='admin_dashboard'),
+    path('admin/testimonials/', admin_views.AdminTestimonialsView.as_view(), name='admin_testimonials'),
+    path('admin/testimonials/approve/<str:testimonial_id>/', 
+         admin_views.AdminTestimonialApproveView.as_view(), 
+         name='admin_testimonial_approve'),
+    path('admin/testimonials/reject/<str:testimonial_id>/', 
+         admin_views.AdminTestimonialRejectView.as_view(), 
+         name='admin_testimonial_reject'),
 ]

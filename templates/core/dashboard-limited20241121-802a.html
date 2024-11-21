@@ -1,0 +1,50 @@
+{# File: templates/core/dashboard.html #}
+{# Location: C:\git\_clapri\templates\core\dashboard.html #}
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Recent Appraisal Requests3</h3>
+        <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary">New Request</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Property</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in recent_requests %}
+                        <tr>
+                            <td>{{ request.request_id }}</td>
+                            <td>{{ request.property_address }}</td>
+                            <td>{{ request.property_type }}</td>
+                            <td>
+                                <span class="badge bg-{{ request.status_color }}">
+                                    {{ request.status }}
+                                </span>
+                            </td>
+                            <td>{{ request.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'core:appraisal_request_detail' request_id=request.request_id %}" 
+                                   class="btn btn-sm btn-outline-primary">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

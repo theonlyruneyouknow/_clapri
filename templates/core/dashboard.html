@@ -116,7 +116,8 @@
                                         </td>
                                         <td>{{ request.date }}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                            <a href="{% url 'core:appraisal_request_detail' request_id=request.request_id %}" 
+                                               class="btn btn-sm btn-outline-primary">View</a>
                                         </td>
                                     </tr>
                                     {% endfor %}

@@ -1,0 +1,223 @@
+{# File: templates/core/dashboard.html #}
+{# Location: C:\git\_clapri\templates\core\dashboard.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Appraisal Pro{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-2">Welcome back, {{ user.name }}!</h1>
+            <p class="text-muted">Here's an overview of your appraisal requests and activities.</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Requests</h6>
+                            <h2 class="mb-0">{{ statistics.total_requests }}</h2>
+                        </div>
+                        <div class="avatar bg-primary-subtle rounded p-3">
+                            <i class="bi bi-file-text fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Pending</h6>
+                            <h2 class="mb-0">{{ statistics.pending_requests }}</h2>
+                        </div>
+                        <div class="avatar bg-warning-subtle rounded p-3">
+                            <i class="bi bi-clock-history fs-4 text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">In Progress</h6>
+                            <h2 class="mb-0">{{ statistics.in_progress }}</h2>
+                        </div>
+                        <div class="avatar bg-info-subtle rounded p-3">
+                            <i class="bi bi-gear fs-4 text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Completed</h6>
+                            <h2 class="mb-0">{{ statistics.completed_requests }}</h2>
+                        </div>
+                        <div class="avatar bg-success-subtle rounded p-3">
+                            <i class="bi bi-check-circle fs-4 text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Requests -->
+        <div class="col-xl-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Appraisal Requests</h5>
+                    <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus"></i> New Request
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if recent_requests %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Property</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for request in recent_requests %}
+                                    <tr>
+                                        <td>{{ request.id }}</td>
+                                        <td>{{ request.property_address }}</td>
+                                        <td>{{ request.type }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ request.status_color }}">
+                                                {{ request.status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ request.date }}</td>
+                                        <td>
+                                            <a href="{% url 'core:appraisal_request_detail' request_id=request.request_id %}" 
+                                               class="btn btn-sm btn-outline-primary">View</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="bi bi-clipboard-plus display-4 text-muted"></i>
+                        </div>
+                        <h6>No Appraisal Requests Yet</h6>
+                        <p class="text-muted">Start by creating your first appraisal request</p>
+                        <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary">
+                            <i class="bi bi-plus"></i> Create Request
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications & Upcoming -->
+        <div class="col-xl-4 mb-4">
+            <!-- Notifications -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Notifications</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if notifications %}
+                        <div class="list-group list-group-flush">
+                            {% for notification in notifications %}
+                            <div class="list-group-item">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        {% if notification.type == 'success' %}
+                                            <i class="bi bi-check-circle text-success"></i>
+                                        {% elif notification.type == 'warning' %}
+                                            <i class="bi bi-exclamation-circle text-warning"></i>
+                                        {% elif notification.type == 'danger' %}
+                                            <i class="bi bi-x-circle text-danger"></i>
+                                        {% else %}
+                                            <i class="bi bi-info-circle text-info"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <p class="mb-1">{{ notification.message }}</p>
+                                        <small class="text-muted">
+                                            {{ notification.date|date:"M d, Y H:i" }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="text-muted mb-0">No new notifications</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Upcoming Appointments -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Upcoming Appointments</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if upcoming_appointments %}
+                        <div class="list-group list-group-flush">
+                            {% for appointment in upcoming_appointments %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ appointment.title }}</h6>
+                                        <small class="text-muted">
+                                            {{ appointment.date|date:"M d, Y H:i" }}
+                                        </small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary">Details</button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="text-muted mb-0">No upcoming appointments</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Add any dashboard-specific JavaScript here
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,78 @@
+{# File: templates/core/admin/testimonials.html #}
+{# Location: C:\git\_clapri\templates\core\admin\testimonials.html #}
+
+{% extends 'base.html' %}
+{% block title %}Admin - Testimonial Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3">Testimonial Management</h1>
+            <p class="text-muted">Review and manage user testimonials</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% if testimonials %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Author</th>
+                                <th>Title</th>
+                                <th>Content</th>
+                                <th>Rating</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for testimonial in testimonials %}
+                            <tr>
+                                <td>
+                                    {{ testimonial.author_name }}
+                                    {% if testimonial.author_company %}
+                                        <br>
+                                        <small class="text-muted">{{ testimonial.author_company }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ testimonial.title }}</td>
+                                <td>{{ testimonial.content|truncatechars:100 }}</td>
+                                <td>
+                                    <div class="text-warning">
+                                        {{ testimonial.rating_stars }}
+                                    </div>
+                                </td>
+                                <td>{{ testimonial.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <form method="post" action="{% url 'core:admin_testimonial_approve' testimonial.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="bi bi-check"></i> Approve
+                                        </button>
+                                    </form>
+                                    <form method="post" action="{% url 'core:admin_testimonial_reject' testimonial.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-x"></i> Reject
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-chat-square-text fs-1 text-muted mb-3"></i>
+                    <h5>No Pending Testimonials</h5>
+                    <p class="text-muted">All testimonials have been reviewed.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

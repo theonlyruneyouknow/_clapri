@@ -40,9 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_bootstrap5',
     # Local apps
-    'core',
-    #'accounts',  # Commented out until we create this app
-    #'pages',     # Commented out until we create this app
+    'core',  # Make sure 'core' is listed here
     'utils',
 ]
 
