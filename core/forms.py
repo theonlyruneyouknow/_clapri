@@ -2,6 +2,8 @@
 # Location: C:\git\_clapri\core\forms.py
 
 from django import forms
+from django.utils import timezone
+from datetime import datetime, timedelta
 from .models import AppraisalRequest
 
 class ContactForm(forms.Form):
@@ -204,3 +206,76 @@ class TestimonialForm(forms.Form):
             'placeholder': 'Your Company (Optional)'
         })
     )
+
+# class AppointmentScheduleForm(forms.Form):
+#     date = forms.DateTimeField(
+#         widget=forms.DateTimeInput(attrs={
+#             'class': 'form-control',
+#             'type': 'datetime-local'
+#         }),
+#         help_text="Select your preferred appointment date and time"
+#     )
+#     notes = forms.CharField(
+#         required=False,
+#         widget=forms.Textarea(attrs={
+#             'class': 'form-control',
+#             'rows': 3,
+#             'placeholder': 'Any special instructions or notes'
+#         })
+#     )
+
+#     def clean_date(self):
+#         date = self.cleaned_data['date']
+#         now = datetime.now()
+#         min_date = now + timedelta(days=1)
+#         max_date = now + timedelta(days=90)
+
+#         if date < min_date:
+#             raise forms.ValidationError("Appointments must be scheduled at least 24 hours in advance")
+#         if date > max_date:
+#             raise forms.ValidationError("Appointments cannot be scheduled more than 90 days in advance")
+#         return date
+
+
+class AppointmentScheduleForm(forms.Form):
+    date = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={
+            'class': 'form-control',
+            'type': 'datetime-local'
+        }),
+        help_text="Select your preferred appointment date and time"
+    )
+    notes = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3,
+            'placeholder': 'Any special instructions or notes'
+        })
+    )
+
+    def clean_date(self):
+        date = self.cleaned_data['date']
+        
+        # Convert to timezone-aware datetime
+        if timezone.is_naive(date):
+            date = timezone.make_aware(date)
+            
+        now = timezone.now()
+        min_date = now + timedelta(days=1)
+        max_date = now + timedelta(days=90)
+
+        if date < min_date:
+            raise forms.ValidationError("Appointments must be scheduled at least 24 hours in advance")
+        if date > max_date:
+            raise forms.ValidationError("Appointments cannot be scheduled more than 90 days in advance")
+            
+        # Ensure appointment is during business hours (9 AM to 5 PM)
+        if date.hour < 9 or date.hour >= 17:
+            raise forms.ValidationError("Appointments must be scheduled between 9 AM and 5 PM")
+            
+        # Check if it's a weekend
+        if date.weekday() >= 5:  # 5 = Saturday, 6 = Sunday
+            raise forms.ValidationError("Appointments cannot be scheduled on weekends")
+
+        return date

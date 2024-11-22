@@ -24,6 +24,17 @@ urlpatterns = [
     path('callback/', views.callback, name='callback'),
     path('appraisal/request/', views.AppraisalRequestView.as_view(), name='appraisal_request'),
     path('appraisal/request/<str:request_id>/', views.AppraisalRequestDetailView.as_view(), name='appraisal_request_detail'),
+    path('appraisal/<str:request_id>/schedule/', views.AppointmentScheduleView.as_view(), name='appointment_schedule'),
+    path('appointments/', views.AppointmentListView.as_view(), name='appointments'),
+    path('appraisal/<str:request_id>/schedule/', 
+         views.AppointmentScheduleView.as_view(), 
+         name='appointment_schedule'),
+    path('appraisal/<str:request_id>/schedule/', 
+         views.AppointmentScheduleView.as_view(), 
+         name='appointment_schedule'),
+    path('appointments/', views.AppointmentListView.as_view(), name='appointments'),
+    path('appraisal/<str:request_id>/schedule/', views.AppointmentScheduleView.as_view(), name='appointment_schedule'),
+    path('appointment/<str:appointment_id>/reschedule/', views.AppointmentRescheduleView.as_view(), name='appointment_reschedule'),
 
     
     # Admin URLs

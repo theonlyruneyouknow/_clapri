@@ -3,7 +3,7 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.views.generic import View, TemplateView, FormView
+from django.views.generic import View, TemplateView, FormView, ListView
 from django.views.generic.edit import FormView
 from django.urls import reverse
 from django.core.mail import send_mail
@@ -12,8 +12,9 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from urllib.parse import quote, urlencode
 from utils.auth import oauth, login_required, get_auth0_user
-from .models import UserProfile, AppraisalRequest, Testimonial
-from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm
+from .models import UserProfile, AppraisalRequest, Testimonial, Appointment
+# from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm
+from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm, AppointmentScheduleForm
 from datetime import datetime, timedelta
 import secrets
 import logging
@@ -677,16 +678,52 @@ class AppraisalRequestDetailView(View):
     def get(self, request, request_id):
         user = get_auth0_user(request)
         try:
+            # Get the appraisal request
             appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
+            
+            # Check if user owns this request or is admin
+            if appraisal_request.user_id != user['sub'] and not user.get('app_metadata', {}).get('is_admin'):
+                messages.error(request, "You don't have permission to view this request.")
+                return redirect('core:dashboard')
+            
+            # Get associated appointment if it exists
+            appointment = Appointment.objects(appraisal_request=appraisal_request).first()
+            
+            # Debug output
+            print(f"Debug: Request ID: {request_id}")
+            print(f"Debug: Has appointment: {bool(appointment)}")
+            print(f"Debug: Request status: {appraisal_request.status}")
+            
             context = {
-                'user': user,  # Add user to context
+                'user': user,
                 'request': appraisal_request,
-                'profile': UserProfile.objects(user_id=user['sub']).first()  # Add profile if needed
+                'appointment': appointment
             }
+            
             return render(request, self.template_name, context)
+            
         except AppraisalRequest.DoesNotExist:
             messages.error(request, 'Appraisal request not found.')
-            return redirect('core:dashboard')    
+            return redirect('core:dashboard')
+
+
+# class AppraisalRequestDetailView(View):
+#     template_name = 'core/appraisal_request_detail.html'
+
+#     @method_decorator(login_required)
+#     def get(self, request, request_id):
+#         user = get_auth0_user(request)
+#         try:
+#             appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
+#             context = {
+#                 'user': user,  # Add user to context
+#                 'request': appraisal_request,
+#                 'profile': UserProfile.objects(user_id=user['sub']).first()  # Add profile if needed
+#             }
+#             return render(request, self.template_name, context)
+#         except AppraisalRequest.DoesNotExist:
+#             messages.error(request, 'Appraisal request not found.')
+#             return redirect('core:dashboard')    
 
 # class AppraisalRequestDetailView(View):
 #     template_name = 'core/appraisal_request_detail.html'
@@ -729,3 +766,214 @@ class AppraisalRequestDetailView(View):
 #         except AppraisalRequest.DoesNotExist:
 #             messages.error(request, 'Appraisal request not found.')
 #             return redirect('core:dashboard')
+
+
+class AppointmentScheduleView(View):
+    template_name = 'core/appointment_schedule.html'
+
+    @method_decorator(login_required)
+    def get(self, request, request_id):
+        user = get_auth0_user(request)
+        try:
+            appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
+            
+            # Check if user owns this request or is admin
+            if appraisal_request.user_id != user['sub'] and not user.get('app_metadata', {}).get('is_admin'):
+                messages.error(request, "You don't have permission to schedule appointments for this request.")
+                return redirect('core:dashboard')
+            
+            # Check if appointment already exists
+            existing_appointment = Appointment.objects(appraisal_request=appraisal_request).first()
+            if existing_appointment:
+                messages.warning(request, "An appointment already exists for this request.")
+                return redirect('core:appraisal_request_detail', request_id=request_id)
+            
+            form = AppointmentScheduleForm()
+            context = {
+                'user': user,
+                'appraisal_request': appraisal_request,
+                'form': form
+            }
+            return render(request, self.template_name, context)
+            
+        except AppraisalRequest.DoesNotExist:
+            messages.error(request, 'Appraisal request not found.')
+            return redirect('core:dashboard')
+
+    @method_decorator(login_required)
+    def post(self, request, request_id):
+        try:
+            appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
+            form = AppointmentScheduleForm(request.POST)
+            
+            if form.is_valid():
+                appointment = Appointment(
+                    appraisal_request=appraisal_request,
+                    scheduled_date=form.cleaned_data['date'],
+                    notes=form.cleaned_data.get('notes', '')
+                )
+                appointment.save()
+                
+                # Update appraisal request status
+                appraisal_request.status = 'scheduled'
+                appraisal_request.save()
+                
+                messages.success(request, 'Appointment scheduled successfully!')
+                return redirect('core:appraisal_request_detail', request_id=request_id)
+            
+            context = {
+                'user': get_auth0_user(request),
+                'appraisal_request': appraisal_request,
+                'form': form
+            }
+            return render(request, self.template_name, context)
+            
+        except AppraisalRequest.DoesNotExist:
+            messages.error(request, 'Appraisal request not found.')
+            return redirect('core:dashboard')
+        
+class AppointmentRescheduleView(View):
+    @method_decorator(login_required)
+    def post(self, request, appointment_id):
+        try:
+            appointment = Appointment.objects.get(id=appointment_id)
+            
+            # Check permissions
+            appraisal_request = appointment.appraisal_request
+            user = get_auth0_user(request)
+            if appraisal_request.user_id != user['sub'] and not user.get('app_metadata', {}).get('is_admin'):
+                messages.error(request, "You don't have permission to reschedule this appointment.")
+                return redirect('core:appointments')
+            
+            # Get and validate new date
+            try:
+                new_date = datetime.strptime(request.POST['new_date'], '%Y-%m-%dT%H:%M')
+                new_date = timezone.make_aware(new_date)
+                
+                # Validate business hours
+                if new_date.hour < 9 or new_date.hour >= 17:
+                    messages.error(request, "Appointments must be scheduled between 9 AM and 5 PM")
+                    return redirect('core:appointments')
+                
+                # Validate weekends
+                if new_date.weekday() >= 5:
+                    messages.error(request, "Appointments cannot be scheduled on weekends")
+                    return redirect('core:appointments')
+                
+                # Validate minimum notice
+                if new_date < timezone.now() + timedelta(days=1):
+                    messages.error(request, "Appointments must be rescheduled at least 24 hours in advance")
+                    return redirect('core:appointments')
+                
+            except (ValueError, TypeError):
+                messages.error(request, "Invalid date format")
+                return redirect('core:appointments')
+            
+            # Store old date for notification
+            old_date = appointment.scheduled_date
+            
+            # Update appointment
+            appointment.scheduled_date = new_date
+            appointment.status = 'rescheduled'
+            appointment.notes = f"{appointment.notes}\n\nRescheduled from {old_date.strftime('%Y-%m-%d %H:%M')} to {new_date.strftime('%Y-%m-%d %H:%M')}\nReason: {request.POST.get('reason', 'No reason provided')}"
+            appointment.save()
+            
+            messages.success(request, 'Appointment rescheduled successfully!')
+            
+        except Appointment.DoesNotExist:
+            messages.error(request, "Appointment not found.")
+            
+        return redirect('core:appointments')        
+
+# class AppointmentScheduleView(View):
+#     template_name = 'core/appointment_schedule.html'
+
+#     @method_decorator(login_required)
+#     def get(self, request, request_id):
+#         user = get_auth0_user(request)
+#         try:
+#             appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
+#             form = AppointmentScheduleForm()
+            
+#             context = {
+#                 'user': user,
+#                 'appraisal_request': appraisal_request,
+#                 'form': form
+#             }
+#             return render(request, self.template_name, context)
+#         except AppraisalRequest.DoesNotExist:
+#             messages.error(request, 'Appraisal request not found.')
+#             return redirect('core:dashboard')
+
+#     @method_decorator(login_required)
+#     def post(self, request, request_id):
+#         form = AppointmentScheduleForm(request.POST)
+#         if form.is_valid():
+#             try:
+#                 appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
+                
+#                 appointment = Appointment(
+#                     appraisal_request=appraisal_request,
+#                     scheduled_date=form.cleaned_data['date'],
+#                     notes=form.cleaned_data.get('notes', '')
+#                 )
+#                 appointment.save()
+
+#                 messages.success(request, 'Appointment scheduled successfully!')
+#                 return redirect('core:appraisal_request_detail', request_id=request_id)
+                
+#             except AppraisalRequest.DoesNotExist:
+#                 messages.error(request, 'Appraisal request not found.')
+#                 return redirect('core:dashboard')
+        
+#         context = {
+#             'user': get_auth0_user(request),
+#             'form': form,
+#             'appraisal_request': AppraisalRequest.objects.get(request_id=request_id)
+#         }
+#         return render(request, self.template_name, context)
+    
+# class AppointmentListView(ListView):
+#     template_name = 'core/appointments.html'
+#     context_object_name = 'appointments'
+
+#     @method_decorator(login_required)
+#     def dispatch(self, request, *args, **kwargs):
+#         return super().dispatch(request, *args, **kwargs)
+
+#     def get_queryset(self):
+#         user = get_auth0_user(self.request)
+#         requests = AppraisalRequest.objects(user_id=user['sub'])
+#         return Appointment.objects(appraisal_request__in=requests).order_by('scheduled_date')
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['user'] = get_auth0_user(self.request)
+#         return context    
+    
+
+class AppointmentListView(ListView):
+    template_name = 'core/appointments.html'
+    context_object_name = 'appointments'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        user = get_auth0_user(self.request)
+        # Get all appraisal requests for this user
+        requests = AppraisalRequest.objects(user_id=user['sub'])
+        # Get all appointments for these requests, sorted by date
+        return Appointment.objects(appraisal_request__in=requests).order_by('-scheduled_date')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        now = datetime.now()
+        
+        appointments = self.get_queryset()
+        context['upcoming_appointments'] = appointments.filter(scheduled_date__gte=now)
+        context['past_appointments'] = appointments.filter(scheduled_date__lt=now)
+        
+        return context

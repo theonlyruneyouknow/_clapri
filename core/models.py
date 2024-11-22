@@ -1,10 +1,41 @@
 # File: core/models.py
 # Location: C:\git\_clapri\core\models.py
 
-from mongoengine import Document, StringField, DateTimeField, BooleanField, EmailField, IntField, FloatField, DecimalField, ListField
+from mongoengine import Document, StringField, DateTimeField, BooleanField, EmailField, IntField, FloatField, DecimalField, ListField, ReferenceField
 from datetime import datetime
 from django import forms
 # from .models import UserProfile, AppraisalRequest
+
+
+class Appointment(Document):
+    appraisal_request = ReferenceField('AppraisalRequest', required=True)
+    scheduled_date = DateTimeField(required=True)
+    status = StringField(choices=['scheduled', 'completed', 'cancelled', 'rescheduled'], default='scheduled')
+    notes = StringField()
+    confirmation_sent = BooleanField(default=False)
+    created_at = DateTimeField(default=datetime.now)
+    updated_at = DateTimeField(default=datetime.now)
+
+    meta = {
+        'collection': 'appointments',
+        'ordering': ['-scheduled_date'],
+        'indexes': [
+            'appraisal_request',
+            'scheduled_date',
+            'status'
+        ]
+    }
+
+    def save(self, *args, **kwargs):
+        self.updated_at = datetime.now()
+        return super(Appointment, self).save(*args, **kwargs)
+
+    def reschedule(self, new_date):
+        old_date = self.scheduled_date
+        self.scheduled_date = new_date
+        self.status = 'rescheduled'
+        self.save()
+        return old_date
 
 class UserProfile(Document):
     user_id = StringField(required=True, unique=True)

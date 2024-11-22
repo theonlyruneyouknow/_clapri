@@ -1,0 +1,200 @@
+{# File: templates/core/appointments.html #}
+{# Location: C:\git\_clapri\templates\core\appointments.html #}
+
+{% extends 'base.html' %}
+{% block title %}Appointments - Jeffrey Martin Appraisal Services{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Your Appointments</h3>
+        <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Request New Appraisal
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Upcoming Appointments -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Upcoming Appointments</h5>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_appointments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Property</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in upcoming_appointments %}
+                                    <tr>
+                                        <td>{{ appointment.scheduled_date|date:"M d, Y h:i A" }}</td>
+                                        <td>
+                                            {{ appointment.appraisal_request.property_address }}<br>
+                                            <small class="text-muted">Request #{{ appointment.appraisal_request.request_id }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{% if appointment.status == 'scheduled' %}success{% elif appointment.status == 'rescheduled' %}warning{% else %}secondary{% endif %}">
+                                                {{ appointment.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="{% url 'core:appraisal_request_detail' request_id=appointment.appraisal_request.request_id %}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                   <i class="bi bi-eye me-1"></i>View Details
+                                                </a>
+                                                {% if appointment.status == 'scheduled' %}
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#rescheduleModal{{ appointment.id }}">
+                                                    <i class="bi bi-calendar me-1"></i>Reschedule
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-calendar2-x fs-1 text-muted"></i>
+                            <p class="mt-2 mb-0">No upcoming appointments scheduled</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Past Appointments -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Past Appointments</h5>
+                </div>
+                <div class="card-body">
+                    {% if past_appointments %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Property</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in past_appointments %}
+                                    <tr>
+                                        <td>{{ appointment.scheduled_date|date:"M d, Y h:i A" }}</td>
+                                        <td>
+                                            {{ appointment.appraisal_request.property_address }}<br>
+                                            <small class="text-muted">Request #{{ appointment.appraisal_request.request_id }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ appointment.status|title }}</span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'core:appraisal_request_detail' request_id=appointment.appraisal_request.request_id %}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                               <i class="bi bi-eye me-1"></i>View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-calendar2-check fs-1 text-muted"></i>
+                            <p class="mt-2 mb-0">No past appointments</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Business Hours</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <strong>Monday - Friday:</strong><br>
+                            9:00 AM - 5:00 PM
+                        </li>
+                        <li class="mb-2">
+                            <strong>Saturday:</strong><br>
+                            10:00 AM - 2:00 PM
+                        </li>
+                        <li>
+                            <strong>Sunday:</strong><br>
+                            Closed
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Appointment Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li class="mb-2">Appointments must be scheduled at least 24 hours in advance</li>
+                        <li class="mb-2">Rescheduling requires minimum 24-hour notice</li>
+                        <li class="mb-2">Please be present at the property during the scheduled time</li>
+                        <li>Have all necessary documentation ready</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reschedule Modal -->
+{% for appointment in upcoming_appointments %}
+{% if appointment.status == 'scheduled' %}
+<div class="modal fade" id="rescheduleModal{{ appointment.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reschedule Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'core:appointment_reschedule' appointment_id=appointment.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p class="mb-3">Current appointment: {{ appointment.scheduled_date|date:"M d, Y h:i A" }}</p>
+                    <div class="mb-3">
+                        <label for="new_date" class="form-label">Select New Date and Time</label>
+                        <input type="datetime-local" class="form-control" id="new_date" name="new_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Reason for Rescheduling</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Confirm Reschedule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endblock %}
