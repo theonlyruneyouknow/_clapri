@@ -52,3 +52,63 @@
     border-radius: 4px;
     margin-bottom: 20px;
 }
+
+.content-body {
+    line-height: 1.6;
+}
+
+.content-body h1, 
+.content-body h2, 
+.content-body h3, 
+.content-body h4, 
+.content-body h5, 
+.content-body h6 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.content-body p {
+    margin-bottom: 1rem;
+}
+
+.content-body ul, 
+.content-body ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+.content-body img {
+    max-width: 100%;
+    height: auto;
+    margin: 1rem 0;
+}
+
+.content-body blockquote {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-left: 4px solid var(--primary-color);
+    background-color: rgba(0,0,0,0.05);
+}
+
+/* For admin users */
+.content-editable {
+    position: relative;
+}
+
+.content-editable:hover:before {
+    content: "Edit";
+    position: absolute;
+    top: -20px;
+    right: 0;
+    background: var(--primary-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.content-editable:hover:before {
+    opacity: 1;
+}

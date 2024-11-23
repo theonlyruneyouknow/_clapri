@@ -1,12 +1,49 @@
+{# File: templates/core/home.html #}
+{# Location: C:\git\_clapri\templates\core\home.html #}
+
 {% extends 'base.html' %}
+{% load custom_filters %}  {# Add this line #}
+
+{% block title %}Home - Appraisal Pro{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-12 text-center mt-5">
-            <h1>Welcome to Appraisal App</h1>
-            <p class="lead">Professional appraisal services at your fingertips</p>
+<div class="container py-4">
+    {% if page_content %}
+        <div class="row mb-5">
+            <div class="col-12">
+                <h1 class="display-4 mb-4">{{ page_content.title }}</h1>
+                <div class="content-body">
+                    {{ page_content.content|safe }}
+                </div>
+            </div>
         </div>
-    </div>
+    {% else %}
+        <!-- Default content -->
+        <div class="row">
+            <div class="col-12 text-center mt-5">
+                <h1>Welcome to Appraisal Pro</h1>
+                <p class="lead">Professional appraisal services at your fingertips</p>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Debug information for admins -->
+    {% if user.is_admin or user|get:'/app_metadata'|get:'is_admin' %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Debug Information (Admin Only)</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Page Content Available:</strong> {% if page_content %}Yes{% else %}No{% endif %}</p>
+                {% if page_content %}
+                    <p><strong>Content ID:</strong> {{ page_content.id }}</p>
+                    <p><strong>Active:</strong> {{ page_content.active }}</p>
+                    <p><strong>Archived:</strong> {{ page_content.archived }}</p>
+                    <p><strong>Display From:</strong> {{ page_content.display_from|default:"Not set" }}</p>
+                    <p><strong>Display Until:</strong> {{ page_content.display_until|default:"Not set" }}</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     # Local apps
     'core',  # Make sure 'core' is listed here
+    'content_management',  # Add this line
     'utils',
 ]
 
