@@ -33,39 +33,29 @@ class HomeView(TemplateView):
         
         # Get active content for the home page
         now = datetime.now()
-        
-        # Debug prints
-        print("\nDebug: Fetching home page content")
-        print(f"Debug: Current time: {now}")
-        
-        # Get all home page content first
-        all_content = PageContent.objects.filter(page_type='home')
-        print(f"Debug: All home content count: {len(all_content)}")
-        for content in all_content:
-            print(f"Debug: Content ID: {content.id}")
-            print(f"Debug: Title: {content.title}")
-            print(f"Debug: Active: {content.active}")
-            print(f"Debug: Archived: {content.archived}")
-            print(f"Debug: Display From: {content.display_from}")
-            print(f"Debug: Display Until: {content.display_until}")
-        
-        # Now get active content
-        active_content = PageContent.objects.filter(
+        content = PageContent.objects.filter(
             page_type='home',
             active=True,
             archived=False
         )
         
-        if content.display_from:
-            active_content = active_content.filter(display_from__lte=now)
-        if content.display_until:
-            active_content = active_content.filter(display_until__gt=now)
-            
-        context['page_content'] = active_content.first()
+        # Debug prints
+        print("\n=== Debug: Home Page Content ===")
+        print(f"Number of content items: {content.count()}")
+        for c in content:
+            print(f"ID: {c.id}")
+            print(f"Title: {c.title}")
+            print(f"Active: {c.active}")
+            print(f"Display From: {c.display_from}")
+            print(f"Display Until: {c.display_until}")
+            print("Content preview:", c.content[:100] if c.content else "No content")
+        print("============================\n")
         
-        print(f"Debug: Selected content: {context['page_content']}")
+        context['page_content'] = content.first()
+        context['debug'] = True  # Add this to show debug info in template
         
         return context
+    
 class AboutView(TemplateView):
     template_name = 'core/about.html'
 

@@ -2,154 +2,138 @@
 {# Location: C:\git\_clapri\templates\core\services.html #}
 
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block title %}Our Services - Appraisal Pro{% endblock %}
 
 {% block content %}
-<div class="container">
-    <!-- Hero Section -->
+<div class="container py-4">
+    {% if page_content %}
+        {{ page_content.content|safe }}
+    {% else %}
     <div class="row mb-5">
         <div class="col-lg-12 text-center">
             <h1 class="display-4 mb-4">Our Services</h1>
-            <p class="lead text-muted">Comprehensive appraisal services tailored to your needs</p>
+            <p class="lead">Comprehensive appraisal services tailored to your needs</p>
         </div>
     </div>
 
-    <!-- Main Services -->
-    <div class="row mb-5">
-        <!-- Residential Appraisals -->
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="text-center mb-3">
-                        <i class="bi bi-house-door display-4 text-primary"></i>
+    <div class="row g-4">
+        <!-- Residential Appraisals Card -->
+        <div class="col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="bi bi-house-door"></i>
                     </div>
-                    <h3 class="card-title text-center mb-3">Residential Appraisals</h3>
-                    <p class="card-text">Comprehensive valuation services for:</p>
+                    <h3 class="card-title">Residential Appraisals</h3>
+                    <p class="text-muted mb-4">Comprehensive valuation services for:</p>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Single-Family Homes</li>
-                        <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Condominiums</li>
-                        <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Multi-Family Units</li>
-                        <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>New Construction</li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2 text-success"></i>
+                            Single-Family Homes
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2 text-success"></i>
+                            Condominiums
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2 text-success"></i>
+                            Multi-Family Units
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2 text-success"></i>
+                            New Construction
+                        </li>
                     </ul>
-                </div>
-                <div class="card-footer bg-transparent text-center">
-                    <a href="{% url 'core:contact' %}" class="btn btn-primary">Request Appraisal</a>
+                    <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary mt-3">
+                        Request Appraisal
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Commercial Appraisals -->
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="text-center mb-3">
-                        <i class="bi bi-building display-4 text-primary"></i>
+        <!-- Commercial Appraisals Card -->
+        <div class="col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="bi bi-building"></i>
                     </div>
-                    <h3 class="card-title text-center mb-3">Commercial Appraisals</h3>
-                    <p class="card-text">Expert valuation services for:</p>
+                    <h3 class="card-title">Commercial Appraisals</h3>
+                    <p class="text-muted mb-4">Expert valuation services for:</p>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Office Buildings</li>
-                        <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Retail Properties</li>
-                        <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Industrial Facilities</li>
-                        <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Mixed-Use Properties</li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2 text-success"></i>
+                            Office Buildings
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2 text-success"></i>
+                            Retail Properties
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2 text-success"></i>
+                            Industrial Facilities
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2 text-success"></i>
+                            Mixed-Use Properties
+                        </li>
                     </ul>
-                </div>
-                <div class="card-footer bg-transparent text-center">
-                    <a href="{% url 'core:contact' %}" class="btn btn-primary">Request Appraisal</a>
+                    <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary mt-3">
+                        Request Appraisal
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Specialized Services -->
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="text-center mb-3">
-                        <i class="bi bi-gear display-4 text-primary"></i>
+        <!-- Specialized Services Card -->
+        <div class="col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="bi bi-diagram-3"></i>
                     </div>
-                    <h3 class="card-title text-center mb-3">Specialized Services</h3>
-                    <p class="card-text">Additional professional services:</p>
+                    <h3 class="card-title">Specialized Services</h3>
+                    <p class="text-muted mb-4">Additional professional services:</p>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Estate Planning</li>
-                        <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Tax Assessment Review</li>
-                        <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Property Tax Appeals</li>
-                        <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Investment Analysis</li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2 text-success"></i>
+                            Estate Planning
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2 text-success"></i>
+                            Tax Assessment Review
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2 text-success"></i>
+                            Property Tax Appeals
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check2 text-success"></i>
+                            Investment Analysis
+                        </li>
                     </ul>
-                </div>
-                <div class="card-footer bg-transparent text-center">
-                    <a href="{% url 'core:contact' %}" class="btn btn-primary">Request Service</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Process Section -->
-    <div class="row mb-5">
-        <div class="col-12 text-center mb-4">
-            <h2>Our Appraisal Process</h2>
-            <p class="text-muted">How we ensure accurate and reliable valuations</p>
-        </div>
-        
-        <!-- Process Steps -->
-        <div class="col-md-3 mb-4">
-            <div class="card border-0 h-100">
-                <div class="card-body text-center">
-                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                        <h3 class="mb-0">1</h3>
-                    </div>
-                    <h4>Initial Consultation</h4>
-                    <p class="text-muted">Discuss your needs and gather preliminary information</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3 mb-4">
-            <div class="card border-0 h-100">
-                <div class="card-body text-center">
-                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                        <h3 class="mb-0">2</h3>
-                    </div>
-                    <h4>Property Inspection</h4>
-                    <p class="text-muted">Thorough on-site evaluation and documentation</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3 mb-4">
-            <div class="card border-0 h-100">
-                <div class="card-body text-center">
-                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                        <h3 class="mb-0">3</h3>
-                    </div>
-                    <h4>Analysis</h4>
-                    <p class="text-muted">Comprehensive market research and data analysis</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3 mb-4">
-            <div class="card border-0 h-100">
-                <div class="card-body text-center">
-                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                        <h3 class="mb-0">4</h3>
-                    </div>
-                    <h4>Final Report</h4>
-                    <p class="text-muted">Detailed appraisal report delivery and review</p>
+                    <a href="{% url 'core:contact' %}" class="btn btn-primary mt-3">
+                        Contact Us
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Call to Action -->
-    <div class="row">
+    <!-- Call to Action Section -->
+    <div class="row mt-5">
         <div class="col-12">
             <div class="bg-light p-5 rounded text-center">
-                <h2>Ready to Get Started?</h2>
+                <h2 class="mb-4">Ready to Get Started?</h2>
                 <p class="lead mb-4">Contact us today for a consultation and quote.</p>
-                <a href="{% url 'core:contact' %}" class="btn btn-primary btn-lg">Request an Appraisal</a>
+                <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary btn-lg">
+                    Request an Appraisal
+                </a>
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

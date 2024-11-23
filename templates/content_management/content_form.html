@@ -3,119 +3,173 @@
 
 {% extends 'base.html' %}
 {% block extra_css %}
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+<link href="https://cdn.summernote.org/0.8.18/summernote-bs4.min.css" rel="stylesheet">
 <style>
-    .inline-edit-content {
-        border: 1px dashed transparent;
-        padding: 10px;
-        margin: 5px 0;
-        transition: all 0.3s ease;
-    }
-    .inline-edit-content:hover {
-        border-color: #007bff;
+    .layout-preview {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 4px;
         cursor: pointer;
     }
-    .inline-edit-active {
-        border-color: #28a745;
-        background-color: rgba(40, 167, 69, 0.1);
+    .layout-preview:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
     }
-    .schedule-badge {
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        font-size: 0.8em;
+    .layout-preview.selected {
+        border-color: #28a745;
+        background-color: #e8f5e9;
+    }
+    .layout-icon {
+        font-size: 2rem;
+        color: #007bff;
+    }
+    .preview-pane {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 20px;
+        min-height: 200px;
+        margin-top: 20px;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-12">
             <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        {% if content %}Edit Content{% else %}Create New Content{% endif %}
-                    </h5>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">{% if content %}Edit{% else %}Create{% endif %} Content</h5>
+                    {% if content %}
+                        <span class="badge {% if content.active %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ content.active|yesno:"Active,Inactive" }}
+                        </span>
+                    {% endif %}
                 </div>
                 <div class="card-body">
-                    <form method="post">
+                    <form method="post" id="contentForm">
                         {% csrf_token %}
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.title.id_for_label }}">Title</label>
-                            {{ form.title }}
-                            {% if form.title.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ form.title.errors|join:", " }}
-                                </div>
-                            {% endif %}
+
+                        <!-- Basic Information -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.title.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.page_type.id_for_label }}" class="form-label">Page Type</label>
+                                {{ form.page_type }}
+                                {% if form.page_type.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.page_type.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="{{ form.page_type.id_for_label }}">Page Type</label>
-                            {{ form.page_type }}
-                            {% if form.page_type.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ form.page_type.errors|join:", " }}
+                        <!-- Layout Selection -->
+                        <div class="mb-4">
+                            <h6 class="mb-3">Choose Layout</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="layout-preview" data-layout="service-card">
+                                        <div class="text-center">
+                                            <i class="bi bi-grid-3x3-gap layout-icon mb-2"></i>
+                                            <h6>Service Card</h6>
+                                            <small class="text-muted">Card layout with icon and list</small>
+                                        </div>
+                                    </div>
                                 </div>
-                            {% endif %}
+                                <div class="col-md-4">
+                                    <div class="layout-preview" data-layout="custom">
+                                        <div class="text-center">
+                                            <i class="bi bi-pencil-square layout-icon mb-2"></i>
+                                            <h6>Custom Content</h6>
+                                            <small class="text-muted">Free-form content editor</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="{{ form.theme.id_for_label }}">Theme</label>
-                            {{ form.theme }}
-                            {% if form.theme.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ form.theme.errors|join:", " }}
+                        <!-- Card Layout Options -->
+                        <div id="card-options" class="mb-4" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Icon</label>
+                                    <select class="form-select" id="icon-select">
+                                        <option value="bi-house">🏠 House</option>
+                                        <option value="bi-building">🏢 Building</option>
+                                        <option value="bi-currency-dollar">💵 Dollar</option>
+                                        <option value="bi-graph-up">📈 Graph</option>
+                                    </select>
                                 </div>
-                            {% endif %}
+                            </div>
+
+                            <div id="list-items" class="mt-3">
+                                <label class="form-label">List Items</label>
+                                <div id="list-container">
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control list-item" placeholder="List item">
+                                        <button type="button" class="btn btn-outline-danger remove-item">Remove</button>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="add-item">
+                                    Add Item
+                                </button>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="{{ form.content.id_for_label }}">Content</label>
+                        <!-- Custom Content Editor -->
+                        <div id="custom-editor" class="mb-4">
                             {{ form.content }}
                             {% if form.content.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ form.content.errors|join:", " }}
-                                </div>
+                                <div class="invalid-feedback d-block">{{ form.content.errors|join:", " }}</div>
                             {% endif %}
                         </div>
 
-                        <div class="row mb-3">
+                        <!-- Scheduling -->
+                        <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="{{ form.display_from.id_for_label }}">Display From</label>
+                                <label for="{{ form.display_from.id_for_label }}" class="form-label">Display From</label>
                                 {{ form.display_from }}
-                                {% if form.display_from.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.display_from.errors|join:", " }}
-                                    </div>
-                                {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="{{ form.display_until.id_for_label }}">Display Until</label>
+                                <label for="{{ form.display_until.id_for_label }}" class="form-label">Display Until</label>
                                 {{ form.display_until }}
-                                {% if form.display_until.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.display_until.errors|join:", " }}
-                                    </div>
-                                {% endif %}
                             </div>
                         </div>
 
-                        <div class="mb-3 form-check">
-                            {{ form.active }}
-                            <label class="form-check-label" for="{{ form.active.id_for_label }}">
-                                Active
-                            </label>
+                        <!-- Theme and Status -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="{{ form.theme.id_for_label }}" class="form-label">Theme</label>
+                                {{ form.theme }}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check mt-4">
+                                    {{ form.active }}
+                                    <label class="form-check-label" for="{{ form.active.id_for_label }}">
+                                        Active
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Preview -->
+                        <div class="mb-4">
+                            <h6>Live Preview</h6>
+                            <div class="preview-pane" id="preview-area">
+                                <!-- Preview content will be inserted here -->
+                            </div>
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="{% url 'content_management:content_list' %}" class="btn btn-secondary">
-                                Cancel
-                            </a>
+                            <a href="{% url 'content_management:content_list' %}" class="btn btn-secondary">Cancel</a>
                             <button type="submit" class="btn btn-primary">
-                                {% if content %}Update{% else %}Create{% endif %}
+                                {% if content %}Update{% else %}Create{% endif %} Content
                             </button>
                         </div>
                     </form>
@@ -127,10 +181,11 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+<script src="https://cdn.summernote.org/0.8.18/summernote-bs4.min.js"></script>
 <script>
-$(document).ready(function() {
-    $('#content-editor').summernote({
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize rich text editor
+    $('#custom-editor').summernote({
         height: 300,
         toolbar: [
             ['style', ['style']],
@@ -140,7 +195,99 @@ $(document).ready(function() {
             ['table', ['table']],
             ['insert', ['link']],
             ['view', ['fullscreen', 'codeview', 'help']]
-        ]
+        ],
+        callbacks: {
+            onChange: function(contents, $editable) {
+                updatePreview();
+            }
+        }
+    });
+
+    // Layout selection
+    document.querySelectorAll('.layout-preview').forEach(preview => {
+        preview.addEventListener('click', function() {
+            document.querySelectorAll('.layout-preview').forEach(p => p.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            const layout = this.dataset.layout;
+            document.getElementById('card-options').style.display = 
+                layout === 'service-card' ? 'block' : 'none';
+            document.getElementById('custom-editor').style.display = 
+                layout === 'custom' ? 'block' : 'none';
+            
+            updatePreview();
+        });
+    });
+
+    // List item management
+    document.getElementById('add-item').addEventListener('click', function() {
+        const container = document.getElementById('list-container');
+        const newItem = document.createElement('div');
+        newItem.className = 'input-group mb-2';
+        newItem.innerHTML = `
+            <input type="text" class="form-control list-item" placeholder="List item">
+            <button type="button" class="btn btn-outline-danger remove-item">Remove</button>
+        `;
+        container.appendChild(newItem);
+        updatePreview();
+    });
+
+    document.getElementById('list-container').addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-item')) {
+            e.target.closest('.input-group').remove();
+            updatePreview();
+        }
+    });
+
+    // Live preview update
+    function updatePreview() {
+        const previewArea = document.getElementById('preview-area');
+        const selectedLayout = document.querySelector('.layout-preview.selected');
+        
+        if (selectedLayout && selectedLayout.dataset.layout === 'service-card') {
+            const icon = document.getElementById('icon-select').value;
+            const listItems = Array.from(document.querySelectorAll('.list-item'))
+                .map(input => input.value)
+                .filter(val => val.trim() !== '');
+            
+            previewArea.innerHTML = `
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="display-4 text-primary mb-3">
+                            <i class="bi ${icon}"></i>
+                        </div>
+                        <h3 class="card-title">${document.querySelector('#id_title').value}</h3>
+                        <p class="text-muted mb-4">Comprehensive valuation services for:</p>
+                        <ul class="list-unstyled">
+                            ${listItems.map(item => `
+                                <li class="mb-2">
+                                    <i class="bi bi-check2 text-success"></i>
+                                    ${item}
+                                </li>
+                            `).join('')}
+                        </ul>
+                        <a href="#" class="btn btn-primary mt-3">Request Appraisal</a>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Show custom content preview
+            previewArea.innerHTML = $('#custom-editor').summernote('code');
+        }
+    }
+
+    // Initial preview
+    updatePreview();
+
+    // Form submission
+    document.getElementById('contentForm').addEventListener('submit', function(e) {
+        const selectedLayout = document.querySelector('.layout-preview.selected');
+        if (selectedLayout && selectedLayout.dataset.layout === 'service-card') {
+            // Compile card layout into content
+            const compiledContent = document.getElementById('preview-area').innerHTML;
+            document.querySelector('#id_content').value = compiledContent;
+        }
+        // For custom layout, the content is already in the editor
     });
 });
 </script>

@@ -170,3 +170,55 @@ h1, h2, h3, h4, h5, h6 {
 .star-rating_Yellow {
     color: #FFB900;  /* Warmer yellow */
 }
+
+/* File: static/css/style.css */
+
+.card {
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1) !important;
+}
+
+.card .bi {
+    transition: transform 0.2s ease;
+}
+
+.card:hover .bi {
+    transform: scale(1.1);
+}
+
+.text-primary {
+    color: #007bff !important;
+}
+
+.text-success {
+    color: #28a745 !important;
+}
+
+.list-unstyled li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.list-unstyled li:last-child {
+    border-bottom: none;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.btn-primary {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+}
+
+.display-4 {
+    font-size: 3.5rem;
+    font-weight: 300;
+    line-height: 1.2;
+}

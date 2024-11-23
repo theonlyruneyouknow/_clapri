@@ -1,0 +1,30 @@
+{# File: templates/content_management/content_form.html #}
+
+{% block extra_css %}
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script>
+const quill = new Quill('#content-editor', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['link', 'image', 'code-block'],
+            ['clean'],
+            [{ 'align': [] }]
+        ]
+    }
+});
+
+// Update hidden form field before submit
+document.querySelector('form').onsubmit = function() {
+    document.querySelector('input[name=content]').value = quill.root.innerHTML;
+};
+</script>
+{% endblock %}
