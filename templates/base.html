@@ -55,14 +55,23 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'testimonials' %}active{% endif %}" 
                            href="{% url 'core:testimonials' %}">Testimonials</a>
-                    </li>
+                    </li>    {% if user %}
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'appointments' %}active{% endif %}" 
                            href="{% url 'core:appointments' %}">Appointments</a>
                     </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" 
-                           href="{% url 'core:contact' %}">Contact Us</a>
+                        href="{% url 'core:contact' %}">Contact Us</a>
+                    </li>
+                    {% if not user %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'core:login' %}">
+                                <i class="bi bi-calendar-check me-1"></i>Log in for Appointments
+                            </a>
+                        </li>
+                    {% endif %}
                     </li>
                 </ul>
                 

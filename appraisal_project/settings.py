@@ -90,9 +90,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'appraisal_project.wsgi.application'
 
 # MongoDB settings
+# from mongoengine import connect
+# MONGODB_URI = os.getenv('MONGODB_URI')
+# connect(host=MONGODB_URI)
+
 from mongoengine import connect
 MONGODB_URI = os.getenv('MONGODB_URI')
-connect(host=MONGODB_URI)
+print(f"\nAttempting to connect to MongoDB with URI: {MONGODB_URI}")
+try:
+    connection = connect(host=MONGODB_URI)
+    print("MongoDB connection successful!")
+    # List all collections
+    db = connection.get_database()
+    print(f"Available collections: {db.list_collection_names()}")
+except Exception as e:
+    print(f"MongoDB connection error: {str(e)}")
 
 # Database (required for Django admin)
 DATABASES = {

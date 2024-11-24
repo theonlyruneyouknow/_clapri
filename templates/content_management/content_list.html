@@ -2,43 +2,60 @@
 {# Location: C:\git\_clapri\templates\content_management\content_list.html #}
 
 {% extends 'base.html' %}
+{% load custom_filters %}
+
 {% block content %}
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Content Management</h2>
-        <a href="{% url 'content_management:content_create' %}" class="btn btn-primary">
-            Create New Content
-        </a>
+        <a href="{% url 'content_management:content_create' %}" class="btn btn-primary">Create New Content</a>
     </div>
 
+    <!-- Debug section -->
+    {% if user.is_admin or user|get:'/app_metadata'|get:'is_admin' %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Debug Information</h5>
+        </div>
+        <div class="card-body">
+            <p>Total content items: {{ contents|length }}</p>
+            <p>Selected page type: {{ selected_page_type }}</p>
+            <p>Selected theme: {{ selected_theme }}</p>
+            <p>Available themes: {{ themes|length }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Filters -->
     <div class="card mb-4">
         <div class="card-body">
-            <div class="row">
+            <form method="get" class="row">
                 <div class="col-md-4">
-                    <select class="form-select" id="page-type-filter">
-                        <option value="">All Pages</option>
-                        <option value="home">Home</option>
-                        <option value="about">About</option>
-                        <option value="services">Services</option>
+                    <select name="page_type" class="form-select">
+                        <option value="all">All Pages</option>
+                        <option value="home" {% if selected_page_type == 'home' %}selected{% endif %}>Home</option>
+                        <option value="about" {% if selected_page_type == 'about' %}selected{% endif %}>About</option>
+                        <option value="services" {% if selected_page_type == 'services' %}selected{% endif %}>Services</option>
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <select class="form-select" id="theme-filter">
-                        <option value="">All Themes</option>
+                    <select name="theme" class="form-select">
+                        <option value="all">All Themes</option>
                         {% for theme in themes %}
-                            <option value="{{ theme.id }}">{{ theme.name }}</option>
+                            <option value="{{ theme.id }}" {% if selected_theme == theme.id %}selected{% endif %}>
+                                {{ theme.name }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button class="btn btn-secondary w-100" id="apply-filters">
-                        Apply Filters
-                    </button>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-secondary w-100">Apply Filters</button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
+    <!-- Content List -->
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -73,7 +90,7 @@
                         {% endif %}
                     </td>
                     <td>
-                        <div class="btn-group" role="group">
+                        <div class="btn-group">
                             <a href="{% url 'content_management:content_edit' content.id %}" 
                                class="btn btn-sm btn-outline-primary">Edit</a>
                             <form method="post" action="{% url 'content_management:content_duplicate' content.id %}" 
@@ -91,30 +108,15 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center">No content found.</td>
+                    <td colspan="6" class="text-center">
+                        <div class="alert alert-info mb-0">
+                            No content found. {% if selected_page_type != 'all' or selected_theme != 'all' %}Try changing the filters or {% endif %}create new content.
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const applyFilters = () => {
-        const pageType = document.getElementById('page-type-filter').value;
-        const theme = document.getElementById('theme-filter').value;
-        const params = new URLSearchParams();
-        
-        if (pageType) params.append('page_type', pageType);
-        if (theme) params.append('theme', theme);
-        
-        window.location.href = `?${params.toString()}`;
-    };
-
-    document.getElementById('apply-filters').addEventListener('click', applyFilters);
-});
-</script>
 {% endblock %}

@@ -33,26 +33,16 @@ class HomeView(TemplateView):
         
         # Get active content for the home page
         now = datetime.now()
-        content = PageContent.objects.filter(
+        context['page_content'] = PageContent.objects.filter(
             page_type='home',
             active=True,
-            archived=False
-        )
-        
-        # Debug prints
-        print("\n=== Debug: Home Page Content ===")
-        print(f"Number of content items: {content.count()}")
-        for c in content:
-            print(f"ID: {c.id}")
-            print(f"Title: {c.title}")
-            print(f"Active: {c.active}")
-            print(f"Display From: {c.display_from}")
-            print(f"Display Until: {c.display_until}")
-            print("Content preview:", c.content[:100] if c.content else "No content")
-        print("============================\n")
-        
-        context['page_content'] = content.first()
-        context['debug'] = True  # Add this to show debug info in template
+            archived=False,
+            display_from__lte=now,
+            display_until__gt=now
+        ).first()
+
+        # Debug print
+        print(f"Debug - Found content: {context['page_content'].title if context['page_content'] else 'None'}")
         
         return context
     

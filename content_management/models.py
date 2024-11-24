@@ -1,6 +1,7 @@
 # File: content_management/models.py
+# Location: C:\git\_clapri\content_management\models.py
 
-from mongoengine import Document, StringField, DateTimeField, BooleanField, ListField, ReferenceField
+from mongoengine import Document, StringField, DateTimeField, BooleanField, ReferenceField
 from datetime import datetime
 
 class Theme(Document):
@@ -20,7 +21,7 @@ class PageContent(Document):
     title = StringField(required=True)
     content = StringField(required=True)
     page_type = StringField(required=True, choices=['home', 'about', 'services'])
-    theme = ReferenceField(Theme)
+    theme = ReferenceField(Theme, required=False)  # Make theme optional
     active = BooleanField(default=False)
     display_from = DateTimeField()
     display_until = DateTimeField()
@@ -36,28 +37,6 @@ class PageContent(Document):
         ]
     }
 
-    def clean(self):
+    def save(self, *args, **kwargs):
         self.updated_at = datetime.now()
-        
-    def is_visible(self):
-        now = datetime.now()
-        if not self.active or self.archived:
-            return False
-        if self.display_from and self.display_from > now:
-            return False
-        if self.display_until and self.display_until < now:
-            return False
-        return True
-
-    def duplicate(self):
-        new_content = PageContent(
-            title=f"Copy of {self.title}",
-            content=self.content,
-            page_type=self.page_type,
-            theme=self.theme,
-            active=False,  # Set inactive by default
-            display_from=self.display_from,
-            display_until=self.display_until
-        )
-        new_content.save()
-        return new_content
+        return super(PageContent, self).save(*args, **kwargs)
