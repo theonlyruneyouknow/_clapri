@@ -1,0 +1,59 @@
+{# File: templates/content_management/theme_list.html #}
+{# Location: C:\git\_clapri\templates\content_management\theme_list.html #}
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Theme Management</h1>
+        <a href="{% url 'content_management:theme_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Create New Theme
+        </a>
+    </div>
+
+    <div class="row">
+        {% for theme in themes %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ theme.name }}</h5>
+                        {% if theme.description %}
+                            <p class="card-text">{{ theme.description }}</p>
+                        {% endif %}
+                        <p class="card-text">
+                            <small class="text-muted">Created: {{ theme.created_at|date:"F j, Y" }}</small>
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-sm btn-outline-secondary me-2" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#cssVars{{ theme.id }}" aria-expanded="false">
+                                <i class="bi bi-code-slash"></i> View CSS
+                            </button>
+                            <a href="{% url 'content_management:content_list' %}?theme={{ theme.id }}" 
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-file-text"></i> View Content
+                            </a>
+                        </div>
+                        {% if theme.css_variables %}
+                            <div class="collapse mt-3" id="cssVars{{ theme.id }}">
+                                <div class="card card-body bg-light">
+                                    <pre class="mb-0"><code>{{ theme.css_variables }}</code></pre>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>
+                    No themes have been created yet. Click the button above to create your first theme.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

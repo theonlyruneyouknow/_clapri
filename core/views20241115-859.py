@@ -83,7 +83,7 @@ class ContactView(FormView):
             user_email_body = render_to_string('core/emails/contact_confirmation.txt', user_email_context)
             
             send_mail(
-                subject="We've Received Your Message - Appraisal Pro",
+                subject="We've Received Your Message - Martin Appraisal Co",
                 message=user_email_body,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[form.cleaned_data['email']],

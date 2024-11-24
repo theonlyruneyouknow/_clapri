@@ -1,0 +1,23 @@
+{# File: templates/content_management/base.html #}
+{# Location: C:\git\_clapri\templates\content_management\base.html #}
+
+{% extends 'base.html' %}
+
+{% block extra_css %}
+{{ block.super }}
+<!-- Add any content management specific styles -->
+<style>
+    .content-wrapper {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="container">
+        {% block content_management %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

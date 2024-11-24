@@ -3,9 +3,9 @@
 
 Dear {{ name }},
 
-Thank you for contacting Appraisal Pro. We have received your message and will get back to you as soon as possible.
+Thank you for contacting Martin Appraisal Co. We have received your message and will get back to you as soon as possible.
 
-If you need immediate assistance, please call us at (123) 456-7890.
+If you need immediate assistance, please call us at (541) 520-9552.
 
 Best regards,
-The Appraisal Pro Team
+The Martin Appraisal Co Team

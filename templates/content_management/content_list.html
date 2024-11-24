@@ -5,42 +5,53 @@
 {% block content %}
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Content Management</h2>
-        <a href="{% url 'content_management:content_create' %}" class="btn btn-primary">
-            Create New Content
-        </a>
+        <h1>Content Management</h1>
+        <div>
+            <a href="{% url 'content_management:content_create' %}" class="btn btn-primary me-2">
+                <i class="bi bi-plus-circle"></i> Create New Content
+            </a>
+            <a href="{% url 'content_management:theme_create' %}" class="btn btn-secondary">
+                <i class="bi bi-palette"></i> Create New Theme
+            </a>
+        </div>
     </div>
 
     <div class="card mb-4">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-4">
-                    <select class="form-select" id="page-type-filter">
-                        <option value="">All Pages</option>
-                        <option value="home">Home</option>
-                        <option value="about">About</option>
-                        <option value="services">Services</option>
+                    <label class="form-label">Page Type</label>
+                    <select class="form-control" id="pageTypeFilter">
+                        <option value="all">All Pages</option>
+                        <option value="home" {% if selected_page_type == 'home' %}selected{% endif %}>Home</option>
+                        <option value="about" {% if selected_page_type == 'about' %}selected{% endif %}>About</option>
+                        <option value="services" {% if selected_page_type == 'services' %}selected{% endif %}>Services</option>
+                        <option value="contact" {% if selected_page_type == 'contact' %}selected{% endif %}>Contact</option>
+                        <option value="appointments" {% if selected_page_type == 'appointments' %}selected{% endif %}>Appointments</option>
+                        <option value="opening_hours" {% if selected_page_type == 'opening_hours' %}selected{% endif %}>Opening Hours</option>
+                        <option value="holiday_schedule" {% if selected_page_type == 'holiday_schedule' %}selected{% endif %}>Holiday Schedule</option>
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <select class="form-select" id="theme-filter">
-                        <option value="">All Themes</option>
+                    <label class="form-label">Theme</label>
+                    <select class="form-control" id="themeFilter">
+                        <option value="all">All Themes</option>
                         {% for theme in themes %}
-                            <option value="{{ theme.id }}">{{ theme.name }}</option>
+                            <option value="{{ theme.id }}" {% if selected_theme == theme.id %}selected{% endif %}>
+                                {{ theme.name }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
-                    <button class="btn btn-secondary w-100" id="apply-filters">
-                        Apply Filters
-                    </button>
+                    <button type="button" class="btn btn-primary" id="applyFilters">Apply Filters</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="table-responsive">
-        <table class="table">
+        <table class="table table-hover">
             <thead>
                 <tr>
                     <th>Title</th>
@@ -66,25 +77,32 @@
                     </td>
                     <td>
                         {% if content.display_from or content.display_until %}
-                            {{ content.display_from|date:"Y-m-d H:i"|default:"∞" }} to
+                            {{ content.display_from|date:"Y-m-d H:i"|default:"∞" }} to 
                             {{ content.display_until|date:"Y-m-d H:i"|default:"∞" }}
                         {% else %}
                             Always
                         {% endif %}
                     </td>
                     <td>
-                        <div class="btn-group" role="group">
+                        <div class="btn-group">
                             <a href="{% url 'content_management:content_edit' content.id %}" 
-                               class="btn btn-sm btn-outline-primary">Edit</a>
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
                             <form method="post" action="{% url 'content_management:content_duplicate' content.id %}" 
                                   class="d-inline">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-secondary">Duplicate</button>
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-copy"></i> Duplicate
+                                </button>
                             </form>
                             <form method="post" action="{% url 'content_management:content_archive' content.id %}" 
-                                  class="d-inline">
+                                  class="d-inline"
+                                  onsubmit="return confirm('Are you sure you want to archive this content?');">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Archive</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-archive"></i> Archive
+                                </button>
                             </form>
                         </div>
                     </td>
@@ -98,23 +116,28 @@
         </table>
     </div>
 </div>
-{% endblock %}
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const applyFilters = () => {
-        const pageType = document.getElementById('page-type-filter').value;
-        const theme = document.getElementById('theme-filter').value;
-        const params = new URLSearchParams();
-        
-        if (pageType) params.append('page_type', pageType);
-        if (theme) params.append('theme', theme);
-        
-        window.location.href = `?${params.toString()}`;
-    };
-
-    document.getElementById('apply-filters').addEventListener('click', applyFilters);
+document.getElementById('applyFilters').addEventListener('click', function() {
+    const pageType = document.getElementById('pageTypeFilter').value;
+    const theme = document.getElementById('themeFilter').value;
+    
+    let url = new URL(window.location);
+    if (pageType !== 'all') {
+        url.searchParams.set('page_type', pageType);
+    } else {
+        url.searchParams.delete('page_type');
+    }
+    
+    if (theme !== 'all') {
+        url.searchParams.set('theme', theme);
+    } else {
+        url.searchParams.delete('theme');
+    }
+    
+    window.location.href = url.toString();
 });
 </script>
+{% endblock %}
 {% endblock %}

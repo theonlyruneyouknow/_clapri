@@ -4,7 +4,7 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 
-{% block title %}Home - Appraisal Pro{% endblock %}
+{% block title %}Home - Martin Appraisal Co{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -55,7 +55,7 @@
         <!-- Default content -->
         <div class="row">
             <div class="col-12 text-center mt-5">
-                <h1>Welcome to Appraisal Pro</h1>
+                <h1>Welcome to Martin Appraisal Co</h1>
                 <p class="lead">Professional appraisal services at your fingertips</p>
                 
                 {% if user.is_admin or user|get:'/app_metadata'|get:'is_admin' %}
