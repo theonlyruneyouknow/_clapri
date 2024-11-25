@@ -1049,3 +1049,27 @@ class AppointmentListView(ListView):
         context['past_appointments'] = appointments.filter(scheduled_date__lt=now)
         
         return context
+    
+class PrivacyPolicyView(TemplateView):
+    template_name = 'core/privacy_policy.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        return context
+
+class TermsOfServiceView(TemplateView):
+    template_name = 'core/terms_of_service.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        return context
+
+class FAQView(TemplateView):
+    template_name = 'core/faq.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        return context    

@@ -35,6 +35,9 @@ urlpatterns = [
     path('appointments/', views.AppointmentListView.as_view(), name='appointments'),
     path('appraisal/<str:request_id>/schedule/', views.AppointmentScheduleView.as_view(), name='appointment_schedule'),
     path('appointment/<str:appointment_id>/reschedule/', views.AppointmentRescheduleView.as_view(), name='appointment_reschedule'),
+    path('privacy-policy/', views.PrivacyPolicyView.as_view(), name='privacy'),
+    path('terms-of-service/', views.TermsOfServiceView.as_view(), name='terms'),
+    path('faq/', views.FAQView.as_view(), name='faq'),
 
     
     # Admin URLs

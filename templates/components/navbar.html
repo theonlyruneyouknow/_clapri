@@ -24,9 +24,17 @@
                        href="{% url 'core:services' %}">Services</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}"
-                       href="{% url 'core:contact' %}">Contact</a>
+                    <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" 
+                       href="{% url 'core:contact' %}">Contact Us</a>
                 </li>
+                {% if not user %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" 
+                       href="{% url 'core:login' %}">
+                       <i class="bi bi-calendar-check"></i> Log in here for Appointment Request
+                    </a>
+                </li>
+                {% endif %}
             </ul>
             <ul class="navbar-nav">
                 {% if user %}

@@ -28,6 +28,20 @@ class ContactForm(forms.Form):
             'placeholder': 'Your Phone Number (Optional)'
         })
     )
+    service_type = forms.ChoiceField(
+        choices=[
+            ('', 'Select Service Type'),
+            ('residential', 'Residential Appraisal'),
+            ('commercial', 'Commercial Appraisal'),
+            ('estate', 'Estate Valuation'),
+            ('tax', 'Tax Assessment'),
+            ('consulting', 'Consulting Services'),
+            ('other', 'Other Services')
+        ],
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        })
+    )
     message = forms.CharField(
         widget=forms.Textarea(attrs={
             'class': 'form-control',

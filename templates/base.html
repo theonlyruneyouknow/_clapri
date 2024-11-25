@@ -56,14 +56,25 @@
                         <a class="nav-link {% if request.resolver_match.url_name == 'testimonials' %}active{% endif %}" 
                            href="{% url 'core:testimonials' %}">Testimonials</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'appointments' %}active{% endif %}" 
-                           href="{% url 'core:appointments' %}">Appointments</a>
-                    </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" 
                            href="{% url 'core:contact' %}">Contact Us</a>
                     </li>
+                    {% if user %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'appointments' %}active{% endif %}" 
+                           href="{% url 'core:appointments' %}">Appointments</a>
+                    </li>
+                    {% endif %}
+                    {% if not user %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" 
+                           href="{% url 'core:login' %}">
+                           <i class="bi bi-calendar-check"></i> Log in here for Appointment Request
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
                 
                 <ul class="navbar-nav">
@@ -88,6 +99,11 @@
                                 <li>
                                     <a class="dropdown-item" href="{% url 'core:profile' %}">
                                         <i class="bi bi-person me-2"></i>Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core:appraisal_request' %}">
+                                        <i class="bi bi-calendar-check"></i> Appointment Request
                                     </a>
                                 </li>
                                 {% if user.is_admin or user|get:'/app_metadata'|get:'is_admin' %}
@@ -136,10 +152,71 @@
     </main>
 
     <!-- Footer -->
+      <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5>Martin Appraisal Co.</h5>
+                    <p class="text-muted">
+                        Professional appraisal services you can trust. Licensed and certified in residential 
+                        and commercial property valuation.
+                    </p>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'core:home' %}">Home</a></li>
+                        <li><a href="{% url 'core:about' %}">About Us</a></li>
+                        <li><a href="{% url 'core:services' %}">Services</a></li>
+                        <li><a href="{% url 'core:contact' %}">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Services</h5>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'core:services' %}#residential">Residential Appraisals</a></li>
+                        <li><a href="{% url 'core:services' %}#commercial">Commercial Appraisals</a></li>
+                        <li><a href="{% url 'core:services' %}#consulting">Consulting Services</a></li>
+                        <li><a href="{% url 'core:services' %}#estate">Estate Valuations</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5>Legal</h5>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'core:privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'core:terms' %}">Terms of Service</a></li>
+                        <li><a href="{% url 'core:faq' %}">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- <div class="footer-bottom text-center">
+                <div class="social-links mb-3">
+                    <a href="#" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" target="_blank" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" target="_blank" title="Twitter"><i class="bi bi-twitter"></i></a>
+                </div>
+                <p class="text-muted mb-0">
+                    © {% now "Y" %} Martin Appraisal Co. All rights reserved.<br>
+                    <small>Licensed and certified in the state of Washington</small>
+                </p>
+            </div> -->
+        </div>
+    </footer>
     <footer class="bg-light mt-5 py-4">
         <div class="container">
             <div class="text-center text-muted">
-                <small>&copy; {% now "Y" %} Martin Appraisal Co. All rights reserved.</small>
+                <div class="social-links mb-3">
+                    <a href="#" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" target="_blank" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" target="_blank" title="Twitter"><i class="bi bi-twitter"></i></a>
+                </div>
+                <p class="text-muted mb-0">
+                    © {% now "Y" %} Martin Appraisal Co. All rights reserved.<br>
+                    <small>Licensed and certified in the state of Oregon</small>
+                </p>
+                <!-- <small>&copy; {% now "Y" %} Martin Appraisal Co. All rights reserved.</small> -->
             </div>
         </div>
     </footer>

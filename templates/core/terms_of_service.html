@@ -1,0 +1,25 @@
+{# File: templates/core/terms_of_service.html #}
+{# Location: C:\git\_clapri\templates\core\terms_of_service.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Terms of Service - Martin Appraisal Co.{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="mb-4">Terms of Service</h1>
+            <p class="lead mb-4">Last updated: {% now "F j, Y" %}</p>
+
+            <h2 class="h4 mb-3">1. Services</h2>
+            <p>Martin Appraisal Co. provides professional real estate appraisal services in accordance with all applicable laws and regulations.</p>
+
+            <h2 class="h4 mb-3">2. Professional Standards</h2>
+            <p>All appraisals are performed in accordance with the Uniform Standards of Professional Appraisal Practice (USPAP).</p>
+
+            <!-- Add more sections as needed -->
+        </div>
+    </div>
+</div>
+{% endblock %}
