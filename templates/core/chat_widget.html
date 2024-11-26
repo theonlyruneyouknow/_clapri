@@ -1,0 +1,249 @@
+{# File: templates/core/chat_widget.html #}
+{# Location: C:\git\_clapri\templates\core\chat_widget.html #}
+
+<div id="chat-widget" class="chat-widget">
+    <div class="chat-header" onclick="toggleChat()">
+        <i class="bi bi-building me-2"></i> Appraisal Assistant
+        <small class="online-indicator">Online</small>
+    </div>
+    <div class="chat-body" id="chat-body">
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot-message">
+                Welcome to Martin Appraisal Company! I can help you with:
+                • Information about our services
+                • Understanding the appraisal process
+                • Scheduling appointments
+                • General questions
+                
+                How can I assist you today?
+            </div>
+        </div>
+        <div class="chat-input">
+            <textarea 
+                id="user-input" 
+                placeholder="Type your message..." 
+                rows="1"
+                onkeydown="handleKeyPress(event)"></textarea>
+            <button onclick="sendMessage()">
+                <i class="bi bi-send"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+.chat-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    z-index: 1000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.chat-header {
+    padding: 15px;
+    background: #2c3e50;
+    color: white;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.online-indicator {
+    margin-left: auto;
+    color: #2ecc71;
+    font-size: 0.8em;
+}
+
+.chat-body {
+    height: 450px;
+    display: none;
+}
+
+.chat-messages {
+    height: 390px;
+    overflow-y: auto;
+    padding: 15px;
+    background: #f8f9fa;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #eee;
+    border-radius: 0 0 10px 10px;
+}
+
+.chat-input textarea {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 15px;
+    margin-right: 10px;
+    resize: none;
+    font-size: 14px;
+}
+
+.chat-input button {
+    background: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.chat-input button:hover {
+    background: #34495e;
+}
+
+.message {
+    margin-bottom: 10px;
+    max-width: 80%;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.user-message {
+    margin-left: auto;
+    background: #2c3e50;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 15px 15px 0 15px;
+}
+
+.bot-message {
+    background: white;
+    padding: 10px 15px;
+    border-radius: 15px 15px 15px 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.typing-indicator {
+    padding: 10px 15px;
+    background: #eee;
+    border-radius: 15px 15px 15px 0;
+    width: fit-content;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 480px) {
+    .chat-widget {
+        width: 100%;
+        right: 0;
+        bottom: 0;
+        border-radius: 10px 10px 0 0;
+    }
+}
+</style>
+
+<script>
+let isTyping = false;
+
+function toggleChat() {
+    const chatBody = document.getElementById('chat-body');
+    if (chatBody.style.display === 'none') {
+        chatBody.style.display = 'block';
+        document.getElementById('user-input').focus();
+    } else {
+        chatBody.style.display = 'none';
+    }
+}
+
+function handleKeyPress(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+    }
+}
+
+async function sendMessage() {
+    const input = document.getElementById('user-input');
+    const message = input.value.trim();
+    if (!message || isTyping) return;
+
+    // Add user message to chat
+    addMessage(message, 'user');
+    input.value = '';
+    isTyping = true;
+
+    // Show typing indicator
+    showTypingIndicator();
+
+    try {
+        const response = await fetch('/chat/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ message })
+        });
+
+        // Remove typing indicator
+        hideTypingIndicator();
+        isTyping = false;
+
+        const data = await response.json();
+        if (data.status === 'success') {
+            addMessage(data.response, 'bot');
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        hideTypingIndicator();
+        isTyping = false;
+        addMessage('I apologize, but I encountered an error. Please try again or contact our office directly.', 'bot');
+    }
+}
+
+function addMessage(message, type) {
+    const messagesDiv = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', type === 'user' ? 'user-message' : 'bot-message');
+    messageDiv.textContent = message;
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function showTypingIndicator() {
+    const messagesDiv = document.getElementById('chat-messages');
+    const indicator = document.createElement('div');
+    indicator.id = 'typing-indicator';
+    indicator.className = 'typing-indicator';
+    indicator.textContent = 'Typing...';
+    messagesDiv.appendChild(indicator);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    const indicator = document.getElementById('typing-indicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>

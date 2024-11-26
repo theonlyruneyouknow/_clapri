@@ -20,6 +20,11 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 import secrets
 import logging
+from django.http import JsonResponse
+from django.views import View
+from .ai_communicator import AICommunicator
+import json
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -1073,3 +1078,72 @@ class FAQView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['user'] = get_auth0_user(self.request)
         return context    
+    
+class ChatView(View):
+    def post(self, request):
+        try:
+            # Log the incoming request
+            logger.debug("Received chat request")
+            
+            # Parse the JSON body
+            try:
+                data = json.loads(request.body)
+                user_message = data.get('message')
+                if not user_message:
+                    raise ValueError("No message provided")
+                
+                logger.debug(f"User message: {user_message}")
+            except json.JSONDecodeError:
+                logger.error("Failed to parse JSON body")
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Invalid request format'
+                }, status=400)
+
+            # Initialize communicator
+            try:
+                communicator = AICommunicator()
+            except Exception as e:
+                logger.error(f"Failed to initialize AI Communicator: {str(e)}")
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Service initialization failed'
+                }, status=500)
+
+            # Get response
+            try:
+                response = communicator.get_response(user_message)
+                logger.debug(f"AI response: {response}")
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'response': response
+                })
+            except Exception as e:
+                logger.error(f"Error getting AI response: {str(e)}")
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Failed to generate response'
+                }, status=500)
+
+        except Exception as e:
+            logger.error(f"Unexpected error in ChatView: {str(e)}")
+            logger.error(traceback.format_exc())
+            return JsonResponse({
+                'status': 'error',
+                'message': 'An unexpected error occurred'
+            }, status=500) 
+        
+def test_openai(request):
+    try:
+        communicator = AICommunicator()
+        response = communicator.get_response("Hello, are you working?")
+        return JsonResponse({
+            'status': 'success',
+            'response': response
+        })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'error': str(e)
+        })        

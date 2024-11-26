@@ -1,0 +1,150 @@
+Watching for file changes with StatReloader
+"GET /appointments/ HTTP/1.1" 200 15568
+"GET /appointments/ HTTP/1.1" 200 15568
+AICommunicator initialized successfully
+Processing user input: good evening
+Sending request to OpenAI
+Error in get_response: 
+
+You tried to access openai.ChatCompletion, but this is no longer supported in openai>=1.0.0 - see the README at https://github.com/openai/openai-python for the API.
+
+You can run `openai migrate` to automatically upgrade your codebase to use the 1.0.0 interface. 
+
+Alternatively, you can pin your installation to the old version, e.g. `pip install openai==0.28`
+
+A detailed migration guide is available here: https://github.com/openai/openai-python/discussions/742
+
+Internal Server Error: /chat/
+"POST /chat/ HTTP/1.1" 500 509
+AICommunicator initialized successfully
+Processing user input: hello
+Sending request to OpenAI
+Error in get_response: 
+
+You tried to access openai.ChatCompletion, but this is no longer supported in openai>=1.0.0 - see the README at https://github.com/openai/openai-python for the API.
+
+You can run `openai migrate` to automatically upgrade your codebase to use the 1.0.0 interface. 
+
+Alternatively, you can pin your installation to the old version, e.g. `pip install openai==0.28`
+
+A detailed migration guide is available here: https://github.com/openai/openai-python/discussions/742
+
+Internal Server Error: /chat/
+"POST /chat/ HTTP/1.1" 500 509
+C:\git\_clapri\core\ai_communicator.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+AICommunicator initialized successfully
+Processing user input: Hello, are you working?
+Sending request to OpenAI
+Error in get_response: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+"GET /test-openai/ HTTP/1.1" 200 342
+AICommunicator initialized successfully
+Processing user input: testing you
+Sending request to OpenAI
+Error in get_response: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+Internal Server Error: /chat/
+"POST /chat/ HTTP/1.1" 500 344
+C:\git\_clapri\core\ai_communicator.py changed, reloading.
+Watching for file changes with StatReloader
+C:\git\_clapri\core\ai_communicator.py changed, reloading.
+Watching for file changes with StatReloader
+C:\git\_clapri\core\ai_communicator.py changed, reloading.
+Watching for file changes with StatReloader
+C:\git\_clapri\appraisal_project\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\git\_clapri\core\ai_communicator.py changed, reloading.
+Watching for file changes with StatReloader
+C:\git\_clapri\core\ai_communicator.py changed, reloading.
+Watching for file changes with StatReloader
+C:\git\_clapri\core\ai_communicator.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /appointments/ HTTP/1.1" 302 0
+"GET /login?returnTo=/appointments/ HTTP/1.1" 301 0
+"GET /login/?returnTo=/appointments/ HTTP/1.1" 302 0
+"GET /callback/?code=67z0N4hUeKYtBKz6nvusVQGerfjgL6LEngDymXmjnyi8C&state=jM4ZCzp2VusXAPa2PNyil4mV0n43lp HTTP/1.1" 302 0
+"GET /appointments/ HTTP/1.1" 200 18225
+"GET /static/css/content_management.css HTTP/1.1" 304 0
+Internal Server Error: /chat/
+"POST /chat/ HTTP/1.1" 500 90
+C:\git\_clapri\core\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\git\_clapri\core\ai_communicator.py changed, reloading.
+Watching for file changes with StatReloader
+C:\git\_clapri\appraisal_project\settings.py changed, reloading.
+INFO 2024-11-25 20:13:48,354 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:13:55,111 basehttp "GET /appointments/ HTTP/1.1" 200 17873
+DEBUG 2024-11-25 20:14:17,833 views Received chat request
+DEBUG 2024-11-25 20:14:17,833 views User message: What are your opening hours
+DEBUG 2024-11-25 20:14:17,834 ai_communicator Initializing AICommunicator
+DEBUG 2024-11-25 20:14:17,834 ai_communicator AICommunicator initialized successfully
+DEBUG 2024-11-25 20:14:17,834 ai_communicator Processing user input: What are your opening hours
+DEBUG 2024-11-25 20:14:17,835 ai_communicator Found matching pattern: (?i).*hour.*|.*time.*|.*open.*
+DEBUG 2024-11-25 20:14:17,835 views AI response: Our business hours are:
+                - Monday-Friday: 9:00 AM - 5:00 PM
+                - Saturday: 10:00 AM - 2:00 PM
+                - Sunday: Closed
+INFO 2024-11-25 20:14:17,836 basehttp "POST /chat/ HTTP/1.1" 200 194
+DEBUG 2024-11-25 20:14:31,839 views Received chat request
+DEBUG 2024-11-25 20:14:31,839 views User message: Who is the propriator
+DEBUG 2024-11-25 20:14:31,839 ai_communicator Initializing AICommunicator
+DEBUG 2024-11-25 20:14:31,839 ai_communicator AICommunicator initialized successfully
+DEBUG 2024-11-25 20:14:31,839 ai_communicator Processing user input: Who is the propriator
+DEBUG 2024-11-25 20:14:31,839 ai_communicator No pattern matched, returning default response
+DEBUG 2024-11-25 20:14:31,839 views AI response: I understand you're interested in our appraisal services. 
+                Would you like to know about:
+                1. Our services
+                2. Business hours
+                3. Scheduling an appointment
+                4. Contact information
+                
+                Please let me know what interests you!
+INFO 2024-11-25 20:14:31,839 basehttp "POST /chat/ HTTP/1.1" 200 370
+DEBUG 2024-11-25 20:14:47,198 views Received chat request
+DEBUG 2024-11-25 20:14:47,198 views User message: 1
+DEBUG 2024-11-25 20:14:47,198 ai_communicator Initializing AICommunicator
+DEBUG 2024-11-25 20:14:47,198 ai_communicator AICommunicator initialized successfully
+DEBUG 2024-11-25 20:14:47,198 ai_communicator Processing user input: 1
+DEBUG 2024-11-25 20:14:47,198 ai_communicator No pattern matched, returning default response
+DEBUG 2024-11-25 20:14:47,198 views AI response: I understand you're interested in our appraisal services. 
+                Would you like to know about:
+                1. Our services
+                2. Business hours
+                3. Scheduling an appointment
+                4. Contact information
+                
+                Please let me know what interests you!
+INFO 2024-11-25 20:14:47,198 basehttp "POST /chat/ HTTP/1.1" 200 370
+DEBUG 2024-11-25 20:15:07,167 views Received chat request
+DEBUG 2024-11-25 20:15:07,167 views User message: when is there an appointment open
+DEBUG 2024-11-25 20:15:07,167 ai_communicator Initializing AICommunicator
+DEBUG 2024-11-25 20:15:07,167 ai_communicator AICommunicator initialized successfully
+DEBUG 2024-11-25 20:15:07,167 ai_communicator Processing user input: when is there an appointment open
+DEBUG 2024-11-25 20:15:07,167 ai_communicator Found matching pattern: (?i).*hour.*|.*time.*|.*open.*
+DEBUG 2024-11-25 20:15:07,167 views AI response: Our business hours are:
+                - Monday-Friday: 9:00 AM - 5:00 PM
+                - Saturday: 10:00 AM - 2:00 PM
+                - Sunday: Closed
+INFO 2024-11-25 20:15:07,167 basehttp "POST /chat/ HTTP/1.1" 200 194
+INFO 2024-11-25 20:15:50,530 autoreload C:\git\_clapri\appraisal_project\settings.py changed, reloading.
+INFO 2024-11-25 20:15:52,021 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:16:41,230 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
+INFO 2024-11-25 20:16:42,774 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:16:44,624 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
+INFO 2024-11-25 20:16:46,001 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:16:50,042 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
+INFO 2024-11-25 20:16:51,478 autoreload Watching for file changes with StatReloader
+DEBUG 2024-11-25 20:17:39,086 views Received chat request
+DEBUG 2024-11-25 20:17:39,086 views User message: hi
+DEBUG 2024-11-25 20:17:39,086 ai_communicator Initializing AICommunicator
+DEBUG 2024-11-25 20:17:39,086 ai_communicator AICommunicator initialized successfully
+DEBUG 2024-11-25 20:17:39,086 ai_communicator Processing user input: hi
+DEBUG 2024-11-25 20:17:39,086 ai_communicator Found matching pattern: (?i).*hello.*|.*hi.*|.*hey.*
+DEBUG 2024-11-25 20:17:39,086 views AI response: Hello! Welcome to Martin Appraisal Company. How can I assist you today? 
+                I can help with:
+                - Information about our services
+                - Scheduling appointments
+                - General questions about appraisals
+INFO 2024-11-25 20:17:39,086 basehttp "POST /chat/ HTTP/1.1" 200 290
+INFO 2024-11-25 20:20:23,425 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
+INFO 2024-11-25 20:20:28,105 autoreload Watching for file changes with StatReloader

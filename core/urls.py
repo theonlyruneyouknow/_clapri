@@ -38,6 +38,8 @@ urlpatterns = [
     path('privacy-policy/', views.PrivacyPolicyView.as_view(), name='privacy'),
     path('terms-of-service/', views.TermsOfServiceView.as_view(), name='terms'),
     path('faq/', views.FAQView.as_view(), name='faq'),
+    path('chat/', views.ChatView.as_view(), name='chat'),
+    path('test-openai/', views.test_openai, name='test_openai'),
 
     
     # Admin URLs
