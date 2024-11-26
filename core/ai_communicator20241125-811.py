@@ -30,13 +30,13 @@ class AICommunicator:
             r'(?i).*price.*|.*cost.*|.*fee.*': """
                 For accurate pricing, we need to assess the specific property and service needed.
                 Please:
-                1. Call our office at (123) 456-7890 for a quote
+                1. Call our office at (541) 520-9552 for a quote
                 2. Schedule a consultation online
                 3. Or provide details about your property type and location
             """,
             r'(?i).*contact.*|.*phone.*|.*email.*': """
                 You can reach us through:
-                - Phone: (123) 456-7890
+                - Phone: (541) 520-9552
                 - Email: info@appraisalpro.com
                 - Office: 123 Main Street, City, State 12345
                 
@@ -48,7 +48,7 @@ class AICommunicator:
                 2. Use our online scheduling system
                 3. Choose your preferred date and time
                 
-                Or call us at (123) 456-7890 during business hours.
+                Or call us at (541) 520-9552 during business hours.
             """,
             r'(?i).*residential.*|.*house.*|.*home.*': """
                 Our residential appraisal services include:

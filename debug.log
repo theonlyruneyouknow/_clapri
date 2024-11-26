@@ -148,3 +148,165 @@ DEBUG 2024-11-25 20:17:39,086 views AI response: Hello! Welcome to Martin Apprai
 INFO 2024-11-25 20:17:39,086 basehttp "POST /chat/ HTTP/1.1" 200 290
 INFO 2024-11-25 20:20:23,425 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
 INFO 2024-11-25 20:20:28,105 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:20:34,659 basehttp "GET /appointments/ HTTP/1.1" 200 17884
+DEBUG 2024-11-25 20:20:41,646 views Received chat request
+DEBUG 2024-11-25 20:20:41,646 views User message: Hi
+DEBUG 2024-11-25 20:20:41,646 ai_communicator Initializing Enhanced AICommunicator
+DEBUG 2024-11-25 20:20:41,650 views AI response: 
+                Welcome! I'm here to help with your appraisal needs. I can provide information about:
+                • Our appraisal services and process
+                • Required documentation
+                • Timelines and scheduling
+                • Specific property types
+                
+                What would you like to know about?
+            
+INFO 2024-11-25 20:20:41,652 basehttp "POST /chat/ HTTP/1.1" 200 427
+DEBUG 2024-11-25 20:20:50,550 views Received chat request
+DEBUG 2024-11-25 20:20:50,550 views User message: How much does it cost
+DEBUG 2024-11-25 20:20:50,550 ai_communicator Initializing Enhanced AICommunicator
+DEBUG 2024-11-25 20:20:50,550 views AI response: 
+                Welcome! I'm here to help with your appraisal needs. I can provide information about:
+                • Our appraisal services and process
+                • Required documentation
+                • Timelines and scheduling
+                • Specific property types
+                
+                What would you like to know about?
+            
+INFO 2024-11-25 20:20:50,550 basehttp "POST /chat/ HTTP/1.1" 200 427
+DEBUG 2024-11-25 20:21:28,774 views Received chat request
+DEBUG 2024-11-25 20:21:28,774 views User message: what kind of service do you offer
+DEBUG 2024-11-25 20:21:28,774 ai_communicator Initializing Enhanced AICommunicator
+DEBUG 2024-11-25 20:21:28,774 views AI response: 
+                Welcome! I'm here to help with your appraisal needs. I can provide information about:
+                • Our appraisal services and process
+                • Required documentation
+                • Timelines and scheduling
+                • Specific property types
+                
+                What would you like to know about?
+            
+INFO 2024-11-25 20:21:28,780 basehttp "POST /chat/ HTTP/1.1" 200 427
+INFO 2024-11-25 20:27:46,039 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-25 20:27:47,544 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:28:24,795 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
+INFO 2024-11-25 20:28:26,265 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:30:32,681 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-25 20:30:34,326 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:30:51,000 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-25 20:30:52,454 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:31:09,183 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-11-25 20:31:10,715 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:31:14,699 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-11-25 20:31:16,314 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:31:22,432 basehttp "GET /appointments/ HTTP/1.1" 200 17884
+DEBUG 2024-11-25 20:31:33,111 views Received chat request
+DEBUG 2024-11-25 20:31:33,111 views User message: Hi
+DEBUG 2024-11-25 20:31:33,111 ai_communicator Initializing AI Communicator
+DEBUG 2024-11-25 20:31:33,111 ai_communicator Processing message 1 for session wdhad9y2yit240hb1pd0f6js6xo2nmqx
+DEBUG 2024-11-25 20:31:33,111 ai_communicator Current context: {'last_topic': None, 'interaction_count': 1, 'discussed_topics': set()}
+DEBUG 2024-11-25 20:31:33,111 views AI response: Hello! I'm your Appraisal Pro assistant. How can I help you today?
+                    I can provide information about our services, pricing, or help schedule an appointment.
+INFO 2024-11-25 20:31:33,129 basehttp "POST /chat/ HTTP/1.1" 200 212
+DEBUG 2024-11-25 20:31:55,241 views Received chat request
+DEBUG 2024-11-25 20:31:55,242 views User message: How long does the appraisal process take
+DEBUG 2024-11-25 20:31:55,242 ai_communicator Initializing AI Communicator
+DEBUG 2024-11-25 20:31:55,243 ai_communicator Processing message 1 for session wdhad9y2yit240hb1pd0f6js6xo2nmqx
+DEBUG 2024-11-25 20:31:55,243 ai_communicator Current context: {'last_topic': None, 'interaction_count': 1, 'discussed_topics': set()}
+DEBUG 2024-11-25 20:31:55,244 views AI response: I can help you with:
+                • Information about our appraisal services
+                • Pricing details
+                • Scheduling appointments
+                • Documentation requirements
+                
+                What would you like to know more about?
+INFO 2024-11-25 20:31:55,259 basehttp "POST /chat/ HTTP/1.1" 200 336
+DEBUG 2024-11-25 20:32:18,174 views Received chat request
+DEBUG 2024-11-25 20:32:18,174 views User message: How do I schedule an appointment
+DEBUG 2024-11-25 20:32:18,174 ai_communicator Initializing AI Communicator
+DEBUG 2024-11-25 20:32:18,179 ai_communicator Processing message 1 for session wdhad9y2yit240hb1pd0f6js6xo2nmqx
+DEBUG 2024-11-25 20:32:18,179 ai_communicator Current context: {'last_topic': None, 'interaction_count': 1, 'discussed_topics': set()}
+DEBUG 2024-11-25 20:32:18,179 ai_communicator Matched pattern: schedule
+DEBUG 2024-11-25 20:32:18,180 views AI response: To schedule an appraisal:
+                    
+                    1. Online Booking:
+                    • Log in to your account
+                    • Select "Request Appointment"
+                    • Choose available time slots
+                    
+                    2. Phone Booking:
+                    • Call (123) 456-7890
+                    • Available Mon-Fri 9AM-5PM
+                    
+                    Would you like me to explain the scheduling process?
+INFO 2024-11-25 20:32:18,195 basehttp "POST /chat/ HTTP/1.1" 200 549
+INFO 2024-11-25 20:32:48,059 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
+INFO 2024-11-25 20:32:49,487 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:33:02,901 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
+INFO 2024-11-25 20:33:04,358 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:33:08,345 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
+INFO 2024-11-25 20:33:09,909 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:33:30,701 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
+INFO 2024-11-25 20:33:32,463 autoreload Watching for file changes with StatReloader
+DEBUG 2024-11-25 20:34:05,220 views Received chat request
+DEBUG 2024-11-25 20:34:05,221 views User message: what is the phone number to call
+DEBUG 2024-11-25 20:34:05,221 ai_communicator Initializing AI Communicator
+DEBUG 2024-11-25 20:34:05,221 ai_communicator Processing message 1 for session wdhad9y2yit240hb1pd0f6js6xo2nmqx
+DEBUG 2024-11-25 20:34:05,222 ai_communicator Current context: {'last_topic': None, 'interaction_count': 1, 'discussed_topics': set()}
+DEBUG 2024-11-25 20:34:05,223 views AI response: I can help you with:
+                • Information about our appraisal services
+                • Pricing details
+                • Scheduling appointments
+                • Documentation requirements
+                
+                What would you like to know more about?
+INFO 2024-11-25 20:34:05,237 basehttp "POST /chat/ HTTP/1.1" 200 336
+DEBUG 2024-11-25 20:34:37,342 views Received chat request
+DEBUG 2024-11-25 20:34:37,342 views User message: What documentation do you need
+DEBUG 2024-11-25 20:34:37,342 ai_communicator Initializing AI Communicator
+DEBUG 2024-11-25 20:34:37,342 ai_communicator Processing message 1 for session wdhad9y2yit240hb1pd0f6js6xo2nmqx
+DEBUG 2024-11-25 20:34:37,342 ai_communicator Current context: {'last_topic': None, 'interaction_count': 1, 'discussed_topics': set()}
+DEBUG 2024-11-25 20:34:37,342 ai_communicator Matched pattern: services
+DEBUG 2024-11-25 20:34:37,342 views AI response: We offer comprehensive appraisal services including:
+                    
+                    1. Residential Appraisals:
+                    • Single-family homes
+                    • Condominiums
+                    • Multi-family properties
+                    
+                    2. Commercial Appraisals:
+                    • Office buildings
+                    • Retail spaces
+                    • Industrial properties
+                    
+                    3. Specialized Services:
+                    • Estate planning
+                    • Tax assessments
+                    • Legal proceedings
+                    
+                    Which type of service interests you?
+INFO 2024-11-25 20:34:37,363 basehttp "POST /chat/ HTTP/1.1" 200 788
+DEBUG 2024-11-25 20:36:00,806 views Received chat request
+DEBUG 2024-11-25 20:36:00,806 views User message: Can I schedule an appointment today
+DEBUG 2024-11-25 20:36:00,806 ai_communicator Initializing AI Communicator
+DEBUG 2024-11-25 20:36:00,806 ai_communicator Processing message 1 for session wdhad9y2yit240hb1pd0f6js6xo2nmqx
+DEBUG 2024-11-25 20:36:00,806 ai_communicator Current context: {'last_topic': None, 'interaction_count': 1, 'discussed_topics': set()}
+DEBUG 2024-11-25 20:36:00,806 ai_communicator Matched pattern: schedule
+DEBUG 2024-11-25 20:36:00,806 views AI response: To schedule an appraisal:
+                    
+                    1. Online Booking:
+                    • Log in to your account
+                    • Select "Request Appointment"
+                    • Choose available time slots
+                    
+                    2. Phone Booking:
+                    • Call (541) 520-9552
+                    • Available Mon-Fri 9AM-5PM
+                    
+                    Would you like me to explain the scheduling process?
+INFO 2024-11-25 20:36:00,828 basehttp "POST /chat/ HTTP/1.1" 200 549
+INFO 2024-11-25 20:38:56,701 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
+INFO 2024-11-25 20:38:58,006 autoreload Watching for file changes with StatReloader
+INFO 2024-11-25 20:42:27,951 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
+INFO 2024-11-25 20:42:29,434 autoreload Watching for file changes with StatReloader
