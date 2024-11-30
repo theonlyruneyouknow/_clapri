@@ -9,6 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables
 load_dotenv()
 
+# Port configuration
+PORT = int(os.getenv('PORT', 8000))
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 
@@ -22,7 +25,7 @@ AUTH0_CLIENT_SECRET = os.getenv('AUTH0_CLIENT_SECRET')
 AUTH0_CALLBACK_URL = os.getenv('AUTH0_CALLBACK_URL')
 AUTH0_AUDIENCE = os.getenv('AUTH0_AUDIENCE')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', '.onrender.com']
 
 # Application definition
 INSTALLED_APPS = [
