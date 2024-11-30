@@ -194,7 +194,7 @@ DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
 ADMIN_EMAIL = os.getenv('EMAIL_HOST_USER')
 
 # OpenAI settings
-OPENAI_API_KEY = env('OPENAI_API_KEY')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 # Add to settings.py
 
