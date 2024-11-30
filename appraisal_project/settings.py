@@ -1,32 +1,26 @@
 # appraisal_project/settings.py
 import os
 from pathlib import Path
-import environ
 from dotenv import load_dotenv
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Initialise environment variables
-env = environ.Env(
-    DEBUG=(bool, False)
-)
+# Load environment variables
+load_dotenv()
 
-# Read the .env file
-# environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-dotenv_path = r'C:\git\_clapri\.env'
-load_dotenv(dotenv_path, override=True)
-# Now you can access variables using env()
-SECRET_KEY = env('SECRET_KEY')
-DEBUG = env('DEBUG')
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Auth0 settings
-AUTH0_DOMAIN = env('AUTH0_DOMAIN')
-AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID')
-AUTH0_CLIENT_SECRET = env('AUTH0_CLIENT_SECRET')
-AUTH0_CALLBACK_URL = env('AUTH0_CALLBACK_URL')
-AUTH0_AUDIENCE = env('AUTH0_AUDIENCE')
+AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN')
+AUTH0_CLIENT_ID = os.getenv('AUTH0_CLIENT_ID')
+AUTH0_CLIENT_SECRET = os.getenv('AUTH0_CLIENT_SECRET')
+AUTH0_CALLBACK_URL = os.getenv('AUTH0_CALLBACK_URL')
+AUTH0_AUDIENCE = os.getenv('AUTH0_AUDIENCE')
 
 ALLOWED_HOSTS = ['*']
 
