@@ -399,3 +399,8 @@ INFO 2024-12-02 22:53:37,243 autoreload C:\git\_clapri\core\models\__init__.py c
 INFO 2024-12-02 22:53:38,798 autoreload Watching for file changes with StatReloader
 INFO 2024-12-02 22:53:40,771 autoreload C:\git\_clapri\core\models\__init__.py changed, reloading.
 INFO 2024-12-02 22:53:42,284 autoreload Watching for file changes with StatReloader
+INFO 2024-12-02 22:53:55,585 basehttp "GET /about/ HTTP/1.1" 200 15217
+INFO 2024-12-02 22:53:55,615 basehttp "GET /static/css/content_management.css HTTP/1.1" 304 0
+WARNING 2024-12-02 22:53:56,152 log Not Found: /favicon.ico
+WARNING 2024-12-02 22:53:56,152 basehttp "GET /favicon.ico HTTP/1.1" 404 11627
+INFO 2024-12-02 22:54:30,875 basehttp "GET /login/ HTTP/1.1" 302 0
