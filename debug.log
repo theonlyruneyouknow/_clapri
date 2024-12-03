@@ -310,3 +310,92 @@ INFO 2024-11-25 20:38:56,701 autoreload C:\git\_clapri\core\ai_communicator.py c
 INFO 2024-11-25 20:38:58,006 autoreload Watching for file changes with StatReloader
 INFO 2024-11-25 20:42:27,951 autoreload C:\git\_clapri\core\ai_communicator.py changed, reloading.
 INFO 2024-11-25 20:42:29,434 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 11:39:16,371 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 11:40:05,752 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 11:40:07,078 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 11:40:15,725 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 11:40:17,238 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 11:40:36,351 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 11:40:37,766 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 11:43:14,416 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 11:43:55,791 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-11-30 11:43:57,152 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 11:43:59,772 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-11-30 11:44:01,082 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 11:44:25,290 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 11:46:58,880 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:11:59,707 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:12:01,123 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:12:14,565 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:13:02,652 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:13:03,935 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:13:11,481 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:13:12,916 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:13:25,079 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:13:55,957 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:13:57,404 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:14:08,416 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:14:09,691 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:14:17,081 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:14:44,834 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:14:46,162 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:32:16,692 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:32:18,285 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:32:19,683 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:32:20,935 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:33:45,413 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:33:46,709 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:34:23,953 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:34:25,283 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:34:41,542 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:34:42,943 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:34:50,789 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:34:52,179 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:35:10,588 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:35:11,991 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:35:14,661 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:35:16,060 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:35:17,706 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:35:19,138 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:35:32,202 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:35:33,695 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:35:55,358 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:35:56,709 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:36:01,218 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:36:02,340 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:36:22,775 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:36:24,138 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:38:08,467 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:38:09,891 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:39:01,018 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-11-30 12:39:02,540 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:44:03,036 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-11-30 12:44:04,472 autoreload Watching for file changes with StatReloader
+INFO 2024-11-30 12:45:03,252 basehttp "GET / HTTP/1.1" 200 19778
+INFO 2024-11-30 12:45:03,382 basehttp "GET /static/css/content_management.css HTTP/1.1" 200 2024
+WARNING 2024-11-30 12:45:03,461 log Not Found: /favicon.ico
+WARNING 2024-11-30 12:45:03,462 basehttp "GET /favicon.ico HTTP/1.1" 404 11342
+INFO 2024-11-30 12:45:12,858 basehttp "GET /services/ HTTP/1.1" 200 17959
+INFO 2024-11-30 14:11:16,359 basehttp "GET /services/ HTTP/1.1" 200 17959
+INFO 2024-11-30 14:11:29,906 basehttp "GET /services/ HTTP/1.1" 200 17959
+INFO 2024-11-30 14:11:45,187 basehttp "GET /about/ HTTP/1.1" 200 15003
+INFO 2024-11-30 14:13:35,331 basehttp "GET /about/ HTTP/1.1" 200 15208
+INFO 2024-11-30 14:15:23,422 basehttp "GET /about/ HTTP/1.1" 200 15217
+INFO 2024-11-30 14:16:46,939 basehttp "GET /about/ HTTP/1.1" 200 15217
+INFO 2024-11-30 14:18:14,460 basehttp "GET /about/ HTTP/1.1" 200 15217
+INFO 2024-11-30 14:18:51,563 basehttp "GET /about/ HTTP/1.1" 200 15217
+INFO 2024-12-02 22:39:47,023 autoreload Watching for file changes with StatReloader
+INFO 2024-12-02 22:41:43,578 autoreload C:\git\_clapri\core\templatetags\Report_Generation_Methods.py changed, reloading.
+INFO 2024-12-02 22:41:44,913 autoreload Watching for file changes with StatReloader
+INFO 2024-12-02 22:42:08,731 autoreload Watching for file changes with StatReloader
+INFO 2024-12-02 22:43:58,848 autoreload C:\git\_clapri\core\models\__init__.py changed, reloading.
+INFO 2024-12-02 22:44:00,497 autoreload Watching for file changes with StatReloader
+INFO 2024-12-02 22:50:54,730 autoreload Watching for file changes with StatReloader
+INFO 2024-12-02 22:53:28,165 autoreload C:\git\_clapri\core\models\__init__.py changed, reloading.
+INFO 2024-12-02 22:53:29,985 autoreload Watching for file changes with StatReloader
+INFO 2024-12-02 22:53:31,430 autoreload C:\git\_clapri\core\models\__init__.py changed, reloading.
+INFO 2024-12-02 22:53:32,974 autoreload Watching for file changes with StatReloader
+INFO 2024-12-02 22:53:37,243 autoreload C:\git\_clapri\core\models\__init__.py changed, reloading.
+INFO 2024-12-02 22:53:38,798 autoreload Watching for file changes with StatReloader
+INFO 2024-12-02 22:53:40,771 autoreload C:\git\_clapri\core\models\__init__.py changed, reloading.
+INFO 2024-12-02 22:53:42,284 autoreload Watching for file changes with StatReloader

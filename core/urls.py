@@ -4,6 +4,7 @@
 from django.urls import path
 from . import views
 from . import admin_views
+from .views import AppraisalReportView
 
 app_name = 'core'
 
@@ -22,7 +23,7 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('callback/', views.callback, name='callback'),
-    path('appraisal/request/', views.AppraisalRequestView.as_view(), name='appraisal_request'),
+#     path('appraisal/request/', views.AppraisalRequestView.as_view(), name='appraisal_request'),
     path('appraisal/request/<str:request_id>/', views.AppraisalRequestDetailView.as_view(), name='appraisal_request_detail'),
     path('appraisal/<str:request_id>/schedule/', views.AppointmentScheduleView.as_view(), name='appointment_schedule'),
     path('appointments/', views.AppointmentListView.as_view(), name='appointments'),
@@ -40,6 +41,8 @@ urlpatterns = [
     path('faq/', views.FAQView.as_view(), name='faq'),
     path('chat/', views.ChatView.as_view(), name='chat'),
     path('test-openai/', views.test_openai, name='test_openai'),
+    path('chat/', views.ChatView.as_view(), name='chat'),
+    path('reports/<str:report_id>/', AppraisalReportView.as_view(), name='report_detail'),
 
     
     # Admin URLs

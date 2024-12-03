@@ -25,25 +25,8 @@ from django.views import View
 from .ai_communicator import AICommunicator
 import json
 import traceback
-from .models import AppraisalReport, InspectionChecklist, PhotoGallery
-from .services.report_generator import ReportGenerator
 
 logger = logging.getLogger(__name__)
-
-class AppraisalReportView(View):
-    template_name = 'appraisal_report.html'
-
-    def get(self, request, report_id):
-        report = get_object_or_404(AppraisalReport, id=report_id)
-        inspection = get_object_or_404(InspectionChecklist, appraisal_report=report)
-        gallery = PhotoGallery.objects.filter(appraisal_report=report).first()
-
-        context = {
-            'report': report,
-            'inspection': inspection,
-            'gallery': gallery
-        }
-        return render(request, self.template_name, context)
 
 # Keep only these existing views for now
 class HomeView(TemplateView):

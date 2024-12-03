@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% block title %}Appraisal Report #{{ report.report_number }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Report Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2">Appraisal Report #{{ report.report_number }}</h1>
+            <p class="text-muted">
+                {{ report.location.address }}, {{ report.location.city }}, {{ report.location.state }} {{ report.location.zip_code }}
+            </p>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary">
+                <i class="bi bi-file-pdf"></i> Export PDF
+            </button>
+            <button class="btn btn-outline-secondary">
+                <i class="bi bi-printer"></i> Print
+            </button>
+        </div>
+    </div>
+
+    <!-- Report Status Bar -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <span class="badge bg-{{ report.status_color }}">{{ report.status|title }}</span>
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted d-block">Inspection Date</small>
+                    {{ report.inspection_date|date:"F j, Y" }}
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted d-block">Report Date</small>
+                    {{ report.report_date|date:"F j, Y" }}
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted d-block">Appraiser</small>
+                    {{ report.appraiser }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Report Content -->
+        <div class="col-lg-8">
+            <!-- Property Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Property Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Property Type</small>
+                            {{ report.characteristics.property_type|title }}
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Year Built</small>
+                            {{ report.characteristics.year_built }}
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Square Footage</small>
+                            {{ report.characteristics.square_footage|floatformat:0 }} sq ft
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Lot Size</small>
+                            {{ report.characteristics.lot_size }}
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Bedrooms</small>
+                            {{ report.characteristics.bedrooms }}
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Bathrooms</small>
+                            {{ report.characteristics.bathrooms }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inspection Details -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Inspection Details</h5>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#photosModal">
+                        <i class="bi bi-images"></i> View Photos
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Inspection Tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#exterior">Exterior</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#interior">Interior</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#systems">Systems</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content pt-4">
+                        <!-- Exterior Tab -->
+                        <div class="tab-pane fade show active" id="exterior">
+                            {% if inspection.exterior %}
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <h6>Foundation</h6>
+                                        <p>Type: {{ inspection.exterior.foundation_type }}<br>
+                                        Condition: {{ inspection.exterior.foundation_condition|title }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Exterior Walls</h6>
+                                        <p>Type: {{ inspection.exterior.exterior_walls_type }}<br>
+                                        Condition: {{ inspection.exterior.exterior_walls_condition|title }}</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Interior Tab -->
+                        <div class="tab-pane fade" id="interior">
+                            {% if inspection.rooms %}
+                                {% for room in inspection.rooms %}
+                                    <div class="border-bottom mb-3 pb-3">
+                                        <h6>{{ room.room_type|title }}</h6>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <small class="text-muted d-block">Dimensions</small>
+                                                {{ room.dimensions }}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small class="text-muted d-block">Condition</small>
+                                                {{ room.condition|title }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <!-- Systems Tab -->
+                        <div class="tab-pane fade" id="systems">
+                            {% if inspection.systems %}
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <h6>Heating</h6>
+                                        <p>Type: {{ inspection.systems.heating_type }}<br>
+                                        Age: {{ inspection.systems.heating_age }} years<br>
+                                        Condition: {{ inspection.systems.heating_condition|title }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Cooling</h6>
+                                        <p>Type: {{ inspection.systems.cooling_type }}<br>
+                                        Age: {{ inspection.systems.cooling_age }} years<br>
+                                        Condition: {{ inspection.systems.cooling_condition|title }}</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Valuation -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Valuation</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center">
+                                <small class="text-muted d-block">Final Value</small>
+                                <h3 class="mb-0">${{ report.valuation.final_value|floatformat:0|intcomma }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center">
+                                <small class="text-muted d-block">Price per Sq Ft</small>
+                                <h3 class="mb-0">${{ report.get_price_per_sqft|floatformat:2|intcomma }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center">
+                                <small class="text-muted d-block">Value Date</small>
+                                <h3 class="mb-0">{{ report.valuation.value_date|date:"m/d/Y" }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Client Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Client Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Client:</strong> {{ report.client_name }}</p>
+                    <p><strong>Reference:</strong> {{ report.client_reference }}</p>
+                    <p><strong>Intended Use:</strong> {{ report.intended_use }}</p>
+                </div>
+            </div>
+
+            <!-- Comparables Summary -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Comparables</h5>
+                </div>
+                <div class="card-body">
+                    {% with comp_summary=report.get_comparable_summary %}
+                        {% if comp_summary %}
+                            <div class="mb-3">
+                                <small class="text-muted d-block">Number of Comparables</small>
+                                <h4 class="mb-0">{{ comp_summary.count }}</h4>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted d-block">Price Range</small>
+                                <h4 class="mb-0">${{ comp_summary.min_price|floatformat:0|intcomma }} - ${{ comp_summary.max_price|floatformat:0|intcomma }}</h4>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No comparables available</p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Photos Modal -->
+<div class="modal fade" id="photosModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Property Photos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    {% for photo in gallery.photos %}
+                        <div class="col-md-4">
+                            <div class="card">
+                                <img src="{{ photo.photo_url }}" class="card-img-top" alt="{{ photo.description }}">
+                                <div class="card-body">
+                                    <p class="card-text">{{ photo.description }}</p>
+                                    <small class="text-muted">{{ photo.photo_type|title }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+});
+
+// Print functionality
+document.querySelector('.btn-print').addEventListener('click', function() {
+    window.print();
+});
+</script>
+{% endblock %}
