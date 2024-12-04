@@ -4,6 +4,7 @@
 from mongoengine import Document, StringField, DateTimeField, BooleanField, EmailField, IntField, FloatField, DecimalField, ListField, ReferenceField
 from datetime import datetime
 from django import forms
+from django.utils import timezone
 # from .models import UserProfile, AppraisalRequest
 
 
@@ -113,6 +114,7 @@ class AppraisalRequest(Document):
     status = StringField(required=True, choices=STATUS_CHOICES, default='pending')
     preferred_date = DateTimeField()
     alternate_date = DateTimeField()
+    created_at = DateTimeField(default=timezone.now)  # Use timezone.now instead of datetime.now
     notes = StringField()
     documents = ListField(StringField())  # URLs to uploaded documents
     created_at = DateTimeField(default=datetime.now)
@@ -132,12 +134,11 @@ class AppraisalRequest(Document):
     }
 
     def save(self, *args, **kwargs):
-        if not self.request_id:
-            # Generate a unique request ID
-            year = str(datetime.now().year)[2:]
-            count = AppraisalRequest.objects.count() + 1
-            self.request_id = f'APR{year}-{count:04d}'
-        self.updated_at = datetime.now()
+        # Ensure timezone awareness when saving
+        if self.preferred_date and timezone.is_naive(self.preferred_date):
+            self.preferred_date = timezone.make_aware(self.preferred_date)
+        if self.alternate_date and timezone.is_naive(self.alternate_date):
+            self.alternate_date = timezone.make_aware(self.alternate_date)
         return super(AppraisalRequest, self).save(*args, **kwargs)
 
     @property

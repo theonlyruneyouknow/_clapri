@@ -4,7 +4,7 @@
 from django.urls import path
 from . import views
 from . import admin_views
-from .views import AppraisalReportView
+from .views import AppraisalReportView, AppraisalListView
 
 app_name = 'core'
 
@@ -43,6 +43,11 @@ urlpatterns = [
     path('test-openai/', views.test_openai, name='test_openai'),
     path('chat/', views.ChatView.as_view(), name='chat'),
     path('reports/<str:report_id>/', AppraisalReportView.as_view(), name='report_detail'),
+    path('appraisals/', AppraisalListView.as_view(), name='appraisal_list'),
+    path('appraisals/<str:report_id>/', AppraisalReportView.as_view(), name='report_detail'),
+#     path('appraisals/', AppraisalListView.as_view(), name='appraisal_list'),
+#     path('appraisals/<str:report_id>/', AppraisalReportView.as_view(), name='report_detail'),
+
 
     
     # Admin URLs

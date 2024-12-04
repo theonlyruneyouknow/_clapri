@@ -199,6 +199,8 @@ ADMIN_EMAIL = os.getenv('EMAIL_HOST_USER')
 # OpenAI settings
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
+
+
 # Add to settings.py
 
 LOGGING = {
@@ -233,7 +235,25 @@ LOGGING = {
         },
     },
 }
-
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'core': {  # Add this section
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -241,3 +261,5 @@ CACHES = {
 }
 
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:5000']
+
+

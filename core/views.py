@@ -3,6 +3,7 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, TemplateView, FormView, ListView
 from django.views.generic.edit import FormView
 from django.urls import reverse
@@ -27,24 +28,173 @@ import json
 import traceback
 from .models import AppraisalReport, InspectionChecklist, PhotoGallery
 from .services.report_generator import ReportGenerator
+from django.utils import timezone
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
-class AppraisalReportView(View):
-    template_name = 'appraisal_report.html'
+class AppraisalReportView(LoginRequiredMixin, View):
+    template_name = 'core/reports/appraisal_report.html'
 
     def get(self, request, report_id):
-        report = get_object_or_404(AppraisalReport, id=report_id)
-        inspection = get_object_or_404(InspectionChecklist, appraisal_report=report)
-        gallery = PhotoGallery.objects.filter(appraisal_report=report).first()
+        try:
+            report = get_object_or_404(AppraisalReport, id=report_id)
+            inspection = get_object_or_404(InspectionChecklist, appraisal_report=report)
+            gallery = PhotoGallery.objects.filter(appraisal_report=report).first()
 
-        context = {
-            'report': report,
-            'inspection': inspection,
-            'gallery': gallery
-        }
-        return render(request, self.template_name, context)
+            context = {
+                'user': get_auth0_user(request),
+                'report': report,
+                'inspection': inspection,
+                'gallery': gallery
+            }
+            return render(request, self.template_name, context)
+        except Exception as e:
+            messages.error(request, f"Error loading report: {str(e)}")
+            return redirect('core:dashboard')
+        
 
+class AppraisalListView(LoginRequiredMixin, View):
+    template_name = 'core/appraisal_list.html'
+
+    def get(self, request):
+        try:
+            reports = AppraisalReport.objects.order_by('-created_at')
+            context = {
+                'user': get_auth0_user(request),
+                'reports': reports
+            }
+            return render(request, self.template_name, context)
+        except Exception as e:
+            messages.error(request, f"Error loading reports: {str(e)}")
+            return redirect('core:dashboard')
+
+class AppraisalRequestView(FormView):
+    template_name = 'core/appraisal_request.html'
+    form_class = AppraisalRequestForm
+    success_url = '/dashboard/'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        user = get_auth0_user(self.request)
+        
+        try:
+            # Get current time with timezone awareness
+            now = timezone.now()
+            
+            # Create timezone aware min and max dates
+            min_schedule_date = now + timedelta(days=1)
+            max_schedule_date = now + timedelta(days=90)
+
+            # Create base appraisal request without dates first
+            appraisal_request = AppraisalRequest(
+                user_id=user['sub'],
+                property_address=form.cleaned_data['property_address'],
+                property_city=form.cleaned_data['property_city'],
+                property_state=form.cleaned_data['property_state'],
+                property_zip=form.cleaned_data['property_zip'],
+                property_type=form.cleaned_data['property_type'],
+                square_footage=form.cleaned_data['square_footage'],
+                year_built=form.cleaned_data['year_built'],
+                bedrooms=form.cleaned_data['bedrooms'],
+                bathrooms=form.cleaned_data['bathrooms'],
+                lot_size=form.cleaned_data['lot_size'],
+                purpose=form.cleaned_data['purpose'],
+                notes=form.cleaned_data['notes'],
+                status='pending',
+                created_at=now
+            )
+
+            # Get dates from form
+            preferred_date = form.cleaned_data.get('preferred_date')
+            alternate_date = form.cleaned_data.get('alternate_date')
+
+            # Log the dates for debugging
+            logger.debug(f"Preferred date before timezone: {preferred_date}")
+            logger.debug(f"Alternate date before timezone: {alternate_date}")
+
+            # Make dates timezone aware if they exist
+            if preferred_date:
+                try:
+                    if timezone.is_naive(preferred_date):
+                        preferred_date = timezone.make_aware(
+                            preferred_date, 
+                            timezone=timezone.get_current_timezone()
+                        )
+                    # Log timezone-aware date
+                    logger.debug(f"Preferred date after timezone: {preferred_date}")
+                    
+                    # Compare dates
+                    if preferred_date < min_schedule_date:
+                        messages.error(self.request, 'Please schedule appointments at least 24 hours in advance.')
+                        return self.form_invalid(form)
+                    if preferred_date > max_schedule_date:
+                        messages.error(self.request, 'Please schedule appointments within 90 days from today.')
+                        return self.form_invalid(form)
+                        
+                    appraisal_request.preferred_date = preferred_date
+                except Exception as e:
+                    logger.error(f"Error processing preferred date: {str(e)}")
+                    messages.error(self.request, 'Invalid preferred date format.')
+                    return self.form_invalid(form)
+
+            if alternate_date:
+                try:
+                    if timezone.is_naive(alternate_date):
+                        alternate_date = timezone.make_aware(
+                            alternate_date, 
+                            timezone=timezone.get_current_timezone()
+                        )
+                    # Log timezone-aware date
+                    logger.debug(f"Alternate date after timezone: {alternate_date}")
+                    
+                    # Compare dates
+                    if alternate_date < min_schedule_date:
+                        messages.error(self.request, 'Please schedule alternate appointments at least 24 hours in advance.')
+                        return self.form_invalid(form)
+                    if alternate_date > max_schedule_date:
+                        messages.error(self.request, 'Please schedule alternate appointments within 90 days from today.')
+                        return self.form_invalid(form)
+                        
+                    appraisal_request.alternate_date = alternate_date
+                except Exception as e:
+                    logger.error(f"Error processing alternate date: {str(e)}")
+                    messages.error(self.request, 'Invalid alternate date format.')
+                    return self.form_invalid(form)
+
+            # Compare dates if both exist
+            if preferred_date and alternate_date:
+                try:
+                    if preferred_date.date() == alternate_date.date():
+                        messages.error(self.request, 'Please select different dates for preferred and alternate appointments.')
+                        return self.form_invalid(form)
+                except Exception as e:
+                    logger.error(f"Error comparing dates: {str(e)}")
+                    messages.error(self.request, 'Error comparing dates.')
+                    return self.form_invalid(form)
+
+            # Save the request
+            appraisal_request.save()
+            messages.success(self.request, 'Your appraisal request has been submitted successfully!')
+            return super().form_valid(form)
+
+        except Exception as e:
+            logger.error(f"Error creating appraisal request: {str(e)}")
+            messages.error(
+                self.request,
+                'There was an error processing your request. Please try again or contact support.'
+            )
+            return self.form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        return context
+    
+    
 # Keep only these existing views for now
 class HomeView(TemplateView):
     template_name = 'core/home.html'
@@ -163,7 +313,19 @@ class ServicesView(TemplateView):
         return context
     
     
+class AppraisalListView(LoginRequiredMixin, ListView):
+    template_name = 'core/appraisal_list.html'
+    context_object_name = 'reports'
+    
+    def get_queryset(self):
+        return AppraisalReport.objects.filter(
+            appraiser=self.request.user.name
+        ).order_by('-created_at')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        return context
 
 class ProfileView(TemplateView):
     template_name = 'core/profile.html'
@@ -265,39 +427,78 @@ class AppraisalRequestView(FormView):
     success_url = '/dashboard/'
 
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         user = get_auth0_user(self.request)
         
-        appraisal_request = AppraisalRequest(
-            user_id=user['sub'],
-            property_address=form.cleaned_data['property_address'],
-            property_city=form.cleaned_data['property_city'],
-            property_state=form.cleaned_data['property_state'],
-            property_zip=form.cleaned_data['property_zip'],
-            property_type=form.cleaned_data['property_type'],
-            square_footage=form.cleaned_data['square_footage'],
-            year_built=form.cleaned_data['year_built'],
-            bedrooms=form.cleaned_data['bedrooms'],
-            bathrooms=form.cleaned_data['bathrooms'],
-            lot_size=form.cleaned_data['lot_size'],
-            purpose=form.cleaned_data['purpose'],
-            preferred_date=form.cleaned_data['preferred_date'],
-            alternate_date=form.cleaned_data['alternate_date'],
-            notes=form.cleaned_data['notes']
-        )
-        appraisal_request.save()
+        try:
+            # Get current time with timezone awareness
+            now = timezone.now()
+            min_schedule_date = now + timedelta(days=1)
+            max_schedule_date = now + timedelta(days=90)
+
+            # Convert form dates to timezone-aware
+            preferred_date = form.cleaned_data.get('preferred_date')
+            alternate_date = form.cleaned_data.get('alternate_date')
+
+            if preferred_date:
+                preferred_date = timezone.make_aware(preferred_date) if timezone.is_naive(preferred_date) else preferred_date
+                if preferred_date < min_schedule_date:
+                    messages.error(self.request, 'Please schedule appointments at least 24 hours in advance.')
+                    return self.form_invalid(form)
+                if preferred_date > max_schedule_date:
+                    messages.error(self.request, 'Please schedule appointments within 90 days from today.')
+                    return self.form_invalid(form)
+
+            if alternate_date:
+                alternate_date = timezone.make_aware(alternate_date) if timezone.is_naive(alternate_date) else alternate_date
+                if alternate_date < min_schedule_date:
+                    messages.error(self.request, 'Please schedule appointments at least 24 hours in advance.')
+                    return self.form_invalid(form)
+                if alternate_date > max_schedule_date:
+                    messages.error(self.request, 'Please schedule appointments within 90 days from today.')
+                    return self.form_invalid(form)
+                
+                # Ensure alternate date is different from preferred date
+                if preferred_date and alternate_date.date() == preferred_date.date():
+                    messages.error(self.request, 'Please select different dates for preferred and alternate appointments.')
+                    return self.form_invalid(form)
+
+            # Create appraisal request
+            appraisal_request = AppraisalRequest(
+                user_id=user['sub'],
+                property_address=form.cleaned_data['property_address'],
+                property_city=form.cleaned_data['property_city'],
+                property_state=form.cleaned_data['property_state'],
+                property_zip=form.cleaned_data['property_zip'],
+                property_type=form.cleaned_data['property_type'],
+                square_footage=form.cleaned_data['square_footage'],
+                year_built=form.cleaned_data['year_built'],
+                bedrooms=form.cleaned_data['bedrooms'],
+                bathrooms=form.cleaned_data['bathrooms'],
+                lot_size=form.cleaned_data['lot_size'],
+                purpose=form.cleaned_data['purpose'],
+                preferred_date=preferred_date,
+                alternate_date=alternate_date,
+                notes=form.cleaned_data['notes'],
+                status='pending',
+                created_at=now
+            )
+            
+            appraisal_request.save()
+            messages.success(self.request, 'Your appraisal request has been submitted successfully!')
+            return super().form_valid(form)
+
+        except Exception as e:
+            logger.error(f"Error creating appraisal request: {str(e)}")
+            messages.error(
+                self.request,
+                'There was an error processing your request. Please try again or contact support.'
+            )
+            return self.form_invalid(form)
         
-        messages.success(self.request, 'Your appraisal request has been submitted successfully!')
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = get_auth0_user(self.request)
-        return context
-
 class TestimonialsView(TemplateView):
     template_name = 'core/testimonials.html'
 

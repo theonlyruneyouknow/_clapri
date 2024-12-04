@@ -404,3 +404,682 @@ INFO 2024-12-02 22:53:55,615 basehttp "GET /static/css/content_management.css HT
 WARNING 2024-12-02 22:53:56,152 log Not Found: /favicon.ico
 WARNING 2024-12-02 22:53:56,152 basehttp "GET /favicon.ico HTTP/1.1" 404 11627
 INFO 2024-12-02 22:54:30,875 basehttp "GET /login/ HTTP/1.1" 302 0
+INFO 2024-12-03 06:41:56,581 basehttp "GET /about/ HTTP/1.1" 200 15217
+INFO 2024-12-03 06:41:58,807 basehttp "GET /login/ HTTP/1.1" 302 0
+INFO 2024-12-03 06:42:31,390 autoreload C:\git\_clapri\run.py changed, reloading.
+INFO 2024-12-03 06:42:33,047 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 06:43:26,686 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 06:43:31,608 basehttp "GET /about/ HTTP/1.1" 200 15217
+INFO 2024-12-03 06:43:31,635 basehttp "GET /static/css/content_management.css HTTP/1.1" 304 0
+WARNING 2024-12-03 06:43:32,127 log Not Found: /favicon.ico
+WARNING 2024-12-03 06:43:32,128 basehttp "GET /favicon.ico HTTP/1.1" 404 11627
+INFO 2024-12-03 06:43:33,760 basehttp "GET /login/ HTTP/1.1" 302 0
+INFO 2024-12-03 06:43:36,216 basehttp "GET /callback/?code=2Z9229iojzdYmQTa6Mu7xZ281TIVyxtDA8Va1e4kdXSPu&state=YGQwOTAmqCXWYKjM0nGild9n9cEW9l HTTP/1.1" 302 0
+INFO 2024-12-03 06:43:36,393 basehttp "GET / HTTP/1.1" 200 22902
+INFO 2024-12-03 06:51:16,473 basehttp "GET /dashboard/ HTTP/1.1" 200 21906
+ERROR 2024-12-03 06:53:07,153 log Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\utils\auth.py", line 33, in decorated_function
+    return f(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\core\views.py", line 225, in get
+    return render(request, self.template_name, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'appraisal_list' not found. 'appraisal_list' is not a valid view function or pattern name.
+ERROR 2024-12-03 06:53:07,166 basehttp "GET /dashboard/ HTTP/1.1" 500 217356
+ERROR 2024-12-03 06:53:12,953 log Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'appraisal_list' not found. 'appraisal_list' is not a valid view function or pattern name.
+ERROR 2024-12-03 06:53:12,962 basehttp "GET / HTTP/1.1" 500 187881
+INFO 2024-12-03 06:53:29,504 basehttp "GET /login/ HTTP/1.1" 302 0
+INFO 2024-12-03 06:53:31,201 basehttp "GET /callback/?code=87b92PlHeJZNIICmqwATzwg76xbg0ZOCySiS2ftx7mp2h&state=TPxMApFIM5iH6dFkGsvFFxyNivdPU3 HTTP/1.1" 302 0
+ERROR 2024-12-03 06:53:31,417 log Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'appraisal_list' not found. 'appraisal_list' is not a valid view function or pattern name.
+ERROR 2024-12-03 06:53:31,426 basehttp "GET / HTTP/1.1" 500 188260
+ERROR 2024-12-03 06:56:20,055 log Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'appraisal_list' not found. 'appraisal_list' is not a valid view function or pattern name.
+ERROR 2024-12-03 06:56:20,063 basehttp "GET / HTTP/1.1" 500 188428
+ERROR 2024-12-03 06:56:26,155 log Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'appraisal_list' not found. 'appraisal_list' is not a valid view function or pattern name.
+ERROR 2024-12-03 06:56:26,163 basehttp "GET / HTTP/1.1" 500 188428
+ERROR 2024-12-03 06:56:36,286 log Internal Server Error: /about/
+Traceback (most recent call last):
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'appraisal_list' not found. 'appraisal_list' is not a valid view function or pattern name.
+ERROR 2024-12-03 06:56:36,295 basehttp "GET /about/ HTTP/1.1" 500 188341
+INFO 2024-12-03 06:56:49,759 autoreload Watching for file changes with StatReloader
+ERROR 2024-12-03 06:56:58,140 log Internal Server Error: /about/
+Traceback (most recent call last):
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 1008, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\base.py", line 969, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\git\_clapri\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'appraisal_list' not found. 'appraisal_list' is not a valid view function or pattern name.
+ERROR 2024-12-03 06:56:58,152 basehttp "GET /about/ HTTP/1.1" 500 188341
+INFO 2024-12-03 06:57:37,837 basehttp "GET /about/ HTTP/1.1" 200 18036
+INFO 2024-12-03 06:57:43,066 basehttp "GET /dashboard/ HTTP/1.1" 200 22224
+INFO 2024-12-03 06:59:24,865 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-12-03 06:59:26,494 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 06:59:29,185 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-12-03 06:59:30,741 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 06:59:51,916 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-12-03 06:59:53,312 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 06:59:57,216 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-12-03 06:59:58,621 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 07:00:14,376 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-12-03 07:00:15,920 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 07:01:24,567 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-12-03 07:01:26,125 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 08:20:13,491 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-12-03 08:20:18,997 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 08:20:24,581 basehttp "GET /dashboard/ HTTP/1.1" 302 0
+INFO 2024-12-03 08:20:24,606 basehttp "GET /login?returnTo=/dashboard/ HTTP/1.1" 301 0
+INFO 2024-12-03 08:20:24,625 basehttp "GET /login/?returnTo=/dashboard/ HTTP/1.1" 302 0
+INFO 2024-12-03 08:20:27,091 basehttp "GET /callback/?code=1dx6qXHczciiHCYGb8GR30WiAj3DO97nE1UH_j8yrcm7d&state=0jwlKph99GxlHqervCkQdX8N8hlvfg HTTP/1.1" 302 0
+INFO 2024-12-03 08:20:28,420 basehttp "GET /dashboard/ HTTP/1.1" 200 24247
+INFO 2024-12-03 08:20:32,801 basehttp "GET /dashboard/ HTTP/1.1" 200 23895
+INFO 2024-12-03 08:23:20,133 basehttp "GET /dashboard/ HTTP/1.1" 200 24067
+INFO 2024-12-03 08:23:26,736 basehttp "GET /appraisal/request/ HTTP/1.1" 200 24381
+INFO 2024-12-03 08:25:48,420 basehttp "GET /appraisal/request/APR24-0001/ HTTP/1.1" 200 16462
+INFO 2024-12-03 08:25:52,888 basehttp "GET /dashboard/ HTTP/1.1" 200 24067
+INFO 2024-12-03 08:26:03,058 basehttp "GET /appointments/ HTTP/1.1" 200 20316
+INFO 2024-12-03 08:26:11,491 basehttp "GET /appraisal/request/APR24-0001/ HTTP/1.1" 200 16462
+INFO 2024-12-03 08:26:14,043 basehttp "GET /dashboard/ HTTP/1.1" 200 24067
+INFO 2024-12-03 09:52:42,365 basehttp "GET /content/ HTTP/1.1" 200 25895
+INFO 2024-12-03 09:52:47,392 basehttp "GET /login/ HTTP/1.1" 302 0
+INFO 2024-12-03 09:52:48,998 basehttp "GET /callback/?code=_zGUGbkL2kqfLCk0UwYW_zML8H8l0UwwuM2YByljOjNAM&state=5aAHzJ2ikRjzeTGaGeFhHmzJeMd62F HTTP/1.1" 302 0
+INFO 2024-12-03 09:52:49,182 basehttp "GET / HTTP/1.1" 200 23220
+INFO 2024-12-03 09:52:53,749 basehttp "GET /content/ HTTP/1.1" 200 28362
+INFO 2024-12-03 09:53:12,807 basehttp "GET /appointments/ HTTP/1.1" 200 20316
+INFO 2024-12-03 09:53:35,777 basehttp "GET /appraisal/request/APR24-0001/ HTTP/1.1" 200 16462
+INFO 2024-12-03 09:53:40,075 basehttp "GET /dashboard/ HTTP/1.1" 200 24067
+INFO 2024-12-03 09:53:50,814 basehttp "GET /appraisal/request/ HTTP/1.1" 200 24381
+INFO 2024-12-03 09:55:00,000 basehttp "GET /dashboard/ HTTP/1.1" 200 24067
+INFO 2024-12-03 10:23:21,504 basehttp "GET /appraisal/request/ HTTP/1.1" 302 0
+INFO 2024-12-03 10:23:21,513 basehttp "GET /login?returnTo=/appraisal/request/ HTTP/1.1" 301 0
+INFO 2024-12-03 10:23:21,535 basehttp "GET /login/?returnTo=/appraisal/request/ HTTP/1.1" 302 0
+INFO 2024-12-03 10:23:23,485 basehttp "GET /callback/?code=CPZ9JvkOESFbr2HmNcrlqOJce89ZT25lflHCW95iqCMSo&state=y6QlmrMwpyzxFnOYbeYdJbd0K2O2LO HTTP/1.1" 302 0
+INFO 2024-12-03 10:23:23,718 basehttp "GET /appraisal/request/ HTTP/1.1" 200 24733
+ERROR 2024-12-03 10:30:36,877 views Error creating appraisal request: can't compare offset-naive and offset-aware datetimes
+INFO 2024-12-03 10:30:37,041 basehttp "POST /appraisal/request/ HTTP/1.1" 200 25271
+ERROR 2024-12-03 10:30:56,052 views Error creating appraisal request: can't compare offset-naive and offset-aware datetimes
+INFO 2024-12-03 10:30:56,218 basehttp "POST /appraisal/request/ HTTP/1.1" 200 25271
+ERROR 2024-12-03 10:31:22,024 views Error creating appraisal request: can't compare offset-naive and offset-aware datetimes
+INFO 2024-12-03 10:31:22,187 basehttp "POST /appraisal/request/ HTTP/1.1" 200 25275
+ERROR 2024-12-03 10:31:35,699 views Error creating appraisal request: can't compare offset-naive and offset-aware datetimes
+INFO 2024-12-03 10:31:35,865 basehttp "POST /appraisal/request/ HTTP/1.1" 200 25275
+ERROR 2024-12-03 10:31:41,259 views Error creating appraisal request: can't compare offset-naive and offset-aware datetimes
+INFO 2024-12-03 10:31:41,470 basehttp "POST /appraisal/request/ HTTP/1.1" 200 25275
+INFO 2024-12-03 10:35:41,136 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-12-03 10:35:42,923 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:36:37,179 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-12-03 10:36:38,779 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:37:58,990 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:38:00,507 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:38:31,533 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:38:32,858 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:38:42,071 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:38:43,614 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:39:19,463 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:39:21,089 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:40:05,383 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:40:06,875 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:40:28,256 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:40:29,831 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:40:32,660 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:40:34,031 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:40:36,698 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:40:38,241 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:40:51,167 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:40:52,507 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:41:14,861 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:41:16,300 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:41:32,529 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:41:34,193 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:45:09,628 autoreload Watching for file changes with StatReloader
+ERROR 2024-12-03 10:45:15,431 views Error creating appraisal request: can't compare offset-naive and offset-aware datetimes
+INFO 2024-12-03 10:45:15,969 basehttp "POST /appraisal/request/ HTTP/1.1" 200 25275
+ERROR 2024-12-03 10:45:34,374 views Error creating appraisal request: can't compare offset-naive and offset-aware datetimes
+INFO 2024-12-03 10:45:34,543 basehttp "POST /appraisal/request/ HTTP/1.1" 200 25275
+INFO 2024-12-03 10:48:16,117 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:48:17,686 autoreload Watching for file changes with StatReloader
+ERROR 2024-12-03 10:48:35,518 views Error creating appraisal request: 'property_address'
+INFO 2024-12-03 10:48:36,038 basehttp "POST /appraisal/request/ HTTP/1.1" 200 23413
+INFO 2024-12-03 10:49:08,274 basehttp "GET /appraisal/request/ HTTP/1.1" 200 22663
+INFO 2024-12-03 10:49:24,337 basehttp "GET /appraisal/request/ HTTP/1.1" 200 22663
+INFO 2024-12-03 10:49:28,845 basehttp "GET / HTTP/1.1" 200 22868
+INFO 2024-12-03 10:49:31,695 basehttp "GET /appointments/ HTTP/1.1" 200 20316
+INFO 2024-12-03 10:49:36,791 basehttp "GET /appraisal/request/ HTTP/1.1" 200 22663
+INFO 2024-12-03 10:51:03,685 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:51:05,304 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:52:30,967 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:52:32,550 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:52:35,681 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 10:52:37,145 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 10:53:21,100 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-12-03 10:53:22,829 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 11:38:47,026 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-12-03 11:38:48,744 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 11:47:52,689 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 11:47:54,155 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 11:48:08,975 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 11:48:10,537 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 11:50:36,250 autoreload C:\git\_clapri\appraisal_project\settings.py changed, reloading.
+INFO 2024-12-03 11:50:37,804 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 11:50:47,222 autoreload C:\git\_clapri\appraisal_project\settings.py changed, reloading.
+INFO 2024-12-03 11:50:48,611 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 12:57:05,017 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-12-03 12:57:06,820 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 12:57:08,659 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-12-03 12:57:10,042 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 12:57:29,404 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-12-03 12:57:30,886 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 12:57:35,010 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-12-03 12:57:36,617 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 12:58:12,704 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-12-03 12:58:14,433 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 12:58:18,654 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-12-03 12:58:20,265 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 12:58:22,254 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-12-03 12:58:23,796 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 12:59:40,659 autoreload C:\git\_clapri\core\urls.py changed, reloading.
+INFO 2024-12-03 12:59:42,323 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 13:00:14,637 basehttp "GET /appraisal/request/ HTTP/1.1" 302 0
+INFO 2024-12-03 13:00:14,646 basehttp "GET /login?returnTo=/appraisal/request/ HTTP/1.1" 301 0
+INFO 2024-12-03 13:00:14,664 basehttp "GET /login/?returnTo=/appraisal/request/ HTTP/1.1" 302 0
+INFO 2024-12-03 13:00:17,040 basehttp "GET /callback/?code=EYzLDBvW5V3YiyIhiT0GcPkdWb33KluWlygFktxBs9fSH&state=txERtQaHLa3furKCK1mAwzzLyWWJ2m HTTP/1.1" 302 0
+INFO 2024-12-03 13:00:18,316 basehttp "GET /appraisal/request/ HTTP/1.1" 200 22923
+INFO 2024-12-03 15:31:51,587 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 15:31:53,229 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 15:32:02,179 basehttp "GET /appraisal/request/ HTTP/1.1" 302 0
+INFO 2024-12-03 15:32:02,191 basehttp "GET /login?returnTo=/appraisal/request/ HTTP/1.1" 301 0
+INFO 2024-12-03 15:32:02,210 basehttp "GET /login/?returnTo=/appraisal/request/ HTTP/1.1" 302 0
+INFO 2024-12-03 15:32:04,546 basehttp "GET /callback/?code=27kRxkPIfLhzt_-SmNaSzHAYNZkyU8q4DoY8RuqWE14BL&state=MQsnIMOOQrLxF1Dtd28gBNhB33NzSq HTTP/1.1" 302 0
+INFO 2024-12-03 15:32:05,770 basehttp "GET /appraisal/request/ HTTP/1.1" 200 24402
+ERROR 2024-12-03 15:32:55,162 views Error creating appraisal request: can't compare offset-naive and offset-aware datetimes
+INFO 2024-12-03 15:32:55,326 basehttp "POST /appraisal/request/ HTTP/1.1" 200 24936
+INFO 2024-12-03 15:35:45,013 autoreload C:\git\_clapri\core\views.py changed, reloading.
+INFO 2024-12-03 15:35:46,761 autoreload Watching for file changes with StatReloader
+INFO 2024-12-03 15:36:21,642 autoreload C:\git\_clapri\core\forms.py changed, reloading.
+INFO 2024-12-03 15:36:23,137 autoreload Watching for file changes with StatReloader
+ERROR 2024-12-03 15:36:39,275 views Error creating appraisal request: can't compare offset-naive and offset-aware datetimes
+INFO 2024-12-03 15:36:39,733 basehttp "POST /appraisal/request/ HTTP/1.1" 200 24936
+WARNING 2024-12-03 15:36:52,787 log Not Found: /appraisal
+WARNING 2024-12-03 15:36:52,788 basehttp "GET /appraisal HTTP/1.1" 404 12176
+INFO 2024-12-03 15:36:57,875 basehttp "GET /about/ HTTP/1.1" 200 17684
+INFO 2024-12-03 15:37:01,889 basehttp "GET /appraisal/request/ HTTP/1.1" 200 24050
+ERROR 2024-12-03 15:37:39,528 views Error creating appraisal request: can't compare offset-naive and offset-aware datetimes
+INFO 2024-12-03 15:37:39,688 basehttp "POST /appraisal/request/ HTTP/1.1" 200 24936
+INFO 2024-12-03 17:24:55,481 basehttp "POST /appraisal/request/ HTTP/1.1" 302 0
+INFO 2024-12-03 17:24:55,490 basehttp "GET /login?returnTo=/appraisal/request/ HTTP/1.1" 301 0
+INFO 2024-12-03 17:24:55,527 basehttp "GET /login/?returnTo=/appraisal/request/ HTTP/1.1" 302 0
+INFO 2024-12-03 17:24:57,933 basehttp "GET /callback/?code=3MSoWTgMwPExTImjAzxdvxJg3_BxpuY7wtvTmaLgbJhAe&state=5uyxNJp9Y8MYigTgbNsapehhcn1Jhi HTTP/1.1" 302 0
+INFO 2024-12-03 17:24:58,539 basehttp "GET /appraisal/request/ HTTP/1.1" 200 24402
+INFO 2024-12-03 17:25:16,847 basehttp "GET /appraisal/request/ HTTP/1.1" 200 24050
+INFO 2024-12-03 17:25:20,573 basehttp "GET /dashboard/ HTTP/1.1" 200 24067
+INFO 2024-12-03 17:25:27,349 basehttp "GET /appraisal/request/ HTTP/1.1" 200 24050
+ERROR 2024-12-03 17:26:06,764 views Error creating appraisal request: can't compare offset-naive and offset-aware datetimes
+INFO 2024-12-03 17:26:06,941 basehttp "POST /appraisal/request/ HTTP/1.1" 200 24936
+INFO 2024-12-04 06:43:10,408 autoreload C:\git\_clapri\appraisal_project\settings.py changed, reloading.

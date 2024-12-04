@@ -87,104 +87,79 @@ class ProfileForm(forms.Form):
 class AppraisalRequestForm(forms.Form):
     property_address = forms.CharField(
         max_length=200,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Street Address'
-        })
+        widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     property_city = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'City'
-        })
+        widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     property_state = forms.CharField(
         max_length=50,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'State'
-        })
+        widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     property_zip = forms.CharField(
         max_length=10,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'ZIP Code'
-        })
+        widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     property_type = forms.ChoiceField(
-        choices=AppraisalRequest.PROPERTY_TYPES,
-        widget=forms.Select(attrs={
-            'class': 'form-control'
-        })
+        choices=[
+            ('residential', 'Residential'),
+            ('commercial', 'Commercial'),
+            ('land', 'Land'),
+            ('multi_family', 'Multi-Family')
+        ],
+        widget=forms.Select(attrs={'class': 'form-control'})
     )
     square_footage = forms.IntegerField(
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Square Footage'
-        })
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
     year_built = forms.IntegerField(
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Year Built'
-        })
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
     bedrooms = forms.IntegerField(
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Number of Bedrooms'
-        })
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
     bathrooms = forms.FloatField(
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'step': '0.5',
-            'placeholder': 'Number of Bathrooms'
-        })
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.5'})
     )
     lot_size = forms.CharField(
         required=False,
-        max_length=50,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Lot Size (e.g., 0.25 acres)'
-        })
-    )
-    purpose = forms.CharField(
-        widget=forms.Textarea(attrs={
-            'class': 'form-control',
-            'rows': 3,
-            'placeholder': 'Purpose of Appraisal'
-        })
+        widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     preferred_date = forms.DateTimeField(
         required=False,
         widget=forms.DateTimeInput(attrs={
             'class': 'form-control',
             'type': 'datetime-local'
-        })
+        }),
+        input_formats=['%Y-%m-%dT%H:%M']
     )
+    
     alternate_date = forms.DateTimeField(
         required=False,
         widget=forms.DateTimeInput(attrs={
             'class': 'form-control',
             'type': 'datetime-local'
+        }),
+        input_formats=['%Y-%m-%dT%H:%M']
+    )
+    purpose = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3
         })
     )
     notes = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={
             'class': 'form-control',
-            'rows': 3,
-            'placeholder': 'Additional Notes'
+            'rows': 3
         })
     )
-
+    
 class TestimonialForm(forms.Form):
     title = forms.CharField(
         max_length=100,
