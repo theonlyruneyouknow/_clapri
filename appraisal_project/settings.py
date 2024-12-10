@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'core',  # Make sure 'core' is listed here
     'content_management',  # Add this line
     'utils',
+    'leads',
 ]
 
 MIDDLEWARE = [
@@ -161,7 +162,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Los_Angeles'
 USE_I18N = True
 USE_TZ = True
 
@@ -262,4 +263,25 @@ CACHES = {
 
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:5000']
 
+# Lead Management Settings
+LEAD_MANAGEMENT = {
+    'AUTO_FOLLOWUP_DAYS': 7,  # Days before automatic follow-up
+    'LEAD_EXPIRY_DAYS': 90,   # Days until a lead is considered expired
+    'DEFAULT_LEAD_OWNER': 'admin@example.com',  # Default owner for new leads
+    'NOTIFICATION_EMAILS': ['manager@example.com'],  # Emails to notify for new leads
+}
 
+# Email Settings (if not already configured)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'your-smtp-server.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@example.com'
+EMAIL_HOST_PASSWORD = 'your-email-password'
+DEFAULT_FROM_EMAIL = 'Appraisal Pro <noreply@example.com>'
+ADMIN_EMAIL = 'admin@example.com'
+
+# Company Information (used in email templates)
+COMPANY_NAME = "Martin Appraisal Company"
+COMPANY_PHONE = "541 520-9552"
+COMPANY_ADDRESS = "123 Main Street, City, State 12345"

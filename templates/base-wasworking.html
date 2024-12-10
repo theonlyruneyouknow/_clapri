@@ -1,0 +1,237 @@
+{# File: templates/base.html #}
+{# Location: C:\git\_clapri\templates\base.html #}
+
+{% load static %}
+{% load custom_filters %}
+<!-- {% include 'core/chat_widget.html' %} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Martin Appraisal Co{% endblock %}</title>
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static 'css/content_management.css' %}">
+    <style>
+        .form-label.required::after {
+            content: " *";
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .star-rating {
+            color: #ffc107;
+            font-size: 1.1rem;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-building"></i> Martin Appraisal Co
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" 
+                           href="{% url 'core:home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" 
+                           href="{% url 'core:about' %}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}" 
+                           href="{% url 'core:services' %}">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'testimonials' %}active{% endif %}" 
+                           href="{% url 'core:testimonials' %}">Testimonials</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" 
+                           href="{% url 'core:contact' %}">Contact Us</a>
+                    </li>
+                    {% if user %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'appointments' %}active{% endif %}" 
+                           href="{% url 'core:appointments' %}">Appointments</a>
+                    </li>
+                    {% endif %}
+                    {% if not user %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" 
+                           href="{% url 'core:login' %}">
+                           <i class="bi bi-calendar-check"></i> Log in here for Appointment Request
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" 
+                               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if user.picture %}
+                                    <img src="{{ user.picture }}" alt="{{ user.name }}" 
+                                         class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                                {% else %}
+                                    <i class="bi bi-person-circle me-2"></i>
+                                {% endif %}
+                                {{ user.name }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core:dashboard' %}">
+                                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                                    </a>
+                                </li>
+                                <!-- <li>
+                                    <a class="dropdown-item" href="{ % url 'core:appraisal_list' % }">
+                                        <i class="bi bi-file-text"></i> Appraisal Reports
+                                    </a>
+                                </li> -->
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core:profile' %}">
+                                        <i class="bi bi-person me-2"></i>Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core:appraisal_request' %}">
+                                        <i class="bi bi-calendar-check"></i> Appointment Request
+                                    </a>
+                                </li>
+                                {% if user.is_admin or user|get:'/app_metadata'|get:'is_admin' %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'content_management:content_list' %}">
+                                            <i class="bi bi-pencil-square me-2"></i>Content Management
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core:logout' %}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'core:login' %}">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                            </a>
+                        </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+      <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5>Martin Appraisal Co.</h5>
+                    <p class="text-muted">
+                        Professional appraisal services you can trust. Licensed and certified in residential 
+                        and commercial property valuation.
+                    </p>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'core:home' %}">Home</a></li>
+                        <li><a href="{% url 'core:about' %}">About Us</a></li>
+                        <li><a href="{% url 'core:services' %}">Services</a></li>
+                        <li><a href="{% url 'core:contact' %}">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Services</h5>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'core:services' %}#residential">Residential Appraisals</a></li>
+                        <li><a href="{% url 'core:services' %}#commercial">Commercial Appraisals</a></li>
+                        <li><a href="{% url 'core:services' %}#consulting">Consulting Services</a></li>
+                        <li><a href="{% url 'core:services' %}#estate">Estate Valuations</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5>Legal</h5>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'core:privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'core:terms' %}">Terms of Service</a></li>
+                        <li><a href="{% url 'core:faq' %}">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- <div class="footer-bottom text-center">
+                <div class="social-links mb-3">
+                    <a href="#" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" target="_blank" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" target="_blank" title="Twitter"><i class="bi bi-twitter"></i></a>
+                </div>
+                <p class="text-muted mb-0">
+                    © {% now "Y" %} Martin Appraisal Co. All rights reserved.<br>
+                    <small>Licensed and certified in the state of Washington</small>
+                </p>
+            </div> -->
+        </div>
+    </footer>
+    <footer class="bg-light mt-5 py-4">
+        <div class="container">
+            <div class="text-center text-muted">
+                <div class="social-links mb-3">
+                    <a href="#" target="_blank" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" target="_blank" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" target="_blank" title="Twitter"><i class="bi bi-twitter"></i></a>
+                </div>
+                <p class="text-muted mb-0">
+                    © {% now "Y" %} Martin Appraisal Co. All rights reserved.<br>
+                    <small>Licensed and certified in the state of Oregon</small>
+                </p>
+                <!-- <small>&copy; {% now "Y" %} Martin Appraisal Co. All rights reserved.</small> -->
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script> window.chtlConfig = { chatbotId: "9136524743" } </script>
+<script async data-id="9136524743" id="chatling-embed-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

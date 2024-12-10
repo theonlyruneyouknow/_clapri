@@ -1,11 +1,43 @@
 # File: core/models.py
 # Location: C:\git\_clapri\core\models.py
 
-from mongoengine import Document, StringField, DateTimeField, BooleanField, EmailField, IntField, FloatField, DecimalField, ListField, ReferenceField
+from mongoengine import Document, StringField, DateTimeField, BooleanField, EmailField, IntField, FloatField, DecimalField, ListField, ReferenceField, DateField
 from datetime import datetime
 from django import forms
 from django.utils import timezone
 # from .models import UserProfile, AppraisalRequest
+
+class TimeSlot(Document):
+    SLOT_CHOICES = [
+        ('morning', '8:00 AM - 11:00 AM'),
+        ('afternoon1', '12:00 PM - 3:00 PM'),
+        ('afternoon2', '3:00 PM - 6:00 PM')
+    ]
+
+    date = DateField(required=True)
+    slot = StringField(required=False, choices=SLOT_CHOICES)
+    is_available = BooleanField(default=True)
+    appraisal_request = ReferenceField('AppraisalRequest')
+    created_at = DateTimeField(default=datetime.now)
+    updated_at = DateTimeField(default=datetime.now)
+
+    meta = {
+        'collection': 'time_slots',
+        'indexes': [
+            {'fields': ['date', 'slot'], 'unique': True},
+            'is_available'
+        ]
+    }
+
+    @classmethod
+    def get_available_slots(cls, start_date, end_date):
+        return cls.objects(
+            date__gte=start_date,
+            date__lte=end_date,
+            is_available=True
+        ).order_by('date', 'slot')
+
+
 
 
 class Appointment(Document):
@@ -110,16 +142,16 @@ class AppraisalRequest(Document):
     bedrooms = IntField()
     bathrooms = FloatField()
     lot_size = StringField()
-    purpose = StringField(required=True)
+    purpose = StringField(required=False)
     status = StringField(required=True, choices=STATUS_CHOICES, default='pending')
-    preferred_date = DateTimeField()
-    alternate_date = DateTimeField()
-    created_at = DateTimeField(default=timezone.now)  # Use timezone.now instead of datetime.now
+    # preferred_date = DateTimeField()
+    # alternate_date = DateTimeField()
+    created_at = DateTimeField(default=datetime.now)
+    updated_at = DateTimeField(default=datetime.now)  # Use timezone.now instead of datetime.now
     notes = StringField()
     documents = ListField(StringField())  # URLs to uploaded documents
-    created_at = DateTimeField(default=datetime.now)
-    updated_at = DateTimeField(default=datetime.now)
-    scheduled_date = DateTimeField()
+    
+    scheduled_date = DateField()
     assigned_appraiser = StringField()
     estimated_value = DecimalField()
     
@@ -133,13 +165,6 @@ class AppraisalRequest(Document):
         ]
     }
 
-    def save(self, *args, **kwargs):
-        # Ensure timezone awareness when saving
-        if self.preferred_date and timezone.is_naive(self.preferred_date):
-            self.preferred_date = timezone.make_aware(self.preferred_date)
-        if self.alternate_date and timezone.is_naive(self.alternate_date):
-            self.alternate_date = timezone.make_aware(self.alternate_date)
-        return super(AppraisalRequest, self).save(*args, **kwargs)
 
     @property
     def status_color(self):

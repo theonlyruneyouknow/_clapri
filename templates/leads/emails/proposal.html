@@ -1,0 +1,80 @@
+{# File: templates/leads/emails/proposal.html #}
+{# Location: C:\git\_clapri\templates\leads\emails\proposal.html #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Appraisal Proposal - {{ company_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .proposal-details {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <p>Dear {{ lead.first_name }},</p>
+        
+        <p>Thank you for considering {{ company_name }} for your appraisal needs. I'm pleased to provide you with our proposal.</p>
+        
+        <div class="proposal-details">
+            <h2>Proposal Overview</h2>
+            <ul>
+                <li><strong>Property Type:</strong> {{ proposal_details.property_type }}</li>
+                <li><strong>Service Type:</strong> {{ proposal_details.service_type }}</li>
+                <li><strong>Estimated Timeline:</strong> {{ proposal_details.timeline }}</li>
+                <li><strong>Investment:</strong> {{ proposal_details.price }}</li>
+            </ul>
+        </div>
+        
+        <p>This proposal includes:</p>
+        <ul>
+            {% for item in proposal_details.included_items %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+        
+        <a href="{{ proposal_url }}" class="cta-button">View Full Proposal</a>
+        
+        <p>If you have any questions about the proposal or would like to proceed, please don't hesitate to contact me directly.</p>
+        
+        <p>Best regards,<br>
+        {{ author.get_full_name }}<br>
+        {{ company_name }}<br>
+        {{ company_phone }}</p>
+    </div>
+    
+    <div class="footer">
+        <p>This proposal is valid for {{ proposal_details.valid_days }} days from the date of this email.</p>
+    </div>
+</body>
+</html>

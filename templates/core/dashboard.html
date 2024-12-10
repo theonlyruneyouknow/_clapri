@@ -176,6 +176,12 @@
                                         </td>
                                     </tr>
                                     {% endfor %}
+
+                                    {% if request.status == 'pending' %}
+                                        <a href="{% url 'core:schedule_selection' request_id=request.request_id %}" class="btn btn-sm btn-primary">
+                                            Schedule
+                                        </a>
+                                    {% endif %}
                                 </tbody>
                             </table>
                         </div>

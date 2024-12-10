@@ -4,7 +4,37 @@
 from django import forms
 from django.utils import timezone
 from datetime import datetime, timedelta
-from .models import AppraisalRequest
+import pytz
+from .models import AppraisalRequest, TimeSlot
+
+
+class ScheduleSelectionForm(forms.Form):
+    appointment_date = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'min': (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d'),
+            'max': (datetime.now() + timedelta(days=90)).strftime('%Y-%m-%d')
+        })
+    )
+    
+    time_slot = forms.ChoiceField(
+        choices=TimeSlot.SLOT_CHOICES,
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        })
+    )
+
+    def clean_appointment_date(self):
+        date = self.cleaned_data['appointment_date']
+        if date < datetime.now().date() + timedelta(days=1):
+            raise forms.ValidationError("Please select a date at least 1 day in advance")
+        if date > datetime.now().date() + timedelta(days=90):
+            raise forms.ValidationError("Please select a date within 90 days")
+        if date.weekday() >= 5:  # Weekend
+            raise forms.ValidationError("Please select a weekday (Monday-Friday)")
+        return date
+
 
 class ContactForm(forms.Form):
     name = forms.CharField(
@@ -129,23 +159,48 @@ class AppraisalRequestForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
-    preferred_date = forms.DateTimeField(
-        required=False,
-        widget=forms.DateTimeInput(attrs={
+    purpose = forms.CharField(  # Make sure this field exists and is required
+        required=False,  # Explicitly mark as required
+        widget=forms.Textarea(attrs={
             'class': 'form-control',
-            'type': 'datetime-local'
-        }),
-        input_formats=['%Y-%m-%dT%H:%M']
+            'rows': 3,
+            'placeholder': 'Please describe the purpose of this appraisal'
+        })
     )
+    appointment_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
+    )
+    time_slot = forms.ChoiceField(
+        required=False,
+        choices=[
+            ('', 'Select a time slot'),
+            ('morning', 'Morning: 8:00 AM - 11:00 AM'),
+            ('afternoon1', 'Early Afternoon: 12:00 PM - 3:00 PM'),
+            ('afternoon2', 'Late Afternoon: 3:00 PM - 6:00 PM')
+        ],
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        })
+    )
+    notes = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3,
+            'placeholder': 'Enter any special requirements or preferred times if the available slots don\'t work for you.'
+        })
+    )
+
     
-    alternate_date = forms.DateTimeField(
-        required=False,
-        widget=forms.DateTimeInput(attrs={
-            'class': 'form-control',
-            'type': 'datetime-local'
-        }),
-        input_formats=['%Y-%m-%dT%H:%M']
-    )
+    
+
+
+
+
     purpose = forms.CharField(
         widget=forms.Textarea(attrs={
             'class': 'form-control',
@@ -159,7 +214,17 @@ class AppraisalRequestForm(forms.Form):
             'rows': 3
         })
     )
-    
+    def clean_appointment_date(self):
+        date = self.cleaned_data.get('appointment_date')
+        if date:
+            if date < datetime.now().date() + timedelta(days=1):
+                raise forms.ValidationError("Please select a date at least 1 day in advance")
+            if date > datetime.now().date() + timedelta(days=90):
+                raise forms.ValidationError("Please select a date within 90 days")
+            if date.weekday() >= 5:  # Weekend
+                raise forms.ValidationError("Please select a weekday (Monday-Friday)")
+        return date
+
 class TestimonialForm(forms.Form):
     title = forms.CharField(
         max_length=100,

@@ -1,7 +1,7 @@
 # File: core/urls.py
 # Location: C:\git\_clapri\core\urls.py
 
-from django.urls import path
+from django.urls import path, include
 from . import views
 from . import admin_views
 from .views import AppraisalReportView, AppraisalListView
@@ -45,9 +45,12 @@ urlpatterns = [
     path('reports/<str:report_id>/', AppraisalReportView.as_view(), name='report_detail'),
     path('appraisals/', AppraisalListView.as_view(), name='appraisal_list'),
     path('appraisals/<str:report_id>/', AppraisalReportView.as_view(), name='report_detail'),
+    path('appraisal/<str:request_id>/schedule/', views.ScheduleSelectionView.as_view(), name='schedule_selection'),
 #     path('appraisals/', AppraisalListView.as_view(), name='appraisal_list'),
 #     path('appraisals/<str:report_id>/', AppraisalReportView.as_view(), name='report_detail'),
-
+    path('debug/content/<str:page_type>/', views.ContentDebugView.as_view(), name='content_debug'),
+    path('leads/', include('leads.urls')),
+    path('content/', include('content_management.urls', namespace='content_management')),
 
     
     # Admin URLs

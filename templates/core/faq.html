@@ -6,28 +6,40 @@
 {% block title %}Frequently Asked Questions - Martin Appraisal Co.{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h1 class="mb-4">Frequently Asked Questions</h1>
-            
-            <div class="accordion" id="faqAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
-                            What is an appraisal?
-                        </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            An appraisal is a professional opinion of value based on thorough research, analysis, and the appraiser's judgment.
+<div class="container py-4">
+    {% if page_content %}
+        <div class="content-body">
+            {{ page_content.content|safe }}
+        </div>
+    {% else %}
+        {# Debug information #}
+        {% if user.is_admin %}
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h1 class="mb-4">Frequently Asked Questions</h1>
+                    
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                    What is an appraisal?
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    An appraisal is a professional opinion of value based on thorough research, analysis, and the appraiser's judgment.
+                                </div>
+                            </div>
                         </div>
+        
+                        <!-- Add more FAQ items as needed -->
                     </div>
                 </div>
-
-                <!-- Add more FAQ items as needed -->
             </div>
         </div>
-    </div>
+        {% endif %}
+    {% endif %}
 </div>
+
 {% endblock %}

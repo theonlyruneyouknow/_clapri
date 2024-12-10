@@ -2,138 +2,54 @@
 {# Location: C:\git\_clapri\templates\core\services.html #}
 
 {% extends 'base.html' %}
-{% load custom_filters %}
 
-{% block title %}Our Services - Martin Appraisal Co{% endblock %}
+{% block title %}Services - Martin Appraisal Co{% endblock %}
 
 {% block content %}
 <div class="container py-4">
     {% if page_content %}
-        {{ page_content.content|safe }}
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <!-- <h1 class="display-4 mb-4">{{ page_content.title }}</h1> -->
+                <div class="content-body">
+                    {{ page_content.content|safe }}
+                </div>
+            </div>
+        </div>
     {% else %}
-    <div class="row mb-5">
-        <div class="col-lg-12 text-center">
-            <h1 class="display-4 mb-4">Our Services</h1>
-            <p class="lead">Comprehensive appraisal services tailored to your needs</p>
+        <!-- Default content if no dynamic content is available -->
+        <div class="row mb-5">
+            <div class="col-lg-12 text-center">
+                <h1 class="display-4">About Martin Appraisal Co</h1>
+                <p class="lead">Professional appraisal services with over 20 years of experience.</p>
+            </div>
         </div>
-    </div>
 
-    <div class="row g-4">
-        <!-- Residential Appraisals Card -->
-        <div class="col-lg-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="display-4 text-primary mb-3">
-                        <i class="bi bi-house-door"></i>
+        <div class="row mb-5">
+            <div class="col-lg-6">
+                <h2>Our Story</h2>
+                <p>Founded in 2003, Martin Appraisal Co has been providing professional and reliable appraisal services 
+                   to clients across the region. Our commitment to accuracy, integrity, and customer service has 
+                   made us a trusted name in the industry.</p>
+                <p>We combine years of experience with modern technology to deliver accurate, timely, and 
+                   comprehensive appraisal services.</p>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title">Why Choose Us?</h3>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">✓ 20+ Years of Experience</li>
+                            <li class="mb-2">✓ Certified Professional Appraisers</li>
+                            <li class="mb-2">✓ Quick Turnaround Time</li>
+                            <li class="mb-2">✓ Competitive Pricing</li>
+                            <li>✓ Modern Technology Integration</li>
+                        </ul>
                     </div>
-                    <h3 class="card-title">Residential Appraisals</h3>
-                    <p class="text-muted mb-4">Comprehensive valuation services for:</p>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <i class="bi bi-check2 text-success"></i>
-                            Single-Family Homes
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check2 text-success"></i>
-                            Condominiums
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check2 text-success"></i>
-                            Multi-Family Units
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check2 text-success"></i>
-                            New Construction
-                        </li>
-                    </ul>
-                    <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary mt-3">
-                        Request Appraisal
-                    </a>
                 </div>
             </div>
         </div>
-
-        <!-- Commercial Appraisals Card -->
-        <div class="col-lg-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="display-4 text-primary mb-3">
-                        <i class="bi bi-building"></i>
-                    </div>
-                    <h3 class="card-title">Commercial Appraisals</h3>
-                    <p class="text-muted mb-4">Expert valuation services for:</p>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <i class="bi bi-check2 text-success"></i>
-                            Office Buildings
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check2 text-success"></i>
-                            Retail Properties
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check2 text-success"></i>
-                            Industrial Facilities
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check2 text-success"></i>
-                            Mixed-Use Properties
-                        </li>
-                    </ul>
-                    <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary mt-3">
-                        Request Appraisal
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Specialized Services Card -->
-        <div class="col-lg-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="display-4 text-primary mb-3">
-                        <i class="bi bi-diagram-3"></i>
-                    </div>
-                    <h3 class="card-title">Specialized Services</h3>
-                    <p class="text-muted mb-4">Additional professional services:</p>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <i class="bi bi-check2 text-success"></i>
-                            Estate Planning
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check2 text-success"></i>
-                            Tax Assessment Review
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check2 text-success"></i>
-                            Property Tax Appeals
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check2 text-success"></i>
-                            Investment Analysis
-                        </li>
-                    </ul>
-                    <a href="{% url 'core:contact' %}" class="btn btn-primary mt-3">
-                        Contact Us
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Call to Action Section -->
-    <div class="row mt-5">
-        <div class="col-12">
-            <div class="bg-light p-5 rounded text-center">
-                <h2 class="mb-4">Ready to Get Started?</h2>
-                <p class="lead mb-4">Contact us today for a consultation and quote.</p>
-                <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary btn-lg">
-                    Request an Appraisal
-                </a>
-            </div>
-        </div>
-    </div>
     {% endif %}
 </div>
 {% endblock %}

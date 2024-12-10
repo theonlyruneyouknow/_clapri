@@ -109,10 +109,9 @@ class AppraisalRequest(Document):
     bedrooms = IntField()
     bathrooms = FloatField()
     lot_size = StringField()
-    purpose = StringField(required=True)
+    purpose = StringField(required=False)
     status = StringField(required=True, choices=STATUS_CHOICES, default='pending')
-    preferred_date = DateTimeField()
-    alternate_date = DateTimeField()
+
     notes = StringField()
     documents = ListField(StringField())  # URLs to uploaded documents
     created_at = DateTimeField(default=datetime.now)

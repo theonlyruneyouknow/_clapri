@@ -21,6 +21,11 @@
                         <i class="bi bi-calendar-plus me-2"></i>Schedule Appointment
                     </a>
                 {% endif %}
+                {% if request.status == 'pending' %}
+                    <a href="{% url 'core:schedule_selection' request_id=request.request_id %}" class="btn btn-primary">
+                        <i class="bi bi-calendar"></i> Schedule Appointment date and timeslot
+                    </a>
+                {% endif %}
             </div>
         </div>
 

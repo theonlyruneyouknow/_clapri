@@ -1,0 +1,67 @@
+{# File: templates/leads/emails/follow_up.html #}
+{# Location: C:\git\_clapri\templates\leads\emails\follow_up.html #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Following Up - {{ company_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <p>Hello {{ lead.first_name }},</p>
+        
+        <p>I hope this email finds you well. I'm following up regarding your interest in our appraisal services.</p>
+        
+        {% if custom_message %}
+        <p>{{ custom_message }}</p>
+        {% else %}
+        <p>We're currently scheduling appraisals for the coming weeks and would be happy to find a time that works best for you.</p>
+        {% endif %}
+        
+        <p>Would you like to:</p>
+        <ul>
+            <li>Schedule your appraisal?</li>
+            <li>Discuss our services in more detail?</li>
+            <li>Get a quote for your specific needs?</li>
+        </ul>
+        
+        <p>You can reach me directly at:</p>
+        <ul>
+            <li>Phone: {{ company_phone }}</li>
+            <li>Email: {{ author.email }}</li>
+        </ul>
+        
+        <p>Looking forward to hearing from you.</p>
+        
+        <p>Best regards,<br>
+        {{ author.get_full_name }}<br>
+        {{ company_name }}</p>
+    </div>
+    
+    <div class="footer">
+        <p>{{ company_name }} | {{ company_phone }}</p>
+    </div>
+</body>
+</html>

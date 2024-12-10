@@ -113,24 +113,52 @@
                             </div>
                         </div>
 
-                        <h6 class="mb-3">Scheduling</h6>
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-6">
-                                <label for="{{ form.preferred_date.id_for_label }}" class="form-label">Preferred Date & Time</label>
-                                {{ form.preferred_date }}
-                                {% if form.preferred_date.errors %}
-                                    <div class="invalid-feedback d-block">{{ form.preferred_date.errors|join:", " }}</div>
-                                {% endif %}
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Schedule Your Appraisal</h5>
                             </div>
-
-                            <div class="col-md-6">
-                                <label for="{{ form.alternate_date.id_for_label }}" class="form-label">Alternate Date & Time</label>
-                                {{ form.alternate_date }}
-                                {% if form.alternate_date.errors %}
-                                    <div class="invalid-feedback d-block">{{ form.alternate_date.errors|join:", " }}</div>
-                                {% endif %}
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <label for="appointment_date" class="form-label">Select Date</label>
+                                    <input type="date" 
+                                           id="appointment_date" 
+                                           name="appointment_date" 
+                                           class="form-control"
+                                           min="{{ min_date|date:'Y-m-d' }}"
+                                           max="{{ max_date|date:'Y-m-d' }}"
+                                           required>
+                                    <small class="text-muted">Please select a weekday (Monday-Friday)</small>
+                                </div>
+                        
+                                <div class="mb-4">
+                                    <label for="time_slot" class="form-label">Available Time Slots</label>
+                                    <select id="time_slot" name="time_slot" class="form-control" required>
+                                        <option value="">Select a time slot</option>
+                                        <option value="morning">Morning: 8:00 AM - 11:00 AM</option>
+                                        <option value="afternoon1">Early Afternoon: 12:00 PM - 3:00 PM</option>
+                                        <option value="afternoon2">Late Afternoon: 3:00 PM - 6:00 PM</option>
+                                    </select>
+                                </div>
+                        
+                                <div class="alert alert-info">
+                                    <p class="mb-2">If none of these times work for you, please note your preferred time in the Additional Notes section below, and we'll contact you to arrange a suitable time.</p>
+                                </div>
                             </div>
                         </div>
+                        
+                        <!-- Additional Notes section -->
+                        <div class="mb-4">
+                            <label for="notes" class="form-label">Additional Notes</label>
+                            <textarea id="notes" 
+                                      name="notes" 
+                                      class="form-control" 
+                                      rows="3"
+                                      placeholder="Enter any special requirements or preferred times if the available slots don't work for you."
+                            >{{ form.notes.value|default:'' }}</textarea>
+                        </div>
+
+
+                        
 
                         <h6 class="mb-3">Additional Information</h6>
                         <div class="mb-4">
@@ -187,4 +215,32 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set minimum dates for both date pickers to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const maxDate = new Date();
+    maxDate.setDate(maxDate.getDate() + 90);
+
+    // Format date to YYYY-MM-DDThh:mm
+    const formatDateForInput = (date) => {
+        return date.toISOString().slice(0, 16);
+    };
+
+    // Set min and max for both date inputs
+    const dateInputs = document.querySelectorAll('input[type="datetime-local"]');
+    dateInputs.forEach(input => {
+        input.min = formatDateForInput(tomorrow);
+        input.max = formatDateForInput(maxDate);
+    });
+
+    // Add change event listeners to ensure alternate date is different from preferred
+
+ 
+});
+</script>
 {% endblock %}

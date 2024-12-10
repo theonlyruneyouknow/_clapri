@@ -1,18 +1,19 @@
-from .core_models import UserProfile, AppraisalRequest, Testimonial, Appointment
+from .user_profile import UserProfile
+from .appraisal_request import AppraisalRequest
+from .testimonial import Testimonial
+from .appointment import Appointment
+from .time_slot import TimeSlot
+from .appraisal_report import AppraisalReport
+from .inspection_checklist import InspectionChecklist
+from .photo_gallery import PhotoGallery
 
-# Import new models
-from .appraisal import AppraisalReport
-from .inspection import InspectionChecklist
-from .photo import PhotoGallery, PropertyPhoto
-
-# Make all models available at the package level
 __all__ = [
     'UserProfile',
     'AppraisalRequest',
     'Testimonial',
+    'Appointment',
+    'TimeSlot',
     'AppraisalReport',
     'InspectionChecklist',
-    'PhotoGallery',
-    'PropertyPhoto',
-    'Appointment'
+    'PhotoGallery'
 ]

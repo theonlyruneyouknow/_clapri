@@ -1,36 +1,22 @@
 {# File: templates/core/privacy_policy.html #}
-{# Location: C:\git\_clapri\templates\core\privacy_policy.html #}
-
 {% extends 'base.html' %}
-
-{% block title %}Privacy Policy - Martin Appraisal Co.{% endblock %}
+{% block title %}Privacy Policy - Appraisal Pro{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h1 class="mb-4">Privacy Policy</h1>
-            <p class="lead mb-4">Last updated: {% now "F j, Y" %}</p>
-
-            <h2 class="h4 mb-3">Information We Collect</h2>
-            <p>We collect information that you provide directly to us when you:</p>
-            <ul>
-                <li>Request an appraisal</li>
-                <li>Create an account</li>
-                <li>Contact us</li>
-                <li>Submit property information</li>
-            </ul>
-
-            <!-- Add more sections as needed -->
-
-            <h2 class="h4 mb-3 mt-4">Contact Us</h2>
-            <p>If you have any questions about this Privacy Policy, please contact us at:</p>
-            <ul>
-                <li>Email: jezuko9552@gmail.com</li>
-                <li>Phone: (541) 520-9552</li>
-                <li>Address: PO BOX 26254, Eugene, OR 97402</li>
-            </ul>
+<div class="container py-4">
+    {% if page_content %}
+        <div class="content-body">
+            {{ page_content.content|safe }}
         </div>
-    </div>
+    {% else %}
+        {# Debug information #}
+        {% if user.is_admin %}
+            <div class="alert alert-warning">
+                <h4>No Active Content Found</h4>
+                <p>No active Privacy Policy content is currently available.</p>
+                <p>Page Type: privacy</p>
+            </div>
+        {% endif %}
+    {% endif %}
 </div>
 {% endblock %}

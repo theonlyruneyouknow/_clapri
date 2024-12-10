@@ -11,11 +11,13 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.utils.decorators import method_decorator
+from django.http import HttpResponseForbidden
 from urllib.parse import quote, urlencode
 from utils.auth import oauth, login_required, get_auth0_user
-from .models import UserProfile, AppraisalRequest, Testimonial, Appointment
+from .models import UserProfile, AppraisalRequest, Testimonial, Appointment, TimeSlot
+from mongoengine.queryset.visitor import Q
 # from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm
-from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm, AppointmentScheduleForm
+from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm, AppointmentScheduleForm, ScheduleSelectionForm
 from content_management.models import PageContent  # Add this import
 from datetime import datetime, timedelta
 from django.utils import timezone
@@ -32,6 +34,159 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
+
+
+def get_active_content(page_type):
+    """Get active content for a specific page type"""
+    now = timezone.now()
+    
+    print(f"\nDEBUG: get_active_content for {page_type}")
+    print(f"Current time: {now}")
+    
+    try:
+        content = PageContent.objects(
+            page_type=page_type,
+            active=True,
+            archived=False,
+            display_from__lte=now
+        ).first()
+        
+        if content:
+            print(f"Found content: {content.title}")
+            print(f"Active: {content.active}")
+            print(f"Archived: {content.archived}")
+            print(f"Display From: {content.display_from}")
+            print(f"Display Until: {content.display_until}")
+        else:
+            print("No content found")
+            
+        return content
+        
+    except Exception as e:
+        print(f"Error in get_active_content: {str(e)}")
+        return None
+
+class PrivacyPolicyView(TemplateView):
+    template_name = 'core/privacy_policy.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        context['page_content'] = get_active_content('privacy')
+        return context
+
+class TermsOfServiceView(TemplateView):
+    template_name = 'core/terms_of_service.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        
+        print("\n=== DEBUG: Terms of Service View ===")
+        print("Getting content...")
+        
+        # Try to get all content first
+        all_content = PageContent.objects.all()
+        print(f"Total content in database: {len(all_content)}")
+        
+        # Look specifically for terms content
+        terms_content = PageContent.objects(page_type='terms')
+        print(f"Found {len(terms_content)} items with page_type 'terms'")
+        for content in terms_content:
+            print(f"Content ID: {content.id}")
+            print(f"Title: {content.title}")
+            print(f"Active: {content.active}")
+            print(f"Archived: {content.archived}")
+            print(f"Display From: {content.display_from}")
+            print(f"Display Until: {content.display_until}")
+        
+        # Get active content
+        active_content = get_active_content('terms')
+        print(f"Active content found: {active_content is not None}")
+        if active_content:
+            print(f"Active content title: {active_content.title}")
+        
+        context['page_content'] = active_content
+        print("===============================\n")
+        
+        return context
+
+class ScheduleSelectionView(View):
+    template_name = 'core/schedule_selection.html'
+
+    @method_decorator(login_required)
+    def get(self, request, request_id):
+        try:
+            appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
+            
+            # Check if user owns this request
+            if appraisal_request.user_id != request.user['sub']:
+                messages.error(request, "You don't have permission to schedule this appointment.")
+                return redirect('core:dashboard')
+            
+            form = ScheduleSelectionForm()
+            
+            context = {
+                'form': form,
+                'appraisal_request': appraisal_request,
+                'user': get_auth0_user(request)
+            }
+            return render(request, self.template_name, context)
+            
+        except AppraisalRequest.DoesNotExist:
+            messages.error(request, 'Appraisal request not found.')
+            return redirect('core:dashboard')
+
+    @method_decorator(login_required)
+    def post(self, request, request_id):
+        try:
+            appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
+            form = ScheduleSelectionForm(request.POST)
+            
+            if form.is_valid():
+                # Get the selected date and time slot
+                date = form.cleaned_data['appointment_date']
+                slot = form.cleaned_data['time_slot']
+                
+                # Check if slot is available
+                existing_slot = TimeSlot.objects(
+                    date=date,
+                    slot=slot,
+                    is_available=True
+                ).first()
+                
+                if not existing_slot:
+                    # Create new slot if it doesn't exist
+                    existing_slot = TimeSlot(
+                        date=date,
+                        slot=slot,
+                        is_available=True
+                    )
+                
+                # Book the slot
+                existing_slot.is_available = False
+                existing_slot.appraisal_request = appraisal_request
+                existing_slot.save()
+                
+                # Update appraisal request
+                appraisal_request.status = 'scheduled'
+                appraisal_request.scheduled_date = date
+                appraisal_request.save()
+                
+                messages.success(request, 'Appointment scheduled successfully!')
+                return redirect('core:appraisal_request_detail', request_id=request_id)
+            
+            context = {
+                'form': form,
+                'appraisal_request': appraisal_request,
+                'user': get_auth0_user(request)
+            }
+            return render(request, self.template_name, context)
+            
+        except AppraisalRequest.DoesNotExist:
+            messages.error(request, 'Appraisal request not found.')
+            return redirect('core:dashboard')
+
 
 class AppraisalReportView(LoginRequiredMixin, View):
     template_name = 'core/reports/appraisal_report.html'
@@ -74,22 +229,17 @@ class AppraisalRequestView(FormView):
     form_class = AppraisalRequestForm
     success_url = '/dashboard/'
 
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['min_date'] = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+        context['max_date'] = (datetime.now() + timedelta(days=90)).strftime('%Y-%m-%d')
+        context['user'] = get_auth0_user(self.request)
+        return context
 
     def form_valid(self, form):
         user = get_auth0_user(self.request)
-        
+    
         try:
-            # Get current time with timezone awareness
-            now = timezone.now()
-            
-            # Create timezone aware min and max dates
-            min_schedule_date = now + timedelta(days=1)
-            max_schedule_date = now + timedelta(days=90)
-
-            # Create base appraisal request without dates first
             appraisal_request = AppraisalRequest(
                 user_id=user['sub'],
                 property_address=form.cleaned_data['property_address'],
@@ -103,80 +253,20 @@ class AppraisalRequestView(FormView):
                 bathrooms=form.cleaned_data['bathrooms'],
                 lot_size=form.cleaned_data['lot_size'],
                 purpose=form.cleaned_data['purpose'],
-                notes=form.cleaned_data['notes'],
-                status='pending',
-                created_at=now
+                notes=form.cleaned_data.get('notes', ''),
+                status='pending'
             )
 
-            # Get dates from form
-            preferred_date = form.cleaned_data.get('preferred_date')
-            alternate_date = form.cleaned_data.get('alternate_date')
-
-            # Log the dates for debugging
-            logger.debug(f"Preferred date before timezone: {preferred_date}")
-            logger.debug(f"Alternate date before timezone: {alternate_date}")
-
-            # Make dates timezone aware if they exist
-            if preferred_date:
-                try:
-                    if timezone.is_naive(preferred_date):
-                        preferred_date = timezone.make_aware(
-                            preferred_date, 
-                            timezone=timezone.get_current_timezone()
-                        )
-                    # Log timezone-aware date
-                    logger.debug(f"Preferred date after timezone: {preferred_date}")
-                    
-                    # Compare dates
-                    if preferred_date < min_schedule_date:
-                        messages.error(self.request, 'Please schedule appointments at least 24 hours in advance.')
-                        return self.form_invalid(form)
-                    if preferred_date > max_schedule_date:
-                        messages.error(self.request, 'Please schedule appointments within 90 days from today.')
-                        return self.form_invalid(form)
-                        
-                    appraisal_request.preferred_date = preferred_date
-                except Exception as e:
-                    logger.error(f"Error processing preferred date: {str(e)}")
-                    messages.error(self.request, 'Invalid preferred date format.')
-                    return self.form_invalid(form)
-
-            if alternate_date:
-                try:
-                    if timezone.is_naive(alternate_date):
-                        alternate_date = timezone.make_aware(
-                            alternate_date, 
-                            timezone=timezone.get_current_timezone()
-                        )
-                    # Log timezone-aware date
-                    logger.debug(f"Alternate date after timezone: {alternate_date}")
-                    
-                    # Compare dates
-                    if alternate_date < min_schedule_date:
-                        messages.error(self.request, 'Please schedule alternate appointments at least 24 hours in advance.')
-                        return self.form_invalid(form)
-                    if alternate_date > max_schedule_date:
-                        messages.error(self.request, 'Please schedule alternate appointments within 90 days from today.')
-                        return self.form_invalid(form)
-                        
-                    appraisal_request.alternate_date = alternate_date
-                except Exception as e:
-                    logger.error(f"Error processing alternate date: {str(e)}")
-                    messages.error(self.request, 'Invalid alternate date format.')
-                    return self.form_invalid(form)
-
-            # Compare dates if both exist
-            if preferred_date and alternate_date:
-                try:
-                    if preferred_date.date() == alternate_date.date():
-                        messages.error(self.request, 'Please select different dates for preferred and alternate appointments.')
-                        return self.form_invalid(form)
-                except Exception as e:
-                    logger.error(f"Error comparing dates: {str(e)}")
-                    messages.error(self.request, 'Error comparing dates.')
-                    return self.form_invalid(form)
-
-            # Save the request
+            # Handle appointment scheduling
+            appointment_date = form.cleaned_data.get('appointment_date')
+            time_slot = form.cleaned_data.get('time_slot')
+            
+            if appointment_date and time_slot:
+                appraisal_request.status = 'scheduled'
+                # Store the appointment information
+                appraisal_request.scheduled_date = appointment_date
+                appraisal_request.time_slot = time_slot
+                
             appraisal_request.save()
             messages.success(self.request, 'Your appraisal request has been submitted successfully!')
             return super().form_valid(form)
@@ -188,13 +278,8 @@ class AppraisalRequestView(FormView):
                 'There was an error processing your request. Please try again or contact support.'
             )
             return self.form_invalid(form)
+    
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = get_auth0_user(self.request)
-        return context
-    
-    
 # Keep only these existing views for now
 class HomeView(TemplateView):
     template_name = 'core/home.html'
@@ -228,26 +313,26 @@ class HomeView(TemplateView):
         
         return context
     
-class AboutView(TemplateView):
-    template_name = 'core/about.html'
+# class AboutView(TemplateView):
+#     template_name = 'core/about.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = get_auth0_user(self.request)
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['user'] = get_auth0_user(self.request)
         
-        # Get active content for the about page
-        now = datetime.now()
-        context['page_content'] = PageContent.objects.filter(
-            page_type='about',
-            active=True,
-            archived=False
-        ).filter(
-            display_from__lte=now
-        ).filter(
-            display_until__gt=now
-        ).first() or None
+#         # Get active content for the about page
+#         now = datetime.now()
+#         context['page_content'] = PageContent.objects.filter(
+#             page_type='about',
+#             active=True,
+#             archived=False
+#         ).filter(
+#             display_from__lte=now
+#         ).filter(
+#             display_until__gt=now
+#         ).first() or None
         
-        return context
+#         return context
 
 class ContactView(FormView):
     template_name = 'core/contact.html'
@@ -271,47 +356,186 @@ class ContactView(FormView):
             )
         return super().form_valid(form)
 
+
+class ContentDebugView(View):
+    @method_decorator(login_required)
+    def get(self, request, page_type):
+        # Get user and verify admin status
+        user = get_auth0_user(request)
+        is_admin = user.get('app_metadata', {}).get('is_admin', False)
+        
+        if not is_admin:
+            return HttpResponseForbidden()
+            
+        now = timezone.now()
+        all_content = PageContent.objects(page_type=page_type)
+        
+        debug_info = {
+            'current_time': now.isoformat(),
+            'page_type': page_type,
+            'total_content_count': all_content.count(),
+            'contents': [{
+                'id': str(content.id),
+                'title': content.title,
+                'active': content.active,
+                'archived': content.archived,
+                'display_from': content.display_from.isoformat() if content.display_from else None,
+                'display_until': content.display_until.isoformat() if content.display_until else None,
+                'status': 'Current' if (
+                    content.active and 
+                    not content.archived and 
+                    content.display_from <= now and 
+                    (not content.display_until or content.display_until > now)
+                ) else 'Inactive',
+                'page_type': content.page_type
+            } for content in all_content]
+        }
+        
+        return JsonResponse(debug_info)
+
+class TermsOfServiceView(TemplateView):
+    template_name = 'core/terms_of_service.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        print("\n=== Terms of Service View Debug ===")
+        # Try both possible page type values
+        content = get_active_content('terms-of-service') or get_active_content('terms')
+        print(f"Content found: {bool(content)}")
+        context['page_content'] = content
+        print("===========================\n")
+        return context
+    
+    
+# class ServicesView(TemplateView):
+#     template_name = 'core/services.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['user'] = get_auth0_user(self.request)
+        
+#         # Get active content for the services page
+#         now = datetime.now()
+#         context['page_content'] = PageContent.objects.filter(
+#             page_type='services',
+#             active=True,
+#             archived=False
+#         ).filter(
+#             display_from__lte=now
+#         ).filter(
+#             display_until__gt=now
+#         ).first() or None
+        
+#         return context
+    
+#     template_name = 'core/services.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['user'] = get_auth0_user(self.request)
+        
+#         # Get active content for the services page
+#         now = datetime.now()
+#         context['page_content'] = PageContent.objects.filter(
+#             page_type='services',
+#             active=True,
+#             archived=False
+#         ).filter(
+#             display_from__lte=now
+#         ).filter(
+#             display_until__gt=now
+#         ).first() or None
+        
+#         return context
+    
+class faqServicesView(TemplateView):
+    template_name = 'core/faq.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        
+        # Get active content for the services page
+        now = datetime.now()
+        context['page_content'] = PageContent.objects.filter(
+            page_type='faq',
+            active=True,
+            archived=False
+        ).filter(
+            display_from__lte=now
+        ).filter(
+            display_until__gt=now
+        ).first() or None
+        
+        return context
+    
+    template_name = 'core/faq.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        
+        # Get active content for the services page
+        now = datetime.now()
+        context['page_content'] = PageContent.objects.filter(
+            page_type='faq',
+            active=True,
+            archived=False
+        ).filter(
+            display_from__lte=now
+        ).filter(
+            display_until__gt=now
+        ).first() or None
+        
+        return context
+        
+
+class AboutView(TemplateView):
+    template_name = 'core/about.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        # Use the new method to get visible content
+        visible_content = PageContent.get_visible_content('about').first()
+        context['page_content'] = visible_content
+        return context
+
 class ServicesView(TemplateView):
     template_name = 'core/services.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = get_auth0_user(self.request)
-        
-        # Get active content for the services page
-        now = datetime.now()
-        context['page_content'] = PageContent.objects.filter(
-            page_type='services',
-            active=True,
-            archived=False
-        ).filter(
-            display_from__lte=now
-        ).filter(
-            display_until__gt=now
-        ).first() or None
-        
+        # Use the new method to get visible content
+        visible_content = PageContent.get_visible_content('services').first()
+        context['page_content'] = visible_content
         return context
     
-    template_name = 'core/services.html'
+class FAQView(TemplateView):
+    template_name = 'core/faq.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = get_auth0_user(self.request)
-        
-        # Get active content for the services page
-        now = datetime.now()
-        context['page_content'] = PageContent.objects.filter(
-            page_type='services',
-            active=True,
-            archived=False
-        ).filter(
-            display_from__lte=now
-        ).filter(
-            display_until__gt=now
-        ).first() or None
-        
-        return context
+        # Use the new method to get visible content
+        visible_content = PageContent.get_visible_content('faq').first()
+        context['page_content'] = visible_content
+        return context      
     
+class TermsOfServiceView(TemplateView):
+    template_name = 'core/terms_of_service.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        # Use the new method to get visible content
+        visible_content = PageContent.get_visible_content('terms').first()
+        context['page_content'] = visible_content
+        return context 
+
+
     
 class AppraisalListView(LoginRequiredMixin, ListView):
     template_name = 'core/appraisal_list.html'
@@ -421,83 +645,7 @@ class DashboardView(TemplateView):
 #         })
 #         return context
     
-class AppraisalRequestView(FormView):
-    template_name = 'core/appraisal_request.html'
-    form_class = AppraisalRequestForm
-    success_url = '/dashboard/'
 
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        user = get_auth0_user(self.request)
-        
-        try:
-            # Get current time with timezone awareness
-            now = timezone.now()
-            min_schedule_date = now + timedelta(days=1)
-            max_schedule_date = now + timedelta(days=90)
-
-            # Convert form dates to timezone-aware
-            preferred_date = form.cleaned_data.get('preferred_date')
-            alternate_date = form.cleaned_data.get('alternate_date')
-
-            if preferred_date:
-                preferred_date = timezone.make_aware(preferred_date) if timezone.is_naive(preferred_date) else preferred_date
-                if preferred_date < min_schedule_date:
-                    messages.error(self.request, 'Please schedule appointments at least 24 hours in advance.')
-                    return self.form_invalid(form)
-                if preferred_date > max_schedule_date:
-                    messages.error(self.request, 'Please schedule appointments within 90 days from today.')
-                    return self.form_invalid(form)
-
-            if alternate_date:
-                alternate_date = timezone.make_aware(alternate_date) if timezone.is_naive(alternate_date) else alternate_date
-                if alternate_date < min_schedule_date:
-                    messages.error(self.request, 'Please schedule appointments at least 24 hours in advance.')
-                    return self.form_invalid(form)
-                if alternate_date > max_schedule_date:
-                    messages.error(self.request, 'Please schedule appointments within 90 days from today.')
-                    return self.form_invalid(form)
-                
-                # Ensure alternate date is different from preferred date
-                if preferred_date and alternate_date.date() == preferred_date.date():
-                    messages.error(self.request, 'Please select different dates for preferred and alternate appointments.')
-                    return self.form_invalid(form)
-
-            # Create appraisal request
-            appraisal_request = AppraisalRequest(
-                user_id=user['sub'],
-                property_address=form.cleaned_data['property_address'],
-                property_city=form.cleaned_data['property_city'],
-                property_state=form.cleaned_data['property_state'],
-                property_zip=form.cleaned_data['property_zip'],
-                property_type=form.cleaned_data['property_type'],
-                square_footage=form.cleaned_data['square_footage'],
-                year_built=form.cleaned_data['year_built'],
-                bedrooms=form.cleaned_data['bedrooms'],
-                bathrooms=form.cleaned_data['bathrooms'],
-                lot_size=form.cleaned_data['lot_size'],
-                purpose=form.cleaned_data['purpose'],
-                preferred_date=preferred_date,
-                alternate_date=alternate_date,
-                notes=form.cleaned_data['notes'],
-                status='pending',
-                created_at=now
-            )
-            
-            appraisal_request.save()
-            messages.success(self.request, 'Your appraisal request has been submitted successfully!')
-            return super().form_valid(form)
-
-        except Exception as e:
-            logger.error(f"Error creating appraisal request: {str(e)}")
-            messages.error(
-                self.request,
-                'There was an error processing your request. Please try again or contact support.'
-            )
-            return self.form_invalid(form)
         
 class TestimonialsView(TemplateView):
     template_name = 'core/testimonials.html'
@@ -823,12 +971,32 @@ class AppraisalRequestView(FormView):
             })
         return initial
 
+    def generate_request_id(self):
+        current_year = datetime.now().year
+        year_str = str(current_year)[2:]  # Get last 2 digits of year
+        
+        # Get start and end of current year
+        year_start = datetime(current_year, 1, 1)
+        year_end = datetime(current_year + 1, 1, 1)
+        
+        # Count requests between start and end of year
+        count = AppraisalRequest.objects(
+            created_at__gte=year_start,
+            created_at__lt=year_end
+        ).count() + 1
+        
+        return f'APR{year_str}-{count:04d}'  # Format: APR23-0001
+
+
     def form_valid(self, form):
         user = get_auth0_user(self.request)
         
         try:
-            # Create new appraisal request
+            now = timezone.now()
+            request_id = self.generate_request_id()
+            
             appraisal_request = AppraisalRequest(
+                request_id=request_id,
                 user_id=user['sub'],
                 property_address=form.cleaned_data['property_address'],
                 property_city=form.cleaned_data['property_city'],
@@ -839,45 +1007,21 @@ class AppraisalRequestView(FormView):
                 year_built=form.cleaned_data['year_built'],
                 bedrooms=form.cleaned_data['bedrooms'],
                 bathrooms=form.cleaned_data['bathrooms'],
-                lot_size=form.cleaned_data['lot_size'],
-                purpose=form.cleaned_data['purpose'],
-                preferred_date=form.cleaned_data['preferred_date'],
-                alternate_date=form.cleaned_data['alternate_date'],
-                notes=form.cleaned_data['notes'],
-                status='pending',
-                created_at=datetime.now()
+                created_at=now
             )
+
+            # Handle appointment scheduling if provided
+            appointment_date = form.cleaned_data.get('appointment_date')
+            time_slot = form.cleaned_data.get('time_slot')
             
-            # Validate dates
-            now = datetime.now()
-            min_schedule_date = now + timedelta(days=1)  # Minimum 24 hours notice
-            max_schedule_date = now + timedelta(days=90)  # Maximum 90 days in advance
-            
-            if appraisal_request.preferred_date:
-                if appraisal_request.preferred_date < min_schedule_date:
-                    messages.error(self.request, 'Please schedule appointments at least 24 hours in advance.')
-                    return self.form_invalid(form)
-                if appraisal_request.preferred_date > max_schedule_date:
-                    messages.error(self.request, 'Please schedule appointments within 90 days from today.')
-                    return self.form_invalid(form)
-                
-            if appraisal_request.alternate_date:
-                if appraisal_request.alternate_date < min_schedule_date:
-                    messages.error(self.request, 'Please schedule appointments at least 24 hours in advance.')
-                    return self.form_invalid(form)
-                if appraisal_request.alternate_date > max_schedule_date:
-                    messages.error(self.request, 'Please schedule appointments within 90 days from today.')
-                    return self.form_invalid(form)
-                
-                # Ensure alternate date is different from preferred date
-                if (appraisal_request.preferred_date and 
-                    appraisal_request.alternate_date.date() == appraisal_request.preferred_date.date()):
-                    messages.error(self.request, 'Please select different dates for preferred and alternate appointments.')
-                    return self.form_invalid(form)
+            if appointment_date and time_slot:
+                appraisal_request.status = 'scheduled'
+                appraisal_request.scheduled_date = appointment_date
+                appraisal_request.time_slot = time_slot
 
             # Save the request
             appraisal_request.save()
-            
+
             # Send email notifications
             try:
                 # Email to admin
@@ -910,7 +1054,7 @@ class AppraisalRequestView(FormView):
             except Exception as e:
                 logger.error(f"Error sending appraisal request emails: {str(e)}")
                 # Continue processing even if email fails
-            
+
             # Success message
             messages.success(
                 self.request,
@@ -940,32 +1084,19 @@ class AppraisalRequestView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = get_auth0_user(self.request)
-        
-        # Add user data to context
-        context['user'] = user
+        context['user'] = get_auth0_user(self.request)
+        context['min_date'] = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+        context['max_date'] = (datetime.now() + timedelta(days=90)).strftime('%Y-%m-%d')
         
         # Get user profile
-        context['profile'] = UserProfile.objects(user_id=user['sub']).first()
+        context['profile'] = UserProfile.objects(user_id=context['user']['sub']).first()
         
         # Get user's recent requests
         context['recent_requests'] = AppraisalRequest.objects(
-            user_id=user['sub']
+            user_id=context['user']['sub']
         ).order_by('-created_at')[:3]
         
-        # Get business hours and scheduling info
-        context['scheduling_info'] = {
-            'business_hours': {
-                'weekdays': '9:00 AM - 5:00 PM',
-                'saturday': '10:00 AM - 2:00 PM',
-                'sunday': 'Closed'
-            },
-            'min_notice': '24 hours',
-            'max_advance': '90 days'
-        }
-        
-        return context
-    
+        return context  
 
 class AppraisalRequestDetailView(View):
     template_name = 'core/appraisal_request_detail.html'
@@ -1282,21 +1413,8 @@ class PrivacyPolicyView(TemplateView):
         context['user'] = get_auth0_user(self.request)
         return context
 
-class TermsOfServiceView(TemplateView):
-    template_name = 'core/terms_of_service.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = get_auth0_user(self.request)
-        return context
 
-class FAQView(TemplateView):
-    template_name = 'core/faq.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = get_auth0_user(self.request)
-        return context    
     
 def test_openai(request):
     try:
