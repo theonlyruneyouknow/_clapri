@@ -1,13 +1,45 @@
 # File: core/forms.py
 # Location: C:\git\_clapri\core\forms.py
-
+from mongoengine import Document, StringField, DateTimeField, EmailField, ListField, ReferenceField
+from mongoengine import BooleanField, IntField, DictField
 from django import forms
 from django.utils import timezone
 from datetime import datetime, timedelta
 import pytz
-from .models import AppraisalRequest, TimeSlot
+from .models import AppraisalRequest, TimeSlot, Lead
+from django import forms
+from .models import Lead
 
+class Lead(Document):
+    """Model for tracking business leads and their interactions"""
+    
+    PROPERTY_TYPES = [
+        ('residential', 'Residential'),
+        ('commercial', 'Commercial'),
+        ('land', 'Land/Lot'),
+        ('multi_family', 'Multi-Family'),
+        ('industrial', 'Industrial'),
+        ('other', 'Other')
+    ]
 
+    # Basic Information
+    first_name = StringField(required=True, max_length=50)
+    last_name = StringField(required=True, max_length=50)
+    email = EmailField(required=True)
+    phone = StringField(max_length=20)
+    property_type = StringField(choices=PROPERTY_TYPES)
+    message = StringField()  # For additional notes
+    created_at = DateTimeField(default=datetime.now)
+    updated_at = DateTimeField(default=datetime.now)
+
+    meta = {
+        'collection': 'leads',
+        'ordering': ['-created_at']
+    }
+
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
+    
 class ScheduleSelectionForm(forms.Form):
     appointment_date = forms.DateField(
         widget=forms.DateInput(attrs={
@@ -333,3 +365,29 @@ class AppointmentScheduleForm(forms.Form):
             raise forms.ValidationError("Appointments cannot be scheduled on weekends")
 
         return date
+
+class LeadForm(forms.Form):
+    first_name = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    last_name = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    phone = forms.CharField(
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    property_type = forms.ChoiceField(
+        choices=Lead.PROPERTY_TYPES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    message = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3})
+    )

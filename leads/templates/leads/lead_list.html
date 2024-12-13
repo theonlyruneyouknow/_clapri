@@ -1,0 +1,161 @@
+{# File: templates/leads/lead_list.html #}
+{# Location: C:\git\_clapri\templates\leads\lead_list.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Leads Management - Appraisal Pro{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Leads Management</h1>
+        <a href="{% url 'core:lead_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Lead
+        </a>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    {{ search_form.search }}
+                </div>
+                <div class="col-md-3">
+                    {{ search_form.status }}
+                </div>
+                <div class="col-md-3">
+                    {{ search_form.source }}
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Leads Table -->
+    <div class="card">
+        <div class="card-body">
+            {% if leads %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Source</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lead in leads %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'core:lead_detail' lead.id %}" class="text-decoration-none">
+                                            {{ lead.get_full_name }}
+                                        </a>
+                                        {% if lead.company %}
+                                            <br>
+                                            <small class="text-muted">{{ lead.company }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ lead.email }}</td>
+                                    <td>{{ lead.phone|default:"-" }}</td>
+                                    <td>
+                                        {% if lead.status == 'new' %}
+                                            <span class="badge bg-primary">New</span>
+                                        {% elif lead.status == 'contacted' %}
+                                            <span class="badge bg-info">Contacted</span>
+                                        {% elif lead.status == 'qualified' %}
+                                            <span class="badge bg-success">Qualified</span>
+                                        {% elif lead.status == 'lost' %}
+                                            <span class="badge bg-danger">Lost</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ lead.status|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ lead.source|title }}</td>
+                                    <td>{{ lead.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'core:lead_detail' lead.id %}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                                    data-bs-toggle="dropdown">
+                                                Status
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                {% for status_value, status_label in lead.STATUS_CHOICES %}
+                                                    <li>
+                                                        <form method="post" action="{% url 'leads:lead_status' lead.id %}">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="status" value="{{ status_value }}">
+                                                            <button type="submit" class="dropdown-item">
+                                                                {{ status_label }}
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1">&laquo; First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                </span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-people fs-1 text-muted mb-3"></i>
+                    <h5>No Leads Found</h5>
+                    <p class="text-muted">Start by adding your first lead</p>
+                    <a href="{% url 'core:lead_create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Add Lead
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

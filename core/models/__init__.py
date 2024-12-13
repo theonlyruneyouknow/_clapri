@@ -1,3 +1,4 @@
+from .lead import Lead
 from .user_profile import UserProfile
 from .appraisal_request import AppraisalRequest
 from .testimonial import Testimonial
@@ -8,6 +9,7 @@ from .inspection_checklist import InspectionChecklist
 from .photo_gallery import PhotoGallery
 
 __all__ = [
+    'Lead',
     'UserProfile',
     'AppraisalRequest',
     'Testimonial',

@@ -209,3 +209,34 @@ class Testimonial(Document):
     @property
     def rating_stars(self):
         return '★' * self.rating + '☆' * (5 - self.rating)
+
+class Lead(Document):
+    """Model for tracking business leads"""
+    
+    PROPERTY_TYPES = [
+        ('residential', 'Residential'),
+        ('commercial', 'Commercial'),
+        ('land', 'Land/Lot'),
+        ('multi_family', 'Multi-Family'),
+        ('industrial', 'Industrial'),
+        ('other', 'Other')
+    ]
+
+    # Basic Information
+    name = StringField(required=True)  # Keep this for backwards compatibility
+    email = EmailField(required=True)
+    phone = StringField(max_length=20)
+    property_type = StringField(choices=PROPERTY_TYPES)
+    message = StringField()
+    
+    # Timestamps
+    created_at = DateTimeField(default=datetime.now)
+    updated_at = DateTimeField(default=datetime.now)
+
+    meta = {
+        'collection': 'leads',
+        'ordering': ['-created_at']
+    }
+
+    def get_full_name(self):
+        return self.name

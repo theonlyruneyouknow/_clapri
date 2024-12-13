@@ -7,10 +7,11 @@ from django.views.generic import View, ListView
 from django.utils.decorators import method_decorator
 from django.core.paginator import Paginator
 from django.db.models import Q
-from utils.auth import login_required
+from utils.auth import login_required, get_auth0_user
 from .models import Lead, LeadInteraction
 from .forms import LeadForm, LeadNoteForm, LeadSearchForm
 from .email_handler import LeadEmailHandler
+from datetime import datetime
 import logging
 
 logger = logging.getLogger(__name__)
@@ -52,42 +53,52 @@ class LeadListView(ListView):
         return context
 
 class LeadCreateView(View):
+    template_name = 'leads/lead_create.html'
+    
     @method_decorator(login_required)
     def get(self, request):
-        form = LeadForm()
-        return render(request, 'leads/lead_form.html', {'form': form})
-
+        # Check if user is admin
+        user = get_auth0_user(request)
+        if not user.get('app_metadata', {}).get('is_admin'):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('core:home')
+            
+        context = {
+            'form': LeadForm(),
+            'user': user
+        }
+        return render(request, self.template_name, context)
+    
     @method_decorator(login_required)
     def post(self, request):
+        user = get_auth0_user(request)
+        if not user.get('app_metadata', {}).get('is_admin'):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('core:home')
+            
         form = LeadForm(request.POST)
         if form.is_valid():
-            lead = Lead(
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name'],
-                email=form.cleaned_data['email'],
-                phone=form.cleaned_data['phone'],
-                company=form.cleaned_data['company'],
-                property_type=form.cleaned_data['property_type'],
-                property_address=form.cleaned_data['property_address'],
-                source=form.cleaned_data['source'],
-                assigned_to=request.user
-            )
-            
-            if form.cleaned_data.get('notes'):
-                lead.add_note(form.cleaned_data['notes'], request.user.get_full_name())
-            
-            lead.save()
-            
-            # Send welcome email
-            email_handler = LeadEmailHandler()
-            if email_handler.send_welcome_email(lead, request.user):
-                messages.success(request, 'Lead created and welcome email sent successfully.')
-            else:
-                messages.warning(request, 'Lead created but there was an issue sending the welcome email.')
-            
-            return redirect('leads:lead_detail', lead_id=lead.id)
+            try:
+                lead = Lead(
+                    name=f"{form.cleaned_data['first_name']} {form.cleaned_data['last_name']}", # Combine names
+                    email=form.cleaned_data['email'],
+                    phone=form.cleaned_data.get('phone', ''),
+                    property_type=form.cleaned_data.get('property_type'),
+                    message=form.cleaned_data.get('notes', ''),  # Use notes as message
+                    created_at=datetime.now()
+                )
+                lead.save()
+                messages.success(request, 'Lead created successfully!')
+                return redirect('core:lead_list')
+            except Exception as e:
+                messages.error(request, f'Error creating lead: {str(e)}')
+                print(f"Error saving lead: {str(e)}")  # Add debug print
         
-        return render(request, 'leads/lead_form.html', {'form': form})
+        context = {
+            'form': form,
+            'user': user
+        }
+        return render(request, self.template_name, context)        
 
 class LeadDetailView(View):
     @method_decorator(login_required)

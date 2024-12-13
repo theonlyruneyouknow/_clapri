@@ -5,8 +5,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, TemplateView, FormView, ListView
-from django.views.generic.edit import FormView
-from django.urls import reverse
+from django.views.generic.edit import FormView, CreateView
+from django.urls import reverse, reverse_lazy
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -14,10 +14,10 @@ from django.utils.decorators import method_decorator
 from django.http import HttpResponseForbidden
 from urllib.parse import quote, urlencode
 from utils.auth import oauth, login_required, get_auth0_user
-from .models import UserProfile, AppraisalRequest, Testimonial, Appointment, TimeSlot
+from .models import UserProfile, AppraisalRequest, Testimonial, Appointment, TimeSlot, Lead
 from mongoengine.queryset.visitor import Q
 # from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm
-from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm, AppointmentScheduleForm, ScheduleSelectionForm
+from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm, AppointmentScheduleForm, ScheduleSelectionForm, LeadForm
 from content_management.models import PageContent  # Add this import
 from datetime import datetime, timedelta
 from django.utils import timezone
@@ -32,8 +32,15 @@ from .models import AppraisalReport, InspectionChecklist, PhotoGallery
 from .services.report_generator import ReportGenerator
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.views.generic import DetailView
+from django.views.generic.edit import DeleteView
+from django.urls import reverse_lazy
+from django.contrib import messages
+
 
 logger = logging.getLogger(__name__)
+
+
 
 
 def get_active_content(page_type):
@@ -65,6 +72,135 @@ def get_active_content(page_type):
     except Exception as e:
         print(f"Error in get_active_content: {str(e)}")
         return None
+    
+class LeadCreateView(View):
+    template_name = 'leads/lead_create.html'
+
+    @method_decorator(login_required)
+    def get(self, request):
+        user = get_auth0_user(request)
+        if not user.get('app_metadata', {}).get('is_admin'):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('core:home')
+            
+        context = {
+            'form': LeadForm(),
+            'user': user
+        }
+        return render(request, self.template_name, context)
+
+    @method_decorator(login_required)
+    def post(self, request):
+        user = get_auth0_user(request)
+        if not user.get('app_metadata', {}).get('is_admin'):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('core:home')
+            
+        form = LeadForm(request.POST)
+        if form.is_valid():
+            try:
+                lead = Lead(
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name'],
+                    email=form.cleaned_data['email'],
+                    phone=form.cleaned_data.get('phone', ''),
+                    property_type=form.cleaned_data.get('property_type'),
+                    message=form.cleaned_data.get('message', '')
+                )
+                lead.save()
+                messages.success(request, 'Lead created successfully!')
+                return redirect('core:lead_list')
+            except Exception as e:
+                messages.error(request, f'Error creating lead: {str(e)}')
+        
+        context = {
+            'form': form,
+            'user': user
+        }
+        return render(request, self.template_name, context)
+    
+class LeadCreateView(View):
+    template_name = 'leads/lead_create.html'
+
+    @method_decorator(login_required)
+    def get(self, request):
+        user = get_auth0_user(request)
+        is_admin = (
+            user.get('is_admin') or 
+            user.get('/app_metadata', {}).get('is_admin')
+        )
+        
+        if not is_admin:
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('core:home')
+            
+        context = {
+            'form': LeadForm(),
+            'user': user
+        }
+        return render(request, self.template_name, context)
+
+    @method_decorator(login_required)
+    @method_decorator(login_required)
+    def post(self, request):
+        print("\n=== Processing Lead Creation POST Request ===")
+        user = get_auth0_user(request)
+        is_admin = (
+            user.get('is_admin') or 
+            user.get('/app_metadata', {}).get('is_admin')
+        )
+        
+        if not is_admin:
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('core:home')
+        
+        form = LeadForm(request.POST)
+        print("Form Data:", request.POST)
+        
+        if form.is_valid():
+            print("Form is valid")
+            try:
+                # Combine first and last name
+                full_name = f"{form.cleaned_data['first_name']} {form.cleaned_data['last_name']}"
+                
+                lead = Lead(
+                    name=full_name,
+                    email=form.cleaned_data['email'],
+                    phone=form.cleaned_data.get('phone', ''),
+                    property_type=form.cleaned_data.get('property_type'),
+                    message=form.cleaned_data.get('message', '')
+                )
+                
+                # Print debug information
+                print("Creating lead with data:", {
+                    'name': lead.name,
+                    'email': lead.email,
+                    'phone': lead.phone,
+                    'property_type': lead.property_type,
+                    'message': lead.message
+                })
+                
+                lead.save()
+                print("Lead saved successfully")
+                messages.success(request, 'Lead created successfully!')
+                return redirect('core:lead_list')
+            except Exception as e:
+                print(f"Error saving lead: {str(e)}")
+                messages.error(request, f'Error creating lead: {str(e)}')
+                
+                # Additional error information
+                import traceback
+                print("Full error traceback:")
+                print(traceback.format_exc())
+        else:
+            print("Form errors:", form.errors)
+        
+        context = {
+            'form': form,
+            'user': user
+        }
+        return render(request, self.template_name, context)
+
 
 class PrivacyPolicyView(TemplateView):
     template_name = 'core/privacy_policy.html'
@@ -72,43 +208,14 @@ class PrivacyPolicyView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = get_auth0_user(self.request)
-        context['page_content'] = get_active_content('privacy')
         return context
 
 class TermsOfServiceView(TemplateView):
-    template_name = 'core/terms_of_service.html'
+    template_name = 'core/terms.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = get_auth0_user(self.request)
-        
-        print("\n=== DEBUG: Terms of Service View ===")
-        print("Getting content...")
-        
-        # Try to get all content first
-        all_content = PageContent.objects.all()
-        print(f"Total content in database: {len(all_content)}")
-        
-        # Look specifically for terms content
-        terms_content = PageContent.objects(page_type='terms')
-        print(f"Found {len(terms_content)} items with page_type 'terms'")
-        for content in terms_content:
-            print(f"Content ID: {content.id}")
-            print(f"Title: {content.title}")
-            print(f"Active: {content.active}")
-            print(f"Archived: {content.archived}")
-            print(f"Display From: {content.display_from}")
-            print(f"Display Until: {content.display_until}")
-        
-        # Get active content
-        active_content = get_active_content('terms')
-        print(f"Active content found: {active_content is not None}")
-        if active_content:
-            print(f"Active content title: {active_content.title}")
-        
-        context['page_content'] = active_content
-        print("===============================\n")
-        
         return context
 
 class ScheduleSelectionView(View):
@@ -394,7 +501,7 @@ class ContentDebugView(View):
         return JsonResponse(debug_info)
 
 class TermsOfServiceView(TemplateView):
-    template_name = 'core/terms_of_service.html'
+    template_name = 'core/terms.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -508,9 +615,23 @@ class ServicesView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = get_auth0_user(self.request)
-        # Use the new method to get visible content
-        visible_content = PageContent.get_visible_content('services').first()
-        context['page_content'] = visible_content
+        context['services'] = [
+            {
+                'title': 'Residential Appraisals',
+                'description': 'Comprehensive valuation for homes and residential properties.',
+                'icon': 'bi-house'
+            },
+            {
+                'title': 'Commercial Appraisals',
+                'description': 'Expert valuation services for commercial real estate.',
+                'icon': 'bi-building'
+            },
+            {
+                'title': 'Property Consultations',
+                'description': 'Professional guidance on property values and market trends.',
+                'icon': 'bi-chat-square-text'
+            }
+        ]
         return context
     
 class FAQView(TemplateView):
@@ -559,36 +680,32 @@ class ProfileView(TemplateView):
         user = get_auth0_user(self.request)
         
         print("\n=== DEBUG USER INFO ===")
-        print("Complete user object:", user)
+        print("User object:", user)
         print("Is admin check paths:")
         print("- Direct is_admin:", user.get('is_admin'))
+        print("- app_metadata:", user.get('app_metadata'))
         print("- /app_metadata:", user.get('/app_metadata'))
+        print("- user_metadata:", user.get('user_metadata'))
         print("- /user_metadata:", user.get('/user_metadata'))
         print("======================\n")
 
         # Simplified admin check
         is_admin = bool(
             user.get('is_admin') or
+            (user.get('app_metadata', {}) or {}).get('is_admin') or
             (user.get('/app_metadata', {}) or {}).get('is_admin') or
+            (user.get('user_metadata', {}) or {}).get('is_admin') or
             (user.get('/user_metadata', {}) or {}).get('is_admin')
         )
 
-        auth_data = {
-            'picture': user.get('picture', None),
-            'email_verified': user.get('email_verified', False),
-            'locale': user.get('locale', ''),
-            'updated_at': user.get('updated_at', ''),
-            'name': user.get('name', ''),
-            'email': user.get('email', ''),
-            'is_admin': is_admin,  # This should now correctly reflect admin status
-            'app_metadata': user.get('/app_metadata', {}),
-            'user_metadata': user.get('/user_metadata', {})
+        context['user'] = user
+        context['debug_info'] = {
+            'is_admin': is_admin,
+            'app_metadata': user.get('app_metadata', {}),
+            'user_metadata': user.get('user_metadata', {}),
+            'raw_user': user
         }
-
-        context.update({
-            'user': user,
-            'auth0_data': auth_data
-        })
+        
         return context
     
 class DashboardView(TemplateView):
@@ -748,7 +865,7 @@ class AdminTestimonialsView(TemplateView):
         if not user.get('app_metadata', {}).get('is_admin', False):
             messages.error(self.request, "You don't have permission to access this page.")
             return redirect('core:home')
-        return super().dispatch(*args, **kwargs)
+        return super().dispatch(self, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1476,3 +1593,109 @@ class ChatView(View):
                 'status': 'error',
                 'message': str(e)
             }, status=500)
+
+class LeadListView(View):
+    template_name = 'leads/lead_list.html'
+
+    @method_decorator(login_required)
+    def get(self, request):
+        user = get_auth0_user(request)
+        
+        # Debug prints for admin check
+        print("\n=== Debug User Info ===")
+        print(f"User: {user}")
+        print(f"App metadata: {user.get('/app_metadata', {})}")
+        
+        # Check admin status
+        is_admin = (
+            user.get('is_admin') or 
+            user.get('/app_metadata', {}).get('is_admin') or 
+            user.get('app_metadata', {}).get('is_admin')
+        )
+        
+        if not is_admin:
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('core:home')
+        
+        try:
+            leads = Lead.objects.all().order_by('-created_at')
+            print(f"Found {leads.count()} leads")
+        except Exception as e:
+            print(f"Error fetching leads: {e}")
+            leads = []
+        
+        context = {
+            'user': user,
+            'leads': leads
+        }
+        return render(request, self.template_name, context)
+
+class LeadDetailView(DetailView):
+    template_name = 'leads/lead_detail.html'
+    context_object_name = 'lead'
+    
+    def get_object(self):
+        # Convert the string ID to ObjectId and get the lead
+        lead_id = self.kwargs.get('id')
+        print(f"Looking for lead with ID: {lead_id}")  # Debug print
+        return Lead.objects.get(id=lead_id)
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        return context
+
+
+class LeadDeleteView(DeleteView):
+    model = Lead
+    success_url = reverse_lazy('core:lead_list')
+    
+    def get_object(self):
+        return Lead.objects.get(id=self.kwargs['id'])
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'Lead deleted successfully.')
+        return super().delete(request, *args, **kwargs)
+
+class FAQView(TemplateView):
+    template_name = 'core/faq.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        context['faqs'] = [
+            {
+                'question': 'What is an appraisal?',
+                'answer': 'An appraisal is a professional opinion of value.'
+            },
+            {
+                'question': 'How long does an appraisal take?',
+                'answer': 'Typically 3-5 business days after the property inspection.'
+            },
+            {
+                'question': 'What documents do I need?',
+                'answer': 'Property deed, recent tax assessments, and any recent improvements documentation.'
+            }
+        ]
+        return context
+    
+
+class LeadStatusUpdateView(View):
+    @method_decorator(login_required)
+    def post(self, request, id):
+        try:
+            lead = Lead.objects.get(id=id)
+            new_status = request.POST.get('status')
+            
+            if new_status and new_status in [status[0] for status in lead.STATUS_CHOICES]:
+                lead.status = new_status
+                lead.save()
+                messages.success(request, 'Lead status updated successfully.')
+            else:
+                messages.error(request, 'Invalid status value provided.')
+                
+            return redirect('core:lead_detail', id=id)
+            
+        except Lead.DoesNotExist:
+            messages.error(request, 'Lead not found.')
+            return redirect('core:lead_list')

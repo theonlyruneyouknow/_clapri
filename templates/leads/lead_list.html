@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Leads Management - Appraisal Pro{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Leads Management</h1>
+        <a href="{% url 'core:lead_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Lead
+        </a>
+    </div>
+
+    <!-- Debug info - remove in production -->
+    {% if leads %}
+    <div class="alert alert-info">
+        Number of leads: {{ leads|length }}
+    </div>
+    {% endif %}
+
+    <!-- Leads Table -->
+    <div class="card">
+        <div class="card-body">
+            {% if leads %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Property Type</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lead in leads %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'core:lead_detail' id=lead.id|stringformat:'s' %}">
+                                {{ lead.get_full_name }}
+                            </a>
+                        </td>
+                        <td>{{ lead.email }}</td>
+                        <td>{{ lead.phone|default:"-" }}</td>
+                        <td>{{ lead.property_type|default:"-"|title }}</td>
+                        <td>{{ lead.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'core:lead_detail' id=lead.id|stringformat:'s' %}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-people fs-1 text-muted mb-3"></i>
+        <h5>No Leads Found</h5>
+        <p class="text-muted">Start by adding your first lead</p>
+        <a href="{% url 'core:lead_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Lead
+        </a>
+    </div>
+{% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

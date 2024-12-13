@@ -1,0 +1,82 @@
+{# File: templates/leads/emails/appointment_confirmation.html #}
+{# Location: C:\git\_clapri\templates\leads\emails\appointment_confirmation.html #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Confirmation - {{ company_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .appointment-details {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .preparation-list {
+            background-color: #fff;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <p>Dear {{ lead.first_name }},</p>
+        
+        <p>This email confirms your upcoming appraisal appointment with {{ company_name }}.</p>
+        
+        <div class="appointment-details">
+            <h2>Appointment Details</h2>
+            <ul>
+                <li><strong>Date:</strong> {{ appointment_date|date:"l, F j, Y" }}</li>
+                <li><strong>Time:</strong> {{ appointment_date|date:"g:i A" }}</li>
+                <li><strong>Location:</strong> {{ appointment_details.location }}</li>
+                <li><strong>Appraiser:</strong> {{ author.get_full_name }}</li>
+                <li><strong>Estimated Duration:</strong> {{ appointment_details.duration }}</li>
+            </ul>
+        </div>
+        
+        <div class="preparation-list">
+            <h3>Preparation Checklist</h3>
+            <p>To ensure a smooth appraisal process, please have the following items available:</p>
+            <ul>
+                <li>Property deed or recent tax bill</li>
+                <li>List of recent improvements (if any)</li>
+                <li>Floor plan or survey (if available)</li>
+                <li>Access to all areas of the property</li>
+            </ul>
+        </div>
+        
+        <p><strong>Need to reschedule?</strong> Please contact us at least 24 hours in advance at {{ company_phone }}.</p>
+        
+        <p>Best regards,<br>
+        {{ author.get_full_name }}<br>
+        {{ company_name }}</p>
+    </div>
+    
+    <div class="footer">
+        <p>{{ company_name }}<br>
+        {{ company_phone }}<br>
+        {{ company_address }}</p>
+    </div>
+</body>
+</html>

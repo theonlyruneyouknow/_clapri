@@ -1,22 +1,27 @@
 {# File: templates/core/privacy_policy.html #}
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Privacy Policy - Appraisal Pro{% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    {% if page_content %}
-        <div class="content-body">
-            {{ page_content.content|safe }}
+    <div class="card">
+        <div class="card-header">
+            <h1 class="h3 mb-0">Privacy Policy</h1>
         </div>
-    {% else %}
-        {# Debug information #}
-        {% if user.is_admin %}
-            <div class="alert alert-warning">
-                <h4>No Active Content Found</h4>
-                <p>No active Privacy Policy content is currently available.</p>
-                <p>Page Type: privacy</p>
-            </div>
-        {% endif %}
-    {% endif %}
+        <div class="card-body">
+            <h2 class="h4">Information Collection and Use</h2>
+            <p>We collect information to provide better services to our users.</p>
+
+            <h2 class="h4">Data Protection</h2>
+            <p>We implement security measures to protect your personal information.</p>
+
+            <h2 class="h4">Information Sharing</h2>
+            <p>We do not share personal information with companies, organizations, or individuals outside of our organization.</p>
+
+            <h2 class="h4">Contact Us</h2>
+            <p>If you have any questions about this Privacy Policy, please contact us.</p>
+        </div>
+    </div>
 </div>
 {% endblock %}

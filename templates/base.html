@@ -119,6 +119,13 @@
                                         </a>
                                     </li>
                                 {% endif %}
+                                {% if user.is_admin or user|get:'/app_metadata'|get:'is_admin' %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core:lead_list' %}">
+                                        <i class="bi bi-funnel"></i> Leads
+                                    </a>
+                                </li>
+                                {% endif %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" href="{% url 'core:logout' %}">
