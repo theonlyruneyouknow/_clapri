@@ -40,7 +40,7 @@
                     <tr>
                         <td>
                             <a href="{% url 'core:lead_detail' id=lead.id|stringformat:'s' %}">
-                                {{ lead.get_full_name }}
+                                {{ lead.name }}
                             </a>
                         </td>
                         <td>{{ lead.email }}</td>
