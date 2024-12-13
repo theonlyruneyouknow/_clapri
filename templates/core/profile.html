@@ -1,136 +1,167 @@
-{# File: templates/core/profile.html #}
-{# Location: C:\git\_clapri\templates\core\profile.html #}
-
 {% extends 'base.html' %}
 
-{% block title %}Your Profile - Martin Appraisal Co{% endblock %}
+{% block title %}Profile - Martin Appraisal Co{% endblock %}
 
 {% block content %}
 <div class="container py-4">
     <div class="row">
-        <div class="col-lg-4">
-            <!-- Profile Card -->
+        <!-- Left Column: Profile Picture and Account Info -->
+        <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-body text-center">
-                    <div class="mb-3">
-                        {% if auth0_data.picture %}
-                            <img src="{{ auth0_data.picture }}" alt="{{ profile.full_name }}" 
-                                 class="rounded-circle img-fluid" style="width: 150px; height: 150px; object-fit: cover;">
-                        {% else %}
-                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto" 
-                                 style="width: 150px; height: 150px;">
-                                <span class="display-4">{{ profile.first_name|first|default:"U" }}</span>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <h5 class="mb-1">{{ auth0_data.name }}</h5>
-                    <p class="text-muted mb-4">{{ profile.company|default:"" }}</p>
-
-                    <!-- Account Information Card -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h6 class="mb-0">Account Information</h6>
+                    {% if auth_data.picture %}
+                        <img src="{{ auth_data.picture }}" alt="{{ auth_data.name }}" 
+                             class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3"
+                             style="width: 150px; height: 150px; font-size: 4rem;">
+                            {{ auth_data.name|first|upper }}
                         </div>
-                        <div class="card-body">
-                            <p class="small text-muted mb-2">Information from your login provider:</p>
-                            <ul class="list-unstyled">
-                                <li class="mb-2">
-                                    <strong>Email:</strong><br>
-                                    {{ auth0_data.email }}
-                                    {% if auth0_data.email_verified %}
-                                        <span class="badge bg-success ms-2">Verified</span>
-                                    {% endif %}
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Account Type:</strong><br>
-                                    {% if auth0_data.is_admin or auth0_data.app_metadata.is_admin %}
-                                        <span class="badge bg-primary">Administrator</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">Standard User</span>
-                                    {% endif %}
-                                </li>
-                                <li class="mb-2">
-                                    <strong>Account Updated:</strong><br>
-                                    {{ auth0_data.updated_at|date:"F j, Y" }}
-                                </li>
-                                {% if auth0_data.locale %}
-                                <li class="mb-2">
-                                    <strong>Locale:</strong><br>
-                                    {{ auth0_data.locale|upper }}
-                                </li>
-                                {% endif %}
-                            </ul>
-                        </div>
-                    </div>
-
-                    {% if debug %}
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h6 class="mb-0">Debug Information</h6>
-                        </div>
-                        <div class="card-body">
-                            <dl>
-                                <dt>Raw is_admin:</dt>
-                                <dd>{{ debug_info.raw_is_admin }}</dd>
-                                
-                                <dt>App Metadata:</dt>
-                                <dd>{{ debug_info.app_metadata }}</dd>
-                                
-                                <dt>User Metadata:</dt>
-                                <dd>{{ debug_info.user_metadata }}</dd>
-                                
-                                <dt>Computed is_admin:</dt>
-                                <dd>{{ debug_info.computed_is_admin }}</dd>
-                            </dl>
-                        </div>
-                    </div>
                     {% endif %}
+                </div>
+            </div>
 
-                    <a href="{% url 'core:profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Account Information</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-2">Information from your login provider:</p>
+                    
+                    <div class="mb-3">
+                        <strong>Email:</strong><br>
+                        {{ auth_data.email }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Account Type:</strong><br>
+                        <span class="badge bg-{% if auth_data.is_admin %}primary{% else %}secondary{% endif %}">
+                            {% if auth_data.is_admin %}Administrator{% else %}Standard User{% endif %}
+                        </span>
+                    </div>
+                    
+                    <div>
+                        <strong>Account Updated:</strong><br>
+                        {{ auth_data.updated_at|date:"M d, Y" }}
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-8">
-            <!-- Profile Information -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h6 class="mb-0">Profile Information</h6>
+        <!-- Right Column: Profile Information -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Profile Information</h5>
+                    <button class="btn btn-primary btn-sm" id="editProfileBtn">
+                        <i class="bi bi-pencil"></i> Edit
+                    </button>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-6 mb-3">
-                            <strong>First Name:</strong>
-                            <p class="text-muted">{{ profile.first_name|default:"Not set" }}</p>
+                    <!-- View Mode -->
+                    <div id="profileView">
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label">First Name</label>
+                                <p class="form-control-plaintext" id="viewFirstName">{{ profile.first_name|default:"Not set" }}</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label">Last Name</label>
+                                <p class="form-control-plaintext" id="viewLastName">{{ profile.last_name|default:"Not set" }}</p>
+                            </div>
                         </div>
-                        <div class="col-sm-6 mb-3">
-                            <strong>Last Name:</strong>
-                            <p class="text-muted">{{ profile.last_name|default:"Not set" }}</p>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label">Phone Number</label>
+                                <p class="form-control-plaintext" id="viewPhone">{{ profile.phone|default:"Not set" }}</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label">Company</label>
+                                <p class="form-control-plaintext" id="viewCompany">{{ profile.company|default:"Not set" }}</p>
+                            </div>
                         </div>
-                        <div class="col-sm-6 mb-3">
-                            <strong>Phone:</strong>
-                            <p class="text-muted">{{ profile.phone|default:"Not set" }}</p>
+
+                        <div class="mb-3">
+                            <label class="form-label">Street Address</label>
+                            <p class="form-control-plaintext" id="viewAddress">{{ profile.address|default:"Not set" }}</p>
                         </div>
-                        <div class="col-sm-6 mb-3">
-                            <strong>Company:</strong>
-                            <p class="text-muted">{{ profile.company|default:"Not set" }}</p>
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="form-label">City</label>
+                                <p class="form-control-plaintext" id="viewCity">{{ profile.city|default:"Not set" }}</p>
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label">State</label>
+                                <p class="form-control-plaintext" id="viewState">{{ profile.state|default:"Not set" }}</p>
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label">ZIP Code</label>
+                                <p class="form-control-plaintext" id="viewZipCode">{{ profile.zip_code|default:"Not set" }}</p>
+                            </div>
                         </div>
                     </div>
-                    
-                    {% if profile.full_address %}
-                    <hr>
-                    <div class="mb-3">
-                        <strong>Address:</strong>
-                        <p class="text-muted">{{ profile.full_address }}</p>
+
+                    <!-- Edit Mode (Hidden by default) -->
+                    <div id="profileEdit" style="display: none;">
+                        <form id="profileForm">
+                            {% csrf_token %}
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label">First Name</label>
+                                    <input type="text" class="form-control" name="first_name" value="{{ profile.first_name }}">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" name="last_name" value="{{ profile.last_name }}">
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label">Phone Number</label>
+                                    <input type="text" class="form-control" name="phone" value="{{ profile.phone }}">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label">Company</label>
+                                    <input type="text" class="form-control" name="company" value="{{ profile.company }}">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Street Address</label>
+                                <input type="text" class="form-control" name="address" value="{{ profile.address }}">
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <label class="form-label">City</label>
+                                    <input type="text" class="form-control" name="city" value="{{ profile.city }}">
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label">State</label>
+                                    <input type="text" class="form-control" name="state" value="{{ profile.state }}">
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label">ZIP Code</label>
+                                    <input type="text" class="form-control" name="zip_code" value="{{ profile.zip_code }}">
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
                     </div>
-                    {% endif %}
                 </div>
             </div>
 
-            <!-- Activity Overview -->
-            <div class="card">
+            <!-- Recent Activity -->
+            <div class="card mt-4">
                 <div class="card-header">
-                    <h6 class="mb-0">Recent Activity</h6>
+                    <h5 class="card-title mb-0">Recent Activity</h5>
                 </div>
                 <div class="card-body">
                     <p class="text-muted">No recent activity to display.</p>
@@ -139,4 +170,114 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const editBtn = document.getElementById('editProfileBtn');
+        const cancelBtn = document.getElementById('cancelEdit');
+        const profileView = document.getElementById('profileView');
+        const profileEdit = document.getElementById('profileEdit');
+        const profileForm = document.getElementById('profileForm');
+    
+        // Store original values for cancel functionality
+        let originalValues = {};
+    
+        function showAlert(message, type = 'success') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            const container = document.querySelector('.card-body');
+            container.insertBefore(alertDiv, container.firstChild);
+            setTimeout(() => alertDiv.remove(), 3000);
+        }
+    
+        // Toggle edit mode
+        editBtn.addEventListener('click', function() {
+            // Store current values before editing
+            const formElements = profileForm.elements;
+            for (let element of formElements) {
+                if (element.name) {
+                    originalValues[element.name] = element.value;
+                }
+            }
+            
+            profileView.style.display = 'none';
+            profileEdit.style.display = 'block';
+            editBtn.style.display = 'none';
+        });
+    
+        // Cancel edit
+        cancelBtn.addEventListener('click', function() {
+            // Restore original values
+            for (let field in originalValues) {
+                const element = profileForm.elements[field];
+                if (element) {
+                    element.value = originalValues[field];
+                }
+            }
+            
+            profileView.style.display = 'block';
+            profileEdit.style.display = 'none';
+            editBtn.style.display = 'block';
+        });
+    
+        // Handle form submission
+        profileForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(profileForm);
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+            
+            fetch('{% url "core:profile_update" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update view mode with new values
+                    for (let field in data.data) {
+                        const viewElement = document.getElementById(`view${field.charAt(0).toUpperCase() + field.slice(1)}`);
+                        if (viewElement) {
+                            viewElement.textContent = data.data[field] || 'Not set';
+                        }
+                    }
+                    
+                    // Update form values
+                    for (let field in data.data) {
+                        const inputElement = document.querySelector(`input[name="${field}"]`);
+                        if (inputElement) {
+                            inputElement.value = data.data[field] || '';
+                        }
+                    }
+                    
+                    // Switch back to view mode
+                    profileView.style.display = 'block';
+                    profileEdit.style.display = 'none';
+                    editBtn.style.display = 'block';
+                    
+                    showAlert(data.message);
+                } else {
+                    throw new Error(data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('Error updating profile. Please try again.', 'danger');
+            });
+        });
+    });
+    </script>
 {% endblock %}

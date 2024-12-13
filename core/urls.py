@@ -18,6 +18,7 @@ urlpatterns = [
     
     # User Management
     path('profile/', views.ProfileView.as_view(), name='profile'),
+    path('profile/update/', views.ProfileUpdateView.as_view(), name='profile_update'),
     path('profile/edit/', views.ProfileEditView.as_view(), name='profile_edit'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     

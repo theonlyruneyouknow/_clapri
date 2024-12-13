@@ -36,12 +36,23 @@ from django.views.generic import DetailView
 from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
 from django.contrib import messages
+from mongoengine import Document, StringField, DictField, DateTimeField
 
 
 logger = logging.getLogger(__name__)
 
-
-
+class User24(Document):
+    user_id = StringField(required=True, unique=True)  # Auth0 sub
+    email = StringField(required=True)
+    user_metadata = DictField()
+    app_metadata = DictField()
+    last_login = DateTimeField(default=datetime.now)
+    created_at = DateTimeField(default=datetime.now)
+    
+    meta = {
+        'collection': 'users24',
+        'indexes': ['user_id', 'email']
+    }
 
 def get_active_content(page_type):
     """Get active content for a specific page type"""
@@ -73,6 +84,69 @@ def get_active_content(page_type):
         print(f"Error in get_active_content: {str(e)}")
         return None
     
+class ProfileUpdateView(View):
+    @method_decorator(login_required)
+    def post(self, request):
+        try:
+            print("\n=== Processing Profile Update ===")
+            data = json.loads(request.body)
+            user = get_auth0_user(request)
+            
+            # Debug print
+            print(f"Received data: {data}")
+            print(f"User ID: {user['sub']}")
+            
+            # Get or create profile
+            profile = UserProfile.objects(user_id=user['sub']).first()
+            is_new = profile is None
+            
+            if not profile:
+                print("Creating new profile")
+                profile = UserProfile(user_id=user['sub'])
+            else:
+                print("Updating existing profile")
+            
+            # Update fields
+            profile.email = user.get('email', '')
+            profile.first_name = data.get('first_name', '')
+            profile.last_name = data.get('last_name', '')
+            profile.phone = data.get('phone', '')
+            profile.company = data.get('company', '')
+            profile.address = data.get('address', '')
+            profile.city = data.get('city', '')
+            profile.state = data.get('state', '')
+            profile.zip_code = data.get('zip_code', '')
+            
+            # Save and print result
+            profile.save()
+            print(f"Profile {'created' if is_new else 'updated'} successfully")
+            print("New profile data:", profile.to_json())
+            
+            return JsonResponse({
+                'success': True,
+                'data': {
+                    'first_name': profile.first_name,
+                    'last_name': profile.last_name,
+                    'phone': profile.phone,
+                    'company': profile.company,
+                    'address': profile.address,
+                    'city': profile.city,
+                    'state': profile.state,
+                    'zip_code': profile.zip_code
+                },
+                'message': 'Profile created successfully!' if is_new else 'Profile updated successfully!'
+            })
+            
+        except Exception as e:
+            print(f"Error in profile update: {str(e)}")
+            print("Full traceback:")
+            import traceback
+            print(traceback.format_exc())
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=400)   
+
 class LeadEditView(View):
     template_name = 'leads/lead_edit.html'
 
@@ -748,42 +822,51 @@ class AppraisalListView(LoginRequiredMixin, ListView):
         context['user'] = get_auth0_user(self.request)
         return context
 
+# In views.py
 class ProfileView(TemplateView):
     template_name = 'core/profile.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = get_auth0_user(self.request)
         
-        print("\n=== DEBUG USER INFO ===")
-        print("User object:", user)
-        print("Is admin check paths:")
-        print("- Direct is_admin:", user.get('is_admin'))
-        print("- app_metadata:", user.get('app_metadata'))
-        print("- /app_metadata:", user.get('/app_metadata'))
-        print("- user_metadata:", user.get('user_metadata'))
-        print("- /user_metadata:", user.get('/user_metadata'))
-        print("======================\n")
-
-        # Simplified admin check
-        is_admin = bool(
-            user.get('is_admin') or
-            (user.get('app_metadata', {}) or {}).get('is_admin') or
-            (user.get('/app_metadata', {}) or {}).get('is_admin') or
-            (user.get('user_metadata', {}) or {}).get('is_admin') or
-            (user.get('/user_metadata', {}) or {}).get('is_admin')
-        )
-
-        context['user'] = user
-        context['debug_info'] = {
-            'is_admin': is_admin,
-            'app_metadata': user.get('app_metadata', {}),
-            'user_metadata': user.get('user_metadata', {}),
-            'raw_user': user
-        }
+        print("\n=== Debug User Info ===")
+        print(f"User object: {user}")
         
+        if not user:
+            # Handle case where user is not authenticated
+            messages.error(self.request, "Please log in to view your profile.")
+            return context
+        
+        # Get user profile
+        profile = UserProfile.objects(user_id=user['sub']).first()
+        
+        # Debug logging
+        print(f"User ID: {user.get('sub')}")
+        print(f"Profile found: {bool(profile)}")
+        if profile:
+            print(f"Profile data: {profile.to_json()}")
+        print("========================\n")
+
+        # Add both user and profile data to context
+        context.update({
+            'user': user,
+            'profile': profile,
+            'auth_data': {
+                'picture': user.get('picture'),
+                'email': user.get('email'),
+                'name': user.get('name'),
+                'email_verified': user.get('email_verified'),
+                'updated_at': user.get('updated_at'),
+                'is_admin': user.get('app_metadata', {}).get('is_admin', False)
+            }
+        })
         return context
-    
+
 class DashboardView(TemplateView):
     template_name = 'core/dashboard.html'
 
@@ -803,41 +886,7 @@ class DashboardView(TemplateView):
         
         return render(request, self.template_name, context)
     
-# class DashboardView(TemplateView):
-#     template_name = 'core/dashboard.html'
-
-#     @method_decorator(login_required)
-#     def dispatch(self, *args, **kwargs):
-#         return super().dispatch(*args, **kwargs)
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         user = get_auth0_user(self.request)
-#         profile = UserProfile.objects(user_id=user['sub']).first()
-
-#         # For now, we'll use placeholder data
-#         # Later, we'll replace these with real data from the database
-#         context.update({
-#             'user': user,
-#             'profile': profile,
-#             'statistics': {
-#                 'total_requests': 0,
-#                 'pending_requests': 0,
-#                 'completed_requests': 0,
-#                 'in_progress': 0
-#             },
-#             'recent_requests': [],
-#             'upcoming_appointments': [],
-#             'notifications': [
-#                 {
-#                     'type': 'info',
-#                     'message': 'Welcome to your dashboard! Start by creating your first appraisal request.',
-#                     'date': datetime.now()
-#                 }
-#             ]
-#         })
-#         return context
-    
+  
 
         
 class TestimonialsView(TemplateView):
@@ -1133,6 +1182,32 @@ def callback(request):
         messages.error(request, "Authentication failed. Please try again.")
         return redirect('core:home')
 
+    # After getting user info from Auth0
+    try:
+        # Get or create user document
+        user24 = User24.objects(user_id=user['sub']).first()
+        if not user24:
+            user24 = User24(
+                user_id=user['sub'],
+                email=user['email']
+            )
+        
+        # Update metadata
+        user24.user_metadata = user.get('user_metadata', {})
+        user24.app_metadata = user.get('app_metadata', {})
+        user24.last_login = datetime.now()
+        user24.save()
+        
+        # Store user info in session
+        request.session['user'] = user
+        
+        return redirect(request.session.get('next', 'core:dashboard'))
+        
+    except Exception as e:
+        logger.error(f"Error saving user metadata: {str(e)}")
+        messages.error(request, "Error saving user data")
+        return redirect('core:login')
+
 def logout(request):
     request.session.clear()
     params = {
@@ -1325,68 +1400,6 @@ class AppraisalRequestDetailView(View):
         except AppraisalRequest.DoesNotExist:
             messages.error(request, 'Appraisal request not found.')
             return redirect('core:dashboard')
-
-
-# class AppraisalRequestDetailView(View):
-#     template_name = 'core/appraisal_request_detail.html'
-
-#     @method_decorator(login_required)
-#     def get(self, request, request_id):
-#         user = get_auth0_user(request)
-#         try:
-#             appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
-#             context = {
-#                 'user': user,  # Add user to context
-#                 'request': appraisal_request,
-#                 'profile': UserProfile.objects(user_id=user['sub']).first()  # Add profile if needed
-#             }
-#             return render(request, self.template_name, context)
-#         except AppraisalRequest.DoesNotExist:
-#             messages.error(request, 'Appraisal request not found.')
-#             return redirect('core:dashboard')    
-
-# class AppraisalRequestDetailView(View):
-#     template_name = 'core/appraisal_request_detail.html'
-
-#     @method_decorator(login_required)
-#     def get(self, request, request_id):
-#         try:
-#             appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
-#             context = {
-#                 'request': appraisal_request
-#             }
-#             return render(request, self.template_name, context)
-#         except AppraisalRequest.DoesNotExist:
-#             messages.error(request, 'Appraisal request not found.')
-#             return redirect('core:dashboard')
-
-# class AppraisalRequestDetailView(View):
-#     template_name = 'core/appraisal_request_detail.html'
-
-#     @method_decorator(login_required)
-#     def get(self, request, request_id):
-#         user = get_auth0_user(request)
-        
-#         try:
-#             appraisal_request = AppraisalRequest.objects.get(request_id=request_id)
-            
-#             # Check if user owns this request or is admin
-#             if appraisal_request.user_id != user['sub'] and not user.get('app_metadata', {}).get('is_admin'):
-#                 messages.error(request, "You don't have permission to view this request.")
-#                 return redirect('core:dashboard')
-            
-#             context = {
-#                 'user': user,
-#                 'request': appraisal_request,
-#                 'status_history': appraisal_request.get_status_history() if hasattr(appraisal_request, 'get_status_history') else None,
-#             }
-            
-#             return render(request, self.template_name, context)
-            
-#         except AppraisalRequest.DoesNotExist:
-#             messages.error(request, 'Appraisal request not found.')
-#             return redirect('core:dashboard')
-
 
 class AppointmentScheduleView(View):
     template_name = 'core/appointment_schedule.html'

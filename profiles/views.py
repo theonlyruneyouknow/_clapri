@@ -6,6 +6,7 @@ from django.views.generic import View
 from utils.auth import login_required, get_auth0_user
 from .models import Profile, Testimonial
 from .forms import ProfileForm, TestimonialForm
+from django.utils.decorators import method_decorator
 
 class DashboardView(View):
     @login_required
@@ -21,22 +22,38 @@ class DashboardView(View):
         return render(request, 'profiles/dashboard.html', context)
 
 class ProfileView(View):
-    @login_required
+    template_name = 'core/profile.html'
+
+    @method_decorator(login_required)
     def get(self, request):
-        auth0_user = get_auth0_user(request)
-        profile = Profile.objects.filter(user_id=auth0_user['sub']).first()
+        user = get_auth0_user(request)
         
-        initial_data = {}
-        if profile:
-            initial_data = {
-                'first_name': profile.first_name,
-                'last_name': profile.last_name,
-                'company': profile.company,
-                'phone': profile.phone
-            }
+        # Get stored profile from database
+        profile = Profile.objects.filter(user_id=user['sub']).first()
         
-        form = ProfileForm(initial=initial_data)
-        return render(request, 'profiles/profile_form.html', {'form': form, 'profile': profile})
+        # Merge Auth0 metadata with stored profile
+        profile_data = {
+            'first_name': profile.first_name if profile else user.get('given_name', ''),
+            'last_name': profile.last_name if profile else user.get('family_name', ''),
+            'email': user.get('email', ''),
+            'phone': profile.phone if profile else '',
+            'company': profile.company if profile else user.get('company', ''),
+            'address': profile.address if profile else '',
+            'city': profile.city if profile else '',
+            'state': profile.state if profile else '',
+            'zip_code': profile.zip_code if profile else '',
+            'picture': user.get('picture', ''),
+            'created_at': profile.created_at if profile else None,
+            'is_verified': profile.is_verified if profile else False
+        }
+
+        context = {
+            'user': user,
+            'profile': profile_data,
+            'is_admin': user.get('is_admin') or user.get('/app_metadata', {}).get('is_admin', False)
+        }
+        
+        return render(request, self.template_name, context)
 
     @login_required
     def post(self, request):
