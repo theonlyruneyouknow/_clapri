@@ -41,6 +41,7 @@ urlpatterns = [
     path('leads/', views.LeadListView.as_view(), name='lead_list'),
     path('leads/create/', views.LeadCreateView.as_view(), name='lead_create'),
     path('leads/<str:id>/', views.LeadDetailView.as_view(), name='lead_detail'),
+    path('leads/<str:id>/edit/', views.LeadEditView.as_view(), name='lead_edit'),
     path('leads/<str:id>/delete/', views.LeadDeleteView.as_view(), name='lead_delete'),
     path('leads/<str:id>/status/', views.LeadStatusUpdateView.as_view(), name='lead_status'),
     

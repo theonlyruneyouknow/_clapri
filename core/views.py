@@ -73,6 +73,82 @@ def get_active_content(page_type):
         print(f"Error in get_active_content: {str(e)}")
         return None
     
+class LeadEditView(View):
+    template_name = 'leads/lead_edit.html'
+
+    @method_decorator(login_required)
+    def get(self, request, id):
+        user = get_auth0_user(request)
+        is_admin = (user.get('is_admin') or user.get('/app_metadata', {}).get('is_admin'))
+        
+        if not is_admin:
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('core:home')
+            
+        try:
+            lead = Lead.objects.get(id=id)
+            # Split the name field into first and last name
+            name_parts = lead.name.split(' ', 1)
+            initial_data = {
+                'first_name': name_parts[0],
+                'last_name': name_parts[1] if len(name_parts) > 1 else '',
+                'email': lead.email,
+                'phone': lead.phone,
+                'property_type': lead.property_type,
+                'message': lead.message
+            }
+            form = LeadForm(initial=initial_data)
+            
+            context = {
+                'form': form,
+                'lead': lead,
+                'user': user
+            }
+            return render(request, self.template_name, context)
+            
+        except Lead.DoesNotExist:
+            messages.error(request, 'Lead not found.')
+            return redirect('core:lead_list')
+
+    @method_decorator(login_required)
+    def post(self, request, id):
+        user = get_auth0_user(request)
+        is_admin = (user.get('is_admin') or user.get('/app_metadata', {}).get('is_admin'))
+        
+        if not is_admin:
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('core:home')
+            
+        try:
+            lead = Lead.objects.get(id=id)
+            form = LeadForm(request.POST)
+            
+            if form.is_valid():
+                # Combine first and last name
+                full_name = f"{form.cleaned_data['first_name']} {form.cleaned_data['last_name']}"
+                
+                lead.name = full_name
+                lead.email = form.cleaned_data['email']
+                lead.phone = form.cleaned_data.get('phone', '')
+                lead.property_type = form.cleaned_data.get('property_type')
+                lead.message = form.cleaned_data.get('message', '')
+                lead.updated_at = datetime.now()
+                
+                lead.save()
+                messages.success(request, 'Lead updated successfully!')
+                return redirect('core:lead_detail', id=id)
+            
+            context = {
+                'form': form,
+                'lead': lead,
+                'user': user
+            }
+            return render(request, self.template_name, context)
+            
+        except Lead.DoesNotExist:
+            messages.error(request, 'Lead not found.')
+            return redirect('core:lead_list')    
+    
 class LeadCreateView(View):
     template_name = 'leads/lead_create.html'
 
