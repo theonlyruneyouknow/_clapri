@@ -153,17 +153,20 @@
                                         <th>ID</th>
                                         <th>Property</th>
                                         <th>Type</th>
-                                        <th>Status</th>
                                         <th>Date</th>
+                                        <th>Status</th>
+                                        <th></th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for request in recent_requests %}
                                     <tr>
-                                        <td>{{ request.id }}</td>
+                                        <td>{{ request.request_id }}</td>
                                         <td>{{ request.property_address }}</td>
-                                        <td>{{ request.type }}</td>
+                                        <td>{{ request.property_type }}</td>
+                                        <td>{{ request.scheduled_date }}</td>
+                                        <!-- <td></td> -->
                                         <td>
                                             <span class="badge bg-{{ request.status_color }}">
                                                 {{ request.status }}
