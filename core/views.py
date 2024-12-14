@@ -481,60 +481,60 @@ class AppraisalListView(LoginRequiredMixin, View):
             messages.error(request, f"Error loading reports: {str(e)}")
             return redirect('core:dashboard')
 
-class AppraisalRequestView(FormView):
-    template_name = 'core/appraisal_request.html'
-    form_class = AppraisalRequestForm
-    success_url = '/dashboard/'
+# class AppraisalRequestView(FormView):
+#     template_name = 'core/appraisal_request.html'
+#     form_class = AppraisalRequestForm
+#     success_url = '/dashboard/'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['min_date'] = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
-        context['max_date'] = (datetime.now() + timedelta(days=90)).strftime('%Y-%m-%d')
-        context['user'] = get_auth0_user(self.request)
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['min_date'] = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+#         context['max_date'] = (datetime.now() + timedelta(days=90)).strftime('%Y-%m-%d')
+#         context['user'] = get_auth0_user(self.request)
+#         return context
 
-    def form_valid(self, form):
-        user = get_auth0_user(self.request)
+#     def form_valid(self, form):
+#         user = get_auth0_user(self.request)
     
-        try:
-            appraisal_request = AppraisalRequest(
-                user_id=user['sub'],
-                property_address=form.cleaned_data['property_address'],
-                property_city=form.cleaned_data['property_city'],
-                property_state=form.cleaned_data['property_state'],
-                property_zip=form.cleaned_data['property_zip'],
-                property_type=form.cleaned_data['property_type'],
-                square_footage=form.cleaned_data['square_footage'],
-                year_built=form.cleaned_data['year_built'],
-                bedrooms=form.cleaned_data['bedrooms'],
-                bathrooms=form.cleaned_data['bathrooms'],
-                lot_size=form.cleaned_data['lot_size'],
-                purpose=form.cleaned_data['purpose'],
-                notes=form.cleaned_data.get('notes', ''),
-                status='pending'
-            )
+#         try:
+#             appraisal_request = AppraisalRequest(
+#                 user_id=user['sub'],
+#                 property_address=form.cleaned_data['property_address'],
+#                 property_city=form.cleaned_data['property_city'],
+#                 property_state=form.cleaned_data['property_state'],
+#                 property_zip=form.cleaned_data['property_zip'],
+#                 property_type=form.cleaned_data['property_type'],
+#                 square_footage=form.cleaned_data['square_footage'],
+#                 year_built=form.cleaned_data['year_built'],
+#                 bedrooms=form.cleaned_data['bedrooms'],
+#                 bathrooms=form.cleaned_data['bathrooms'],
+#                 lot_size=form.cleaned_data['lot_size'],
+#                 purpose=form.cleaned_data['purpose'],
+#                 notes=form.cleaned_data.get('notes', ''),
+#                 status='pending'
+#             )
 
-            # Handle appointment scheduling
-            appointment_date = form.cleaned_data.get('appointment_date')
-            time_slot = form.cleaned_data.get('time_slot')
+#             # Handle appointment scheduling
+#             appointment_date = form.cleaned_data.get('appointment_date')
+#             time_slot = form.cleaned_data.get('time_slot')
             
-            if appointment_date and time_slot:
-                appraisal_request.status = 'scheduled'
-                # Store the appointment information
-                appraisal_request.scheduled_date = appointment_date
-                appraisal_request.time_slot = time_slot
+#             if appointment_date and time_slot:
+#                 appraisal_request.status = 'scheduled'
+#                 # Store the appointment information
+#                 appraisal_request.scheduled_date = appointment_date
+#                 appraisal_request.time_slot = time_slot
                 
-            appraisal_request.save()
-            messages.success(self.request, 'Your appraisal request has been submitted successfully!')
-            return super().form_valid(form)
+#             appraisal_request.save()
+#             messages.success(self.request, 'Your appraisal request has been submitted successfully!')
+#             return super().form_valid(form)
 
-        except Exception as e:
-            logger.error(f"Error creating appraisal request: {str(e)}")
-            messages.error(
-                self.request,
-                'There was an error processing your request. Please try again or contact support.'
-            )
-            return self.form_invalid(form)
+#         except Exception as e:
+#             logger.error(f"Error creating appraisal request: {str(e)}")
+#             messages.error(
+#                 self.request,
+#                 'There was an error processing your request. Please try again or contact support.'
+#             )
+#             return self.form_invalid(form)
     
 
 # Keep only these existing views for now
@@ -996,6 +996,7 @@ class CalendarView(View):
         }
         
         return render(request, 'core/calendar.html', context)       
+
 class TestimonialsView(TemplateView):
     template_name = 'core/testimonials.html'
 
@@ -1347,6 +1348,7 @@ class AppraisalRequestView(FormView):
         return initial
 
     def generate_request_id(self):
+        """Generate a unique request ID in format APRyy-xxxx"""
         current_year = datetime.now().year
         year_str = str(current_year)[2:]  # Get last 2 digits of year
         
@@ -1362,7 +1364,6 @@ class AppraisalRequestView(FormView):
         
         return f'APR{year_str}-{count:04d}'  # Format: APR23-0001
 
-
     def form_valid(self, form):
         user = get_auth0_user(self.request)
         
@@ -1370,6 +1371,11 @@ class AppraisalRequestView(FormView):
             now = timezone.now()
             request_id = self.generate_request_id()
             
+            # Get appointment details
+            appointment_date = self.request.POST.get('appointment_date')
+            time_slot = self.request.POST.get('time_slot')
+            
+            # Create base appraisal request
             appraisal_request = AppraisalRequest(
                 request_id=request_id,
                 user_id=user['sub'],
@@ -1382,17 +1388,38 @@ class AppraisalRequestView(FormView):
                 year_built=form.cleaned_data['year_built'],
                 bedrooms=form.cleaned_data['bedrooms'],
                 bathrooms=form.cleaned_data['bathrooms'],
-                created_at=now
+                lot_size=form.cleaned_data.get('lot_size'),
+                purpose=form.cleaned_data.get('purpose'),
+                notes=form.cleaned_data.get('notes'),
+                created_at=now,
+                updated_at=now
             )
 
-            # Handle appointment scheduling if provided
-            appointment_date = form.cleaned_data.get('appointment_date')
-            time_slot = form.cleaned_data.get('time_slot')
-            
+            # Handle scheduling if both date and time slot are provided
             if appointment_date and time_slot:
-                appraisal_request.status = 'scheduled'
-                appraisal_request.scheduled_date = appointment_date
-                appraisal_request.time_slot = time_slot
+                try:
+                    # Convert date string to datetime
+                    base_date = datetime.strptime(appointment_date, '%Y-%m-%d')
+                    
+                    # Set time based on slot selection
+                    time_mapping = {
+                        'morning': '09:00',      # Default to 9 AM for morning slot
+                        'afternoon1': '13:00',    # Default to 1 PM for early afternoon
+                        'afternoon2': '15:00',    # Default to 3 PM for late afternoon
+                    }
+                    
+                    time_str = time_mapping.get(time_slot, '09:00')
+                    date_str = base_date.strftime('%Y-%m-%d')
+                    scheduled_datetime = datetime.strptime(f"{date_str} {time_str}", '%Y-%m-%d %H:%M')
+                    
+                    appraisal_request.scheduled_date = scheduled_datetime
+                    appraisal_request.time_slot = time_slot
+                    appraisal_request.status = 'scheduled'
+                except ValueError as e:
+                    logger.error(f"Date parsing error: {str(e)}")
+                    appraisal_request.status = 'pending'
+            else:
+                appraisal_request.status = 'pending'
 
             # Save the request
             appraisal_request.save()
@@ -1429,7 +1456,7 @@ class AppraisalRequestView(FormView):
             except Exception as e:
                 logger.error(f"Error sending appraisal request emails: {str(e)}")
                 # Continue processing even if email fails
-
+            
             # Success message
             messages.success(
                 self.request,
@@ -1459,20 +1486,35 @@ class AppraisalRequestView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['user'] = get_auth0_user(self.request)
+        user = get_auth0_user(self.request)
+        
+        # Add user to context
+        context['user'] = user
+        
+        # Add date limits
         context['min_date'] = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
         context['max_date'] = (datetime.now() + timedelta(days=90)).strftime('%Y-%m-%d')
         
         # Get user profile
-        context['profile'] = UserProfile.objects(user_id=context['user']['sub']).first()
+        context['profile'] = UserProfile.objects(user_id=user['sub']).first()
         
         # Get user's recent requests
         context['recent_requests'] = AppraisalRequest.objects(
-            user_id=context['user']['sub']
+            user_id=user['sub']
         ).order_by('-created_at')[:3]
         
-        return context  
-
+        # Add scheduling info
+        context['scheduling_info'] = {
+            'business_hours': {
+                'weekdays': '9:00 AM - 5:00 PM',
+                'saturday': '10:00 AM - 2:00 PM',
+                'sunday': 'Closed'
+            },
+            'min_notice': '24 hours',
+            'max_advance': '90 days'
+        }
+        
+        return context
 class AppraisalRequestDetailView(View):
     template_name = 'core/appraisal_request_detail.html'
 

@@ -19,6 +19,12 @@ class AppraisalRequest(Document):
         ('cancelled', 'Cancelled')
     )
 
+    TIME_SLOTS = (
+        ('morning', 'Morning: 8:00 AM - 11:00 AM'),
+        ('afternoon1', 'Early Afternoon: 12:00 PM - 3:00 PM'),
+        ('afternoon2', 'Late Afternoon: 3:00 PM - 6:00 PM')
+    )
+
     request_id = StringField(unique=True)  # Auto-generated ID
     user_id = StringField(required=True)  # Auth0 user ID
     property_address = StringField(required=True, max_length=200)
@@ -33,6 +39,8 @@ class AppraisalRequest(Document):
     lot_size = StringField()
     purpose = StringField(required=False)
     status = StringField(required=True, choices=STATUS_CHOICES, default='pending')
+    time_slot = StringField(choices=TIME_SLOTS)
+    scheduled_date = DateTimeField()
 
     created_at = DateTimeField(default=datetime.now)
     updated_at = DateTimeField(default=datetime.now)  # Use timezone.now instead of datetime.now
@@ -68,3 +76,8 @@ class AppraisalRequest(Document):
     @property
     def full_property_address(self):
         return f"{self.property_address}, {self.property_city}, {self.property_state} {self.property_zip}"
+    
+    @property
+    def formatted_time_slot(self):
+        """Returns human-readable time slot"""
+        return dict(self.TIME_SLOTS).get(self.time_slot, '')

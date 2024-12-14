@@ -206,18 +206,15 @@ class AppraisalRequestForm(forms.Form):
             'type': 'date'
         })
     )
+    
     time_slot = forms.ChoiceField(
         required=False,
-        choices=[
-            ('', 'Select a time slot'),
-            ('morning', 'Morning: 8:00 AM - 11:00 AM'),
-            ('afternoon1', 'Early Afternoon: 12:00 PM - 3:00 PM'),
-            ('afternoon2', 'Late Afternoon: 3:00 PM - 6:00 PM')
-        ],
+        choices=[('', 'Select a time slot')] + list(AppraisalRequest.TIME_SLOTS),
         widget=forms.Select(attrs={
             'class': 'form-control'
         })
     )
+    
     notes = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={
@@ -226,6 +223,8 @@ class AppraisalRequestForm(forms.Form):
             'placeholder': 'Enter any special requirements or preferred times if the available slots don\'t work for you.'
         })
     )
+
+    
 
     
     
