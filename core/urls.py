@@ -49,6 +49,13 @@ urlpatterns = [
     path('calendar/', views.CalendarView.as_view(), name='calendar'),
     path('calendar/<int:year>/<int:month>/', views.CalendarView.as_view(), name='calendar'),
     
+    path('services/residential/', views.ResidentialServicesView.as_view(), name='residential_services'),
+    path('services/commercial/', views.CommercialServicesView.as_view(), name='commercial_services'),
+    path('services/consulting/', views.ConsultingServicesView.as_view(), name='consulting_services'),
+    path('services/residential/', views.ResidentialServicesView.as_view(), name='residential_services'),
+    path('services/commercial/', views.CommercialServicesView.as_view(), name='commercial_services'),
+    path('services/consulting/', views.ConsultingServicesView.as_view(), name='consulting_services'),
+    
     # Legal & Info Pages
     path('privacy-policy/', views.PrivacyPolicyView.as_view(), name='privacy'),
     path('terms/', views.TermsOfServiceView.as_view(), name='terms'),

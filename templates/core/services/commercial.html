@@ -1,0 +1,122 @@
+{# File: templates/core/services/commercial.html #}
+
+{% extends 'base.html' %}
+{% block title %}Commercial Appraisal Services - Appraisal Pro{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {% if page_content %}
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <h1 class="display-4 mb-4">{{ page_content.title }}</h1>
+                <div class="content-body">
+                    {{ page_content.content|safe }}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Default content -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="display-4 mb-4">Commercial Appraisal Services</h1>
+                <p class="lead mb-5">Professional valuation services for all types of commercial properties.</p>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <!-- Office Buildings -->
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="bi bi-building text-primary me-2"></i>
+                            Office Buildings
+                        </h3>
+                        <p class="card-text">Comprehensive valuations for:</p>
+                        <ul>
+                            <li>Single-tenant buildings</li>
+                            <li>Multi-tenant complexes</li>
+                            <li>Medical offices</li>
+                            <li>Professional centers</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Retail Properties -->
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="bi bi-shop text-primary me-2"></i>
+                            Retail Properties
+                        </h3>
+                        <p class="card-text">Expert appraisals for:</p>
+                        <ul>
+                            <li>Shopping centers</li>
+                            <li>Strip malls</li>
+                            <li>Individual retail stores</li>
+                            <li>Restaurant buildings</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <!-- Industrial -->
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="bi bi-box-seam text-primary me-2"></i>
+                            Industrial Properties
+                        </h3>
+                        <p class="card-text">Specialized valuations for:</p>
+                        <ul>
+                            <li>Warehouses</li>
+                            <li>Manufacturing facilities</li>
+                            <li>Distribution centers</li>
+                            <li>Light industrial complexes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mixed-Use -->
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="bi bi-grid-3x3 text-primary me-2"></i>
+                            Mixed-Use Properties
+                        </h3>
+                        <p class="card-text">Complex valuations for:</p>
+                        <ul>
+                            <li>Retail/residential combinations</li>
+                            <li>Office/retail buildings</li>
+                            <li>Multi-purpose facilities</li>
+                            <li>Live/work developments</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card bg-light">
+                    <div class="card-body text-center py-5">
+                        <h2 class="mb-4">Need a Commercial Appraisal?</h2>
+                        <p class="lead mb-4">Contact us for a consultation and detailed quote for your commercial property.</p>
+                        <a href="{% url 'core:contact' %}" class="btn btn-primary btn-lg">
+                            Request Consultation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

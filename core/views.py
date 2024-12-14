@@ -765,25 +765,56 @@ class ServicesView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = get_auth0_user(self.request)
-        context['services'] = [
-            {
-                'title': 'Residential Appraisals',
-                'description': 'Comprehensive valuation for homes and residential properties.',
-                'icon': 'bi-house'
-            },
-            {
-                'title': 'Commercial Appraisals',
-                'description': 'Expert valuation services for commercial real estate.',
-                'icon': 'bi-building'
-            },
-            {
-                'title': 'Property Consultations',
-                'description': 'Professional guidance on property values and market trends.',
-                'icon': 'bi-chat-square-text'
-            }
-        ]
+        # Add the same content retrieval logic as AboutView
+        context['page_content'] = PageContent.objects.filter(
+            page_type='services',
+            active=True,
+            archived=False
+        ).first()
         return context
     
+# File: core/views.py
+# Add these new view classes
+
+class ResidentialServicesView(TemplateView):
+    template_name = 'core/services/residential.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        context['page_content'] = PageContent.objects.filter(
+            page_type='residential_services',
+            active=True,
+            archived=False
+        ).first()
+        return context
+
+class CommercialServicesView(TemplateView):
+    template_name = 'core/services/commercial.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        context['page_content'] = PageContent.objects.filter(
+            page_type='commercial_services',
+            active=True,
+            archived=False
+        ).first()
+        return context
+
+class ConsultingServicesView(TemplateView):
+    template_name = 'core/services/consulting.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = get_auth0_user(self.request)
+        context['page_content'] = PageContent.objects.filter(
+            page_type='consulting_services',
+            active=True,
+            archived=False
+        ).first()
+        return context
+
 class FAQView(TemplateView):
     template_name = 'core/faq.html'
 

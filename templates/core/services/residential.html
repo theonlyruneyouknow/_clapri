@@ -1,0 +1,118 @@
+{# File: templates/core/services/residential.html #}
+
+{% extends 'base.html' %}
+{% block title %}Residential Appraisal Services - Appraisal Pro{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {% if page_content %}
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <h1 class="display-4 mb-4">{{ page_content.title }}</h1>
+                <div class="content-body">
+                    {{ page_content.content|safe }}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Default content -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="display-4 mb-4">Residential Appraisal Services</h1>
+                <p class="lead mb-5">Expert valuation services for all types of residential properties.</p>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <!-- Single Family Homes -->
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="bi bi-house text-primary me-2"></i>
+                            Single Family Homes
+                        </h3>
+                        <p class="card-text">Comprehensive appraisals for houses of all sizes and styles, including:</p>
+                        <ul>
+                            <li>Traditional single-family homes</li>
+                            <li>Custom-built houses</li>
+                            <li>Historic properties</li>
+                            <li>Luxury residences</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Condos & Townhouses -->
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="bi bi-buildings text-primary me-2"></i>
+                            Condos & Townhouses
+                        </h3>
+                        <p class="card-text">Specialized valuations for shared-wall properties, considering:</p>
+                        <ul>
+                            <li>Common area amenities</li>
+                            <li>HOA regulations</li>
+                            <li>Market comparables</li>
+                            <li>Location factors</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h3 class="card-title">Our Appraisal Process</h3>
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <i class="bi bi-calendar-check display-4 text-primary"></i>
+                                    <h5 class="mt-2">Schedule</h5>
+                                    <p>Book your appointment online or by phone</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <i class="bi bi-house-gear display-4 text-primary"></i>
+                                    <h5 class="mt-2">Inspect</h5>
+                                    <p>Thorough on-site property evaluation</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <i class="bi bi-graph-up display-4 text-primary"></i>
+                                    <h5 class="mt-2">Analyze</h5>
+                                    <p>Comprehensive market research</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <i class="bi bi-file-earmark-text display-4 text-primary"></i>
+                                    <h5 class="mt-2">Report</h5>
+                                    <p>Detailed appraisal report delivery</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="mb-4">Ready to Get Started?</h2>
+                <p class="lead mb-4">Contact us today to schedule your residential appraisal.</p>
+                <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary btn-lg">
+                    Request an Appraisal
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

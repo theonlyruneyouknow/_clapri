@@ -1,0 +1,87 @@
+{# File: templates/core/services/consulting.html #}
+
+{% extends 'base.html' %}
+{% block title %}Consulting Services - Appraisal Pro{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {% if page_content %}
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <h1 class="display-4 mb-4">{{ page_content.title }}</h1>
+                <div class="content-body">
+                    {{ page_content.content|safe }}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Default content -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="display-4 mb-4">Specialized Consulting Services</h1>
+                <p class="lead mb-5">Expert guidance and analysis for complex property matters.</p>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <!-- Estate Planning -->
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="bi bi-journal-text text-primary me-2"></i>
+                            Estate Planning
+                        </h3>
+                        <p class="card-text">Comprehensive services including:</p>
+                        <ul>
+                            <li>Estate tax valuations</li>
+                            <li>Date of death valuations</li>
+                            <li>Asset distribution planning</li>
+                            <li>Trust asset valuations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tax Assessment -->
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="bi bi-calculator text-primary me-2"></i>
+                            Tax Assessment Review
+                        </h3>
+                        <p class="card-text">Professional assistance with:</p>
+                        <ul>
+                            <li>Property tax appeals</li>
+                            <li>Assessment analysis</li>
+                            <li>Comparable property research</li>
+                            <li>Appeal documentation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+</div>
+
+<!-- Call to Action -->
+<div class="row">
+<div class="col-12">
+<div class="card bg-light">
+    <div class="card-body text-center py-5">
+        <h2 class="mb-4">Need a Commercial Appraisal?</h2>
+        <p class="lead mb-4">Contact us for a consultation and detailed quote for your commercial property.</p>
+        <a href="{% url 'core:contact' %}" class="btn btn-primary btn-lg">
+            Request Consultation
+        </a>
+    </div>
+</div>
+</div>
+</div>
+{% endif %}
+</div>
+{% endblock %}

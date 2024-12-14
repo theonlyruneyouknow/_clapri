@@ -1,90 +1,140 @@
-{# File: templates/core/home.html #}
-{# Location: C:\git\_clapri\templates\core\home.html #}
+{# File: templates/core/services.html #}
+{# Location: C:\git\_clapri\templates\core\services.html #}
 
 {% extends 'base.html' %}
 {% load custom_filters %}
 
-{% block title %}Home - Martin Appraisal Co{% endblock %}
+{% block title %}Our Services - Appraisal Pro{% endblock %}
 
 {% block content %}
 <div class="container py-4">
     {% if page_content %}
         <div class="row mb-5">
-            <div class="col-12">
+            <div class="col-lg-12">
                 <h1 class="display-4 mb-4">{{ page_content.title }}</h1>
                 <div class="content-body">
                     {{ page_content.content|safe }}
                 </div>
             </div>
         </div>
-        
-        {% if user.is_admin or user|get:'/app_metadata'|get:'is_admin' %}
-            <div class="card mt-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="card-title mb-0">Admin Debug Information</h5>
-                </div>
-                <div class="card-body">
-                    <dl>
-                        <dt>Content ID:</dt>
-                        <dd>{{ page_content.id }}</dd>
-                        
-                        <dt>Title:</dt>
-                        <dd>{{ page_content.title }}</dd>
-                        
-                        <dt>Active:</dt>
-                        <dd>{{ page_content.active }}</dd>
-                        
-                        <dt>Display From:</dt>
-                        <dd>{{ page_content.display_from|default:"Not set" }}</dd>
-                        
-                        <dt>Display Until:</dt>
-                        <dd>{{ page_content.display_until|default:"Not set" }}</dd>
-                        
-                        <dt>Last Updated:</dt>
-                        <dd>{{ page_content.updated_at|date:"F j, Y H:i:s" }}</dd>
-                    </dl>
-                    
-                    <div class="mt-3">
-                        <a href="{% url 'content_management:content_edit' content_id=page_content.id %}" 
-                           class="btn btn-primary">Edit This Content</a>
+    {% else %}
+        <!-- Default content -->
+        <div class="row g-4">
+            <!-- Residential Appraisals Card -->
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="display-4 text-primary mb-3">
+                            <i class="bi bi-house-door"></i>
+                        </div>
+                        <h3 class="card-title">Residential Appraisals</h3>
+                        <p class="text-muted mb-4">Comprehensive valuation services for:</p>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="bi bi-check2 text-success"></i>
+                                Single-Family Homes
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check2 text-success"></i>
+                                Condominiums
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check2 text-success"></i>
+                                Multi-Family Units
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check2 text-success"></i>
+                                New Construction
+                            </li>
+                        </ul>
+                        <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary mt-3">
+                            Request Appraisal
+                        </a>
                     </div>
                 </div>
             </div>
-        {% endif %}
-    {% else %}
-        <!-- Default content -->
-        <div class="row">
-            <div class="col-12 text-center mt-5">
-                <h1>Welcome to Martin Appraisal Co</h1>
-                <p class="lead">Professional appraisal services at your fingertips</p>
-                
-                {% if user.is_admin or user|get:'/app_metadata'|get:'is_admin' %}
-                    <div class="alert alert-info mt-4">
-                        <h5>Admin Notice</h5>
-                        <p>No active content found for the home page. Would you like to create some?</p>
-                        <a href="{% url 'content_management:content_create' %}" class="btn btn-primary">
-                            Create Home Page Content
+
+            <!-- Commercial Appraisals Card -->
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="display-4 text-primary mb-3">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <h3 class="card-title">Commercial Appraisals</h3>
+                        <p class="text-muted mb-4">Expert valuation services for:</p>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="bi bi-check2 text-success"></i>
+                                Office Buildings
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check2 text-success"></i>
+                                Retail Properties
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check2 text-success"></i>
+                                Industrial Facilities
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check2 text-success"></i>
+                                Mixed-Use Properties
+                            </li>
+                        </ul>
+                        <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary mt-3">
+                            Request Appraisal
                         </a>
                     </div>
-                {% endif %}
+                </div>
+            </div>
+
+            <!-- Specialized Services Card -->
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="display-4 text-primary mb-3">
+                            <i class="bi bi-diagram-3"></i>
+                        </div>
+                        <h3 class="card-title">Specialized Services</h3>
+                        <p class="text-muted mb-4">Additional professional services:</p>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="bi bi-check2 text-success"></i>
+                                Estate Planning
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check2 text-success"></i>
+                                Tax Assessment Review
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check2 text-success"></i>
+                                Property Tax Appeals
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check2 text-success"></i>
+                                Investment Analysis
+                            </li>
+                        </ul>
+                        <a href="{% url 'core:contact' %}" class="btn btn-primary mt-3">
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="bg-light p-5 rounded text-center">
+                    <h2 class="mb-4">Ready to Get Started?</h2>
+                    <p class="lead mb-4">Contact us today for a consultation and quote.</p>
+                    <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary btn-lg">
+                        Request an Appraisal
+                    </a>
+                </div>
             </div>
         </div>
     {% endif %}
 </div>
-
-{% if debug %}
-<!-- Debug Panel -->
-<div class="container mt-4">
-    <div class="card bg-light">
-        <div class="card-header">
-            <h5 class="mb-0">Debug Information</h5>
-        </div>
-        <div class="card-body">
-            <pre>{{ page_content|pprint }}</pre>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-{% include 'core/chat_widget.html' %}
 {% endblock %}

@@ -1,0 +1,55 @@
+{# File: templates/core/services.html #}
+{# Location: C:\git\_clapri\templates\core\services.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Services - Martin Appraisal Co{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {% if page_content %}
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <!-- <h1 class="display-4 mb-4">{{ page_content.title }}</h1> -->
+                <div class="content-body">
+                    {{ page_content.content|safe }}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Default content if no dynamic content is available -->
+        <div class="row mb-5">
+            <div class="col-lg-12 text-center">
+                <h1 class="display-4">About Martin Appraisal Co</h1>
+                <p class="lead">Professional appraisal services with over 20 years of experience.</p>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-lg-6">
+                <h2>Our Story</h2>
+                <p>Founded in 2003, Martin Appraisal Co has been providing professional and reliable appraisal services 
+                   to clients across the region. Our commitment to accuracy, integrity, and customer service has 
+                   made us a trusted name in the industry.</p>
+                <p>We combine years of experience with modern technology to deliver accurate, timely, and 
+                   comprehensive appraisal services.</p>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title">Why Choose Us?</h3>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">✓ 20+ Years of Experience</li>
+                            <li class="mb-2">✓ Certified Professional Appraisers</li>
+                            <li class="mb-2">✓ Quick Turnaround Time</li>
+                            <li class="mb-2">✓ Competitive Pricing</li>
+                            <li>✓ Modern Technology Integration</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
