@@ -19,7 +19,7 @@ from mongoengine.queryset.visitor import Q
 # from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm
 from .forms import ContactForm, ProfileForm, AppraisalRequestForm, TestimonialForm, AppointmentScheduleForm, ScheduleSelectionForm, LeadForm
 from content_management.models import PageContent  # Add this import
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from django.utils import timezone
 import secrets
 import logging
@@ -37,7 +37,7 @@ from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from mongoengine import Document, StringField, DictField, DateTimeField
-
+import calendar
 
 logger = logging.getLogger(__name__)
 
@@ -928,8 +928,74 @@ class DashboardView(TemplateView):
         })
         return context   
   
-
+class CalendarView(View):
+    @method_decorator(login_required)
+    def get(self, request, year=None, month=None):
+        # Get current year and month if not specified
+        if not year:
+            year = datetime.now().year
+        if not month:
+            month = datetime.now().month
+            
+        # Convert to integers
+        year = int(year)
+        month = int(month)
         
+        # Get calendar info
+        cal = calendar.monthcalendar(year, month)
+        month_name = calendar.month_name[month]
+        
+        # Calculate start and end dates for the month
+        start_date = datetime(year, month, 1, 0, 0, 0)
+        if month == 12:
+            end_date = datetime(year + 1, 1, 1, 0, 0, 0)
+        else:
+            end_date = datetime(year, month + 1, 1, 0, 0, 0)
+        
+        # Get appointments for this month using date range
+        appointments = AppraisalRequest.objects.filter(
+            user_id=get_auth0_user(request)['sub'],
+            scheduled_date__gte=start_date,
+            scheduled_date__lt=end_date
+        ).order_by('scheduled_date')
+        
+        # Create appointment lookup by day
+        appointment_lookup = {}
+        for appointment in appointments:
+            day = appointment.scheduled_date.day
+            if day not in appointment_lookup:
+                appointment_lookup[day] = []
+            appointment_lookup[day].append(appointment)
+        
+        # Get prev/next month links
+        if month == 1:
+            prev_month = 12
+            prev_year = year - 1
+        else:
+            prev_month = month - 1
+            prev_year = year
+            
+        if month == 12:
+            next_month = 1
+            next_year = year + 1
+        else:
+            next_month = month + 1
+            next_year = year
+        
+        context = {
+            'calendar': cal,
+            'month_name': month_name,
+            'year': year,
+            'month': month,
+            'appointments': appointment_lookup,
+            'prev_month': prev_month,
+            'prev_year': prev_year,
+            'next_month': next_month,
+            'next_year': next_year,
+            'user': get_auth0_user(request)  # Add user to context
+        }
+        
+        return render(request, 'core/calendar.html', context)       
 class TestimonialsView(TemplateView):
     template_name = 'core/testimonials.html'
 

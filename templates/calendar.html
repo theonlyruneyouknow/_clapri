@@ -1,0 +1,96 @@
+{# File: templates/core/calendar.html #}
+{# Location: C:\git\_clapri\templates\core\calendar.html #}
+
+{% extends 'base.html' %}
+
+{% block title %}Calendar - Martin Appraisal Co{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ month_name }} {{ year }}</h5>
+                <div>
+                    <a href="{% url 'core:calendar' year=prev_year month=prev_month %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                    <a href="{% url 'core:calendar' %}" class="btn btn-outline-primary mx-2">Today</a>
+                    <a href="{% url 'core:calendar' year=next_year month=next_month %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered calendar-table">
+                <thead>
+                    <tr>
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for week in calendar %}
+                    <tr>
+                        {% for day in week %}
+                        <td class="{% if day == 0 %}text-muted{% endif %} position-relative" style="height: 120px;">
+                            {% if day != 0 %}
+                                <div class="d-flex justify-content-between">
+                                    <span>{{ day }}</span>
+                                    {% if day in appointments %}
+                                        <span class="badge bg-primary rounded-pill">
+                                            {{ appointments|get:day|length }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                {% if day in appointments %}
+                                    <div class="mt-1">
+                                        {% for appointment in appointments|get:day %}
+                                        <div class="calendar-event p-1 mb-1 rounded bg-primary-subtle">
+                                            <small class="d-block text-truncate">
+                                                {{ appointment.scheduled_date|date:"g:i A" }} -
+                                                {{ appointment.formatted_address }}
+                                            </small>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.calendar-table th {
+    text-align: center;
+    width: 14.28%;
+}
+
+.calendar-table td {
+    padding: 8px;
+    vertical-align: top;
+}
+
+.calendar-event {
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.calendar-event:hover {
+    background-color: #0d6efd !important;
+    color: white;
+}
+</style>
+{% endblock %}

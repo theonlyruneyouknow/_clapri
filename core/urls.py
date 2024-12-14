@@ -45,6 +45,9 @@ urlpatterns = [
     path('leads/<str:id>/edit/', views.LeadEditView.as_view(), name='lead_edit'),
     path('leads/<str:id>/delete/', views.LeadDeleteView.as_view(), name='lead_delete'),
     path('leads/<str:id>/status/', views.LeadStatusUpdateView.as_view(), name='lead_status'),
+
+    path('calendar/', views.CalendarView.as_view(), name='calendar'),
+    path('calendar/<int:year>/<int:month>/', views.CalendarView.as_view(), name='calendar'),
     
     # Legal & Info Pages
     path('privacy-policy/', views.PrivacyPolicyView.as_view(), name='privacy'),
