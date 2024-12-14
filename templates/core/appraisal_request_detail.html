@@ -2,48 +2,224 @@
 {# Location: C:\git\_clapri\templates\core\appraisal_request_detail.html #}
 
 {% extends 'base.html' %}
-{% block title %}Appraisal Request Details{% endblock %}
+{% block title %}Appraisal Request {{ request.request_id }} - Martin Appraisal Co{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
             <div>
-                <h5 class="card-title mb-0">
-                    Appraisal Request #{{ request.request_id }}
-                    <span class="badge bg-{{ request.status_color }} ms-2">{{ request.status }}</span>
-                </h5>
+                <h1 class="h3 mb-2">Appraisal Request {{ request.request_id }}</h1>
+                <p class="text-muted mb-0">Created on {{ request.created_at|date:"F j, Y" }}</p>
             </div>
             <div>
-                {% if not appointment %}
-                    <a href="{% url 'core:appointment_schedule' request_id=request.request_id %}" 
-                       class="btn btn-primary">
-                        <i class="bi bi-calendar-plus me-2"></i>Schedule Appointment
-                    </a>
-                {% endif %}
                 {% if request.status == 'pending' %}
                     <a href="{% url 'core:schedule_selection' request_id=request.request_id %}" class="btn btn-primary">
-                        <i class="bi bi-calendar"></i> Schedule Appointment date and timeslot
+                        <i class="bi bi-calendar-plus"></i> Schedule Appointment
                     </a>
                 {% endif %}
+                <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary ms-2">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Timeline -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between position-relative status-timeline">
+                        {% for stage in status_timeline %}
+                        <div class="text-center status-point {% if stage.active %}active{% endif %} {% if stage.completed %}completed{% endif %}">
+                            <div class="status-icon mb-2">
+                                <i class="bi bi-circle-fill"></i>
+                            </div>
+                            <div class="status-label">{{ stage.status|title }}</div>
+                            {% if stage.date %}
+                                <small class="text-muted d-block">{{ stage.date|date:"M d, Y" }}</small>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        <!-- Progress line -->
+                        <div class="progress-line"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Property Details -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Property Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted mb-1">Property Address</label>
+                            <p class="mb-0">{{ request.property_address }}</p>
+                            <p class="mb-0">{{ request.property_city }} {{ request.property_state }}, {{ request.property_zip }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted mb-1">Property Type</label>
+                            <p class="mb-0">{{ request.property_type }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted mb-1">Square Footage</label>
+                            <p class="mb-0">{{ request.square_footage }} sq ft</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted mb-1">Year Built</label>
+                            <p class="mb-0">{{ request.year_built|default:"Not specified" }}</p>
+                        </div>
+                        {% if request.bedrooms or request.bathrooms %}
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted mb-1">Bedrooms/Bathrooms</label>
+                            <p class="mb-0">
+                                {% if request.bedrooms %}{{ request.bedrooms }} bed{% endif %}
+                                {% if request.bathrooms %} / {{ request.bathrooms }} bath{% endif %}
+                            </p>
+                        </div>
+                        {% endif %}
+                        {% if request.lot_size %}
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted mb-1">Lot Size</label>
+                            <p class="mb-0">{{ request.lot_size }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label class="text-muted mb-1">Purpose of Appraisal</label>
+                            <p class="mb-0">{{ request.purpose }}</p>
+                        </div>
+                        {% if request.notes %}
+                        <div class="col-12">
+                            <label class="text-muted mb-1">Additional Notes</label>
+                            <p class="mb-0">{{ request.notes }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Section (if implemented) -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Documents</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">No documents uploaded yet.</p>
+                    <button class="btn btn-outline-primary" disabled>
+                        <i class="bi bi-upload"></i> Upload Documents
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- ... rest of the template remains the same ... -->
+        <!-- Status and Timeline -->
+        <div class="col-lg-4">
+            <!-- Current Status -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Current Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-{{ request.status_color }} me-2">{{ request.status_display }}</span>
+                        <span class="text-muted">Updated {{ request.updated_at|date:"M d, Y" }}</span>
+                    </div>
+                    
+                    {% if request.scheduled_date %}
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-calendar-event me-2"></i>
+                        Scheduled for:<br>
+                        <strong>{{ request.scheduled_date|date:"F j, Y h:i A" }}</strong>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
 
-        <div class="card-footer">
-            <div class="d-flex justify-content-between align-items-center">
-                <a href="{% url 'core:dashboard' %}" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
-                </a>
-                {% if not appointment %}
-                    <a href="{% url 'core:appointment_schedule' request_id=request.request_id %}" 
-                       class="btn btn-primary">
-                        <i class="bi bi-calendar-plus me-2"></i>Schedule Appointment
-                    </a>
-                {% endif %}
+            <!-- Contact Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        <i class="bi bi-telephone me-2"></i>
+                        541-520-9552
+                    </p>
+                    <p class="mb-0">
+                        <i class="bi bi-envelope me-2"></i>
+                        martin@martinappraisalco.com
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+/* Status Timeline Styles */
+.status-timeline {
+    padding: 20px 40px;
+}
+
+.status-timeline::before {
+    content: '';
+    position: absolute;
+    top: 30px;
+    left: 50px;
+    right: 50px;
+    height: 2px;
+    background: #e9ecef;
+    z-index: 1;
+}
+
+.status-point {
+    position: relative;
+    z-index: 2;
+    background: white;
+    padding: 0 10px;
+}
+
+.status-icon {
+    width: 24px;
+    height: 24px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 50%;
+    color: #dee2e6;
+}
+
+.status-point.active .status-icon {
+    color: #0d6efd;
+}
+
+.status-point.completed .status-icon {
+    color: #198754;
+}
+
+.status-label {
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.status-point.active .status-label {
+    color: #0d6efd;
+}
+
+.status-point.completed .status-label {
+    color: #198754;
+}
+</style>
 {% endblock %}

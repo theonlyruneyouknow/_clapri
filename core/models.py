@@ -130,8 +130,8 @@ class AppraisalRequest(Document):
         ('cancelled', 'Cancelled')
     )
 
-    request_id = StringField(unique=True)  # Auto-generated ID
-    user_id = StringField(required=True)  # Auth0 user ID
+    request_id = StringField(unique=True)
+    user_id = StringField(required=True)
     property_address = StringField(required=True, max_length=200)
     property_city = StringField(required=True, max_length=100)
     property_state = StringField(required=True, max_length=50)
@@ -142,29 +142,20 @@ class AppraisalRequest(Document):
     bedrooms = IntField()
     bathrooms = FloatField()
     lot_size = StringField()
-    purpose = StringField(required=False)
+    purpose = StringField(required=True)
     status = StringField(required=True, choices=STATUS_CHOICES, default='pending')
-    # preferred_date = DateTimeField()
-    # alternate_date = DateTimeField()
-    created_at = DateTimeField(default=datetime.now)
-    updated_at = DateTimeField(default=datetime.now)  # Use timezone.now instead of datetime.now
+    preferred_date = DateTimeField()
+    alternate_date = DateTimeField()
     notes = StringField()
-    documents = ListField(StringField())  # URLs to uploaded documents
-    
-    scheduled_date = DateField()
+    created_at = DateTimeField(default=datetime.now)
+    updated_at = DateTimeField(default=datetime.now)
+    scheduled_date = DateTimeField()
     assigned_appraiser = StringField()
-    estimated_value = DecimalField()
     
     meta = {
         'collection': 'appraisal_requests',
-        'ordering': ['-created_at'],
-        'indexes': [
-            'user_id',
-            'status',
-            'request_id'
-        ]
+        'ordering': ['-created_at']
     }
-
 
     @property
     def status_color(self):
@@ -176,11 +167,21 @@ class AppraisalRequest(Document):
             'completed': 'success',
             'cancelled': 'danger'
         }.get(self.status, 'secondary')
-
+    
     @property
-    def full_property_address(self):
+    def formatted_address(self):
+        """Returns a nicely formatted full address"""
         return f"{self.property_address}, {self.property_city}, {self.property_state} {self.property_zip}"
-
+    
+    @property
+    def property_type_display(self):
+        """Returns the display name for the property type"""
+        return dict(self.PROPERTY_TYPES).get(self.property_type, self.property_type)
+    
+    @property
+    def status_display(self):
+        """Returns the display name for the status"""
+        return dict(self.STATUS_CHOICES).get(self.status, self.status)
 
 class Testimonial(Document):
     user_id = StringField(required=True)  # Auth0 user ID

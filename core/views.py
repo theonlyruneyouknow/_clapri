@@ -871,21 +871,62 @@ class DashboardView(TemplateView):
     template_name = 'core/dashboard.html'
 
     @method_decorator(login_required)
-    def get(self, request, *args, **kwargs):
-        user = get_auth0_user(request)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = get_auth0_user(self.request)
         profile = UserProfile.objects(user_id=user['sub']).first()
-        
-        # Get recent appraisal requests
-        recent_requests = AppraisalRequest.objects(user_id=user['sub']).order_by('-created_at')
-        
-        context = {
+
+        # Get latest requests for this user
+        recent_requests = AppraisalRequest.objects(user_id=user['sub']).order_by('-created_at')[:5]
+
+        # Get pending requests count
+        pending_count = AppraisalRequest.objects(
+            user_id=user['sub'],
+            status='pending'
+        ).count()
+
+        # Get in-progress requests count
+        in_progress_count = AppraisalRequest.objects(
+            user_id=user['sub'],
+            status__in=['scheduled', 'in_progress', 'reviewing']
+        ).count()
+
+        # Get completed requests count
+        completed_count = AppraisalRequest.objects(
+            user_id=user['sub'],
+            status='completed'
+        ).count()
+
+        # Get upcoming appointments
+        upcoming_appointments = AppraisalRequest.objects(
+            user_id=user['sub'],
+            status='scheduled',
+            scheduled_date__gte=datetime.now()
+        ).order_by('scheduled_date')[:5]
+
+        context.update({
             'user': user,
             'profile': profile,
+            'statistics': {
+                'total_requests': recent_requests.count(),
+                'pending_requests': pending_count,
+                'completed_requests': completed_count,
+                'in_progress': in_progress_count
+            },
             'recent_requests': recent_requests,
-        }
-        
-        return render(request, self.template_name, context)
-    
+            'upcoming_appointments': upcoming_appointments,
+            'notifications': [
+                {
+                    'type': 'info',
+                    'message': 'Welcome to your dashboard! Here you can track your appraisal requests.',
+                    'date': datetime.now()
+                }
+            ] if not recent_requests else []
+        })
+        return context   
   
 
         

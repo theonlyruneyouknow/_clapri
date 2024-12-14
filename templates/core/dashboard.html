@@ -82,57 +82,7 @@
     <div class="row">
         
             <!-- templates/core/dashboard.html (add within the main content area) -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Recent Appraisal Reports</h5>
-                            <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary">
-                                <i class="bi bi-plus-circle"></i> New Appraisal
-                            </a>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Report #</th>
-                                            <th>Property</th>
-                                            <th>Status</th>
-                                            <th>Date</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for report in recent_reports %}
-                                        <tr>
-                                            <td>{{ report.report_number }}</td>
-                                            <td>{{ report.location.address }}</td>
-                                            <td>
-                                                <span class="badge bg-{{ report.status_color }}">
-                                                    {{ report.status|title }}
-                                                </span>
-                                            </td>
-                                            <td>{{ report.report_date|date:"M d, Y" }}</td>
-                                            <td>
-                                                <a href="{% url 'core:report_detail' report.id %}" 
-                                                class="btn btn-sm btn-outline-primary">
-                                                    View Report
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        {% empty %}
-                                        <tr>
-                                            <td colspan="5" class="text-center">No reports available</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>    
+               
         
         
         <!-- Recent Requests -->
@@ -141,7 +91,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">Recent Appraisal Requests</h5>
                     <a href="{% url 'core:appraisal_request' %}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-plus"></i> New Request
+                        <i class="bi bi-plus"></i> New Appraisal Request
                     </a>
                 </div>
                 <div class="card-body">
@@ -204,49 +154,40 @@
             </div>
         </div>
 
-
-
-        <!-- Notifications & Upcoming -->
+        <!-- Upcoming Appointments -->
         <div class="col-xl-4 mb-4">
-            <!-- Notifications -->
-            <div class="card mb-4">
+            <div class="card h-100">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Notifications</h5>
+                    <h5 class="card-title mb-0">Upcoming Appointments</h5>
                 </div>
                 <div class="card-body p-0">
-                    {% if notifications %}
+                    {% if upcoming_appointments %}
                         <div class="list-group list-group-flush">
-                            {% for notification in notifications %}
+                            {% for appointment in upcoming_appointments %}
                             <div class="list-group-item">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0">
-                                        {% if notification.type == 'success' %}
-                                            <i class="bi bi-check-circle text-success"></i>
-                                        {% elif notification.type == 'warning' %}
-                                            <i class="bi bi-exclamation-circle text-warning"></i>
-                                        {% elif notification.type == 'danger' %}
-                                            <i class="bi bi-x-circle text-danger"></i>
-                                        {% else %}
-                                            <i class="bi bi-info-circle text-info"></i>
-                                        {% endif %}
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <p class="mb-1">{{ notification.message }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ appointment.formatted_address }}</h6>
                                         <small class="text-muted">
-                                            {{ notification.date|date:"M d, Y H:i" }}
+                                            {{ appointment.scheduled_date|date:"M d, Y h:i A" }}
                                         </small>
                                     </div>
+                                    <a href="#" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-calendar"></i>
+                                    </a>
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
                     {% else %}
                         <div class="text-center py-4">
-                            <p class="text-muted mb-0">No new notifications</p>
+                            <p class="text-muted mb-0">No upcoming appointments</p>
                         </div>
                     {% endif %}
                 </div>
             </div>
+
+        
 
             <!-- Upcoming Appointments -->
             <div class="card">
