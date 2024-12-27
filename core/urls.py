@@ -21,7 +21,9 @@ urlpatterns = [
     path('profile/update/', views.ProfileUpdateView.as_view(), name='profile_update'),
     path('profile/edit/', views.ProfileEditView.as_view(), name='profile_edit'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
-    
+    path('admin/users/', views.UserManagementView.as_view(), name='user_management'),
+
+
     # Authentication
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),

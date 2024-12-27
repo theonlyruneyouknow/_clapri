@@ -4,6 +4,7 @@
 from functools import wraps
 from django.shortcuts import redirect
 from django.conf import settings
+from django.contrib import messages
 from authlib.integrations.django_client import OAuth
 import logging
 
@@ -36,3 +37,28 @@ def login_required(f):
 def get_auth0_user(request):
     """Get Auth0 user from session"""
     return request.session.get('user')
+
+def is_admin(user):
+    """Check if user has admin privileges"""
+    if not user:
+        return False
+        
+    # Check all possible locations for admin flag
+    return any([
+        user.get('is_admin'),
+        user.get('/app_metadata', {}).get('is_admin'),
+        user.get('app_metadata', {}).get('is_admin'),
+        user.get('/user_metadata', {}).get('is_admin'),
+        user.get('user_metadata', {}).get('is_admin')
+    ])
+
+def admin_required(f):
+    """Decorator for views that require admin access"""
+    @wraps(f)
+    def decorated_function(request, *args, **kwargs):
+        user = get_auth0_user(request)
+        if not user or not is_admin(user):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('core:home')
+        return f(request, *args, **kwargs)
+    return decorated_function

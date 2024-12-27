@@ -5,6 +5,7 @@ from mongoengine import Document, StringField, DateTimeField, BooleanField, Emai
 from datetime import datetime
 from django import forms
 from django.utils import timezone
+
 # from .models import UserProfile, AppraisalRequest
 
 class TimeSlot(Document):
@@ -71,10 +72,17 @@ class Appointment(Document):
         return old_date
 
 class UserProfile(Document):
+    ROLES = (
+        ('admin', 'Administrator'),
+        ('appraiser', 'Appraiser'),
+        ('user', 'Standard User')
+    )
+
     user_id = StringField(required=True, unique=True)
     email = EmailField(required=True)
     first_name = StringField(max_length=50)
     last_name = StringField(max_length=50)
+    role = StringField(choices=ROLES, default='user')  # Single role field definition
     phone = StringField(max_length=20)
     company = StringField(max_length=100)
     address = StringField(max_length=200)
@@ -89,29 +97,19 @@ class UserProfile(Document):
         'collection': 'user_profiles',
         'indexes': [
             'user_id',
-            'email'
+            'email',
+            'role',
+            ('created_at', -1)
         ]
     }
 
     def save(self, *args, **kwargs):
         self.updated_at = datetime.now()
-        return super(UserProfile, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     @property
-    def full_name(self):
-        if self.first_name or self.last_name:
-            return f"{self.first_name} {self.last_name}".strip()
-        return "Anonymous"
-
-    @property
-    def full_address(self):
-        address_parts = [
-            self.address,
-            self.city,
-            self.state,
-            self.zip_code
-        ]
-        return ', '.join(filter(None, address_parts))
+    def is_admin(self):
+        return self.role == 'admin'
 
 class AppraisalRequest(Document):
     PROPERTY_TYPES = (
