@@ -280,7 +280,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'your-email@example.com'
 EMAIL_HOST_PASSWORD = 'your-email-password'
-DEFAULT_FROM_EMAIL = 'Appraisal Pro <noreply@example.com>'
+DEFAULT_FROM_EMAIL = 'Martin Appraisal Co <noreply@example.com>'
 ADMIN_EMAIL = 'admin@example.com'
 
 # Company Information (used in email templates)
