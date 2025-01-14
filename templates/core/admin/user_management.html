@@ -1,0 +1,66 @@
+{# templates/core/admin/user_management.html #}
+
+{% extends 'base.html' %}
+{% block title %}User Management - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3">User Management</h1>
+            <p class="text-muted">Manage user roles and permissions</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Created</th>
+                            <th>Last Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for profile in user_profiles %}
+                        <tr>
+                            <td>{{ profile.full_name }}</td>
+                            <td>{{ profile.email }}</td>
+                            <td>
+                                <form method="post" class="role-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="user_id" value="{{ profile.user_id }}">
+                                    <div class="btn-group" role="group">
+                                        <input type="radio" class="btn-check" name="role" 
+                                               id="user_{{ profile.user_id }}_user" value="user"
+                                               {% if profile.role == 'user' %}checked{% endif %}
+                                               onchange="this.form.submit()">
+                                        <label class="btn btn-outline-secondary" for="user_{{ profile.user_id }}_user">
+                                            User
+                                        </label>
+
+                                        <input type="radio" class="btn-check" name="role" 
+                                               id="user_{{ profile.user_id }}_admin" value="admin"
+                                               {% if profile.role == 'admin' %}checked{% endif %}
+                                               onchange="this.form.submit()">
+                                        <label class="btn btn-outline-primary" for="user_{{ profile.user_id }}_admin">
+                                            Admin
+                                        </label>
+                                    </div>
+                                </form>
+                            </td>
+                            <td>{{ profile.created_at|date:"M d, Y" }}</td>
+                            <td>{{ profile.updated_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -42,10 +42,10 @@ import calendar
 logger = logging.getLogger(__name__)
 
 class User24(Document):
-    user_id = StringField(required=True, unique=True)  # Auth0 sub
+    user_id = StringField(required=True, unique=True)
     email = StringField(required=True)
-    user_metadata = DictField()
-    app_metadata = DictField()
+    user_metadata = DictField(default={})
+    app_metadata = DictField(default={})
     last_login = DateTimeField(default=datetime.now)
     created_at = DateTimeField(default=datetime.now)
     
@@ -53,6 +53,14 @@ class User24(Document):
         'collection': 'users24',
         'indexes': ['user_id', 'email']
     }
+
+    @property
+    def is_admin(self):
+        """Check if user has admin role"""
+        return any([
+            self.app_metadata.get('is_admin'),
+            self.user_metadata.get('is_admin')
+        ])
 
 def get_active_content(page_type):
     """Get active content for a specific page type"""
@@ -84,6 +92,56 @@ def get_active_content(page_type):
         print(f"Error in get_active_content: {str(e)}")
         return None
     
+class UserManagementView(View):
+    template_name = 'core/admin/user_management.html'
+
+    @method_decorator(login_required)
+    def get(self, request):
+        user = get_auth0_user(request)
+        profile = UserProfile.objects(user_id=user['sub']).first()
+        
+        if not profile or not profile.is_admin:
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('core:home')
+            
+        user_profiles = UserProfile.objects.all().order_by('-created_at')
+        
+        context = {
+            'user': user,
+            'user_profiles': user_profiles
+        }
+        return render(request, self.template_name, context)
+
+    @method_decorator(login_required)
+    def post(self, request):
+        current_user = get_auth0_user(request)
+        current_profile = UserProfile.objects(user_id=current_user['sub']).first()
+        
+        if not current_profile or not current_profile.is_admin:
+            messages.error(request, "You don't have permission to perform this action.")
+            return redirect('core:home')
+
+        try:
+            target_user_id = request.POST.get('user_id')
+            new_role = request.POST.get('role')
+            
+            if new_role not in ['user', 'admin']:
+                raise ValueError("Invalid role specified")
+
+            target_profile = UserProfile.objects(user_id=target_user_id).first()
+            if target_profile:
+                target_profile.role = new_role
+                target_profile.save()
+                messages.success(request, f"User role updated successfully!")
+            else:
+                messages.error(request, "User not found.")
+                
+            return redirect('core:user_management')
+            
+        except Exception as e:
+            messages.error(request, f"Error updating user: {str(e)}")
+            return redirect('core:user_management')
+
 class ProfileUpdateView(View):
     @method_decorator(login_required)
     def post(self, request):
@@ -1297,22 +1355,46 @@ def callback(request):
         token = oauth.auth0.authorize_access_token(request)
         userinfo = token.get('userinfo')
         
-        # Add debugging
-        print("=== Auth0 Debug Info ===")
-        print("Token:", token)
-        print("Userinfo:", userinfo)
-        print("ID Token:", token.get('id_token'))
-        print("Access Token:", token.get('access_token'))
-        print("=====================")
-        
         if not userinfo:
             logger.error("No user info in token")
             messages.error(request, "Failed to get user information")
             return redirect('core:home')
 
+        # Store user info in session
         request.session['user'] = userinfo
-        return_to = request.session.pop('return_to', '/')
         
+        # Create or update User24 record
+        try:
+            user24 = User24.objects(user_id=userinfo['sub']).first()
+            if not user24:
+                user24 = User24(
+                    user_id=userinfo['sub'],
+                    email=userinfo['email'],
+                    user_metadata=userinfo.get('user_metadata', {}),
+                    app_metadata=userinfo.get('app_metadata', {})
+                )
+            else:
+                user24.email = userinfo['email']
+                user24.user_metadata = userinfo.get('user_metadata', {})
+                user24.app_metadata = userinfo.get('app_metadata', {})
+            
+            user24.last_login = datetime.now()
+            user24.save()
+
+            # Create or update UserProfile
+            profile = UserProfile.objects(user_id=userinfo['sub']).first()
+            if not profile:
+                profile = UserProfile(
+                    user_id=userinfo['sub'],
+                    email=userinfo['email'],
+                    first_name=userinfo.get('given_name', ''),
+                    last_name=userinfo.get('family_name', '')
+                )
+                profile.save()
+        except Exception as e:
+            logger.error(f"Error saving user data: {str(e)}")
+            
+        return_to = request.session.pop('return_to', '/')
         messages.success(request, f"Welcome, {userinfo.get('name', 'User')}!")
         return redirect(return_to)
 
@@ -1320,33 +1402,7 @@ def callback(request):
         logger.exception("Callback error")
         messages.error(request, "Authentication failed. Please try again.")
         return redirect('core:home')
-
-    # After getting user info from Auth0
-    try:
-        # Get or create user document
-        user24 = User24.objects(user_id=user['sub']).first()
-        if not user24:
-            user24 = User24(
-                user_id=user['sub'],
-                email=user['email']
-            )
-        
-        # Update metadata
-        user24.user_metadata = user.get('user_metadata', {})
-        user24.app_metadata = user.get('app_metadata', {})
-        user24.last_login = datetime.now()
-        user24.save()
-        
-        # Store user info in session
-        request.session['user'] = user
-        
-        return redirect(request.session.get('next', 'core:dashboard'))
-        
-    except Exception as e:
-        logger.error(f"Error saving user metadata: {str(e)}")
-        messages.error(request, "Error saving user data")
-        return redirect('core:login')
-
+    
 def logout(request):
     request.session.clear()
     params = {
