@@ -94,7 +94,6 @@ class ContactForm(forms.Form):
         choices=[
             ('', 'Select Service Type'),
             ('residential', 'Residential Appraisal'),
-            ('commercial', 'Commercial Appraisal'),
             ('estate', 'Estate Valuation'),
             ('tax', 'Tax Assessment'),
             ('consulting', 'Consulting Services'),
